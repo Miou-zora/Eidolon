@@ -6,16 +6,16 @@ endif
 
 ifeq ($(OS),Windows_NT)
 VENV_DIR	=	venv
+VENV_SCRIPT	=	${VENV_DIR}/Scripts/
+else
+VENV_SCRIPT	=
 endif
+
 
 
 all:
-	${PY} main.py
+	${VENV_SCRIPT}python main.py
 
 exe:
-ifeq ($(OS),Windows_NT)
-	${VENV_DIR}/Scripts/pyinstaller main.py --onefile
-else
-	pyinstaller main.py --onefile
-endif
+	${VENV_SCRIPT}pyinstaller main.py --onefile
 

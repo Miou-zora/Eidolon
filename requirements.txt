@@ -1,1 +1,2 @@
 pyinstaller==6.1.0
+esper==3.2
