@@ -8,11 +8,9 @@ ifeq ($(OS),Windows_NT)
 VENV_DIR	=	venv
 endif
 
-# TODO: add .exe packaging
 
 all:
 	${PY} main.py
-
 
 exe:
 ifeq ($(OS),Windows_NT)
