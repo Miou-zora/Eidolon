@@ -4,10 +4,20 @@ else
 PY		=	python
 endif
 
+ifeq ($(OS),Windows_NT)
+VENV_DIR	=	venv
+endif
+
 # TODO: add .exe packaging
 
 all:
 	${PY} main.py
 
-mp:
-	mypy
+
+exe:
+ifeq ($(OS),Windows_NT)
+	${VENV_DIR}/Scripts/pyinstaller main.py --onefile
+else
+	pyinstaller main.py --onefile
+endif
+
