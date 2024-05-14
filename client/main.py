@@ -1,48 +1,38 @@
-import esper
-import pyray
+# Copyright 2015 gRPC authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""The Python implementation of the GRPC helloworld.Greeter client."""
 
-import pymunk  # Import pymunk..
+from __future__ import print_function
 
-space = pymunk.Space()  # Create a Space which contain the simulation
-space.gravity = 0, -981  # Set its gravity
+import logging
 
-body = pymunk.Body()  # Create a Body
-body.position = 50, 100  # Set the position of the body
-
-poly = pymunk.Poly.create_box(body)  # Create a box shape and attach to body
-poly.mass = 10  # Set the mass on the shape
-space.add(body, poly)  # Add both body and shape to the simulation
-
-print_options = pymunk.SpaceDebugDrawOptions()  # For easy printing
-
-for _ in range(100):  # Run simulation 100 steps in total
-    space.step(0.02)  # Step the simulation one step forward
-    space.debug_draw(print_options)
-
-from dataclasses import dataclass as component
-
-
-@component
-class Position:
-    x: float = 0.0
-    y: float = 0.0
+import grpc
+from proto import core_pb2
+from proto import core_pb2_grpc
 
 
-player = esper.create_entity()
-esper.add_component(player, Position(x=5, y=5))
-print(player)
-
-
-def main():
-    print("Hello world!: From client")
-    pyray.init_window(800, 450, "Hello")
-    while not pyray.window_should_close():
-        pyray.begin_drawing()
-        pyray.clear_background(pyray.WHITE)
-        pyray.draw_text("Hello world from client", 190, 200, 20, pyray.VIOLET)
-        pyray.end_drawing()
-    pyray.close_window()
+def run():
+    # NOTE(gRPC Python Team): .close() is possible on a channel and should be
+    # used in circumstances in which the with statement does not fit the needs
+    # of the code.
+    print("Will try to greet world ...")
+    with grpc.insecure_channel("localhost:50051") as channel:
+        stub = helloworld_pb2_grpc.GreeterStub(channel)
+        response = stub.SayHello(helloworld_pb2.HelloRequest(name="you"))
+    print("Greeter client received: " + response.message)
 
 
 if __name__ == "__main__":
-    main()
+    logging.basicConfig()
+    run()

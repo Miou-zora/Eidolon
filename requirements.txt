@@ -2,3 +2,5 @@ pyinstaller==6.1.0
 esper==3.2
 raylib==5.0.0.2
 pymunk==6.8.0
+grpcio==1.63.0
+grpcio-tools==1.63.0

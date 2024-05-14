@@ -7,6 +7,7 @@ endif
 ifeq ($(OS),Windows_NT)
 VENV_DIR	=	venv
 VENV_SCRIPT	=	${VENV_DIR}/Scripts/
+VENV_PY		=	${VENV_DIR}/Lib/site-packages/
 else
 VENV_SCRIPT	=
 endif
@@ -25,16 +26,22 @@ else
 FILE_SEP	=	/
 endif
 
-client:
+PROTO_FOLDER	=	./proto
+
+proto:
+	${VENV_SCRIPT}python ${VENV_PY}grpc_tools${FILE_SEP}protoc.py -I. --python_out=. --pyi_out=. --grpc_python_out=. ${PROTO_FOLDER}/core.proto
+
+client: proto
+	${VENV_SCRIPT}pip install
 	${VENV_SCRIPT}python client/main.py
 
-server:
+server: proto
 	${VENV_SCRIPT}python server/main.py
 
-exe-client:
+exe-client: proto
 	${VENV_SCRIPT}pyinstaller --noconsole client${FILE_SEP}main.py --onefile --name=client
 
-exe-server:
+exe-server: proto
 	${VENV_SCRIPT}pyinstaller server${FILE_SEP}main.py --onefile --name=server
 
 clean:
@@ -53,4 +60,4 @@ else
 	${RM_DIR} dist
 endif
 
-.PHONY: client server exe-client exe-server
+.PHONY: client server exe-client exe-server proto
