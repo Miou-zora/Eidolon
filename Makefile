@@ -29,10 +29,9 @@ endif
 PROTO_FOLDER	=	./proto
 
 proto:
-	${VENV_SCRIPT}python ${VENV_PY}grpc_tools${FILE_SEP}protoc.py -I. --python_out=. --pyi_out=. --grpc_python_out=. ${PROTO_FOLDER}/core.proto
+	${VENV_SCRIPT}pip install -e .
 
 client: proto
-	${VENV_SCRIPT}pip install
 	${VENV_SCRIPT}python client/main.py
 
 server: proto
