@@ -16,14 +16,7 @@ ifeq ($(OS),Windows_NT)
 RM			=	del /s /q /f
 RM_DIR		=	rd /s /q
 else
-RM			=	rm -f
 RM_DIR		=	rm -rf
-endif
-
-ifeq ($(OS),Windows_NT)
-FILE_SEP	=	\\
-else
-FILE_SEP	=	/
 endif
 
 PROTO_FOLDER	=	./proto
@@ -38,10 +31,10 @@ server: proto
 	${VENV_SCRIPT}python server/main.py
 
 exe-client: proto
-	${VENV_SCRIPT}pyinstaller --noconsole client${FILE_SEP}main.py --onefile --name=client
+	${VENV_SCRIPT}pyinstaller --noconsole client/main.py --onefile --name=client
 
 exe-server: proto
-	${VENV_SCRIPT}pyinstaller server${FILE_SEP}main.py --onefile --name=server
+	${VENV_SCRIPT}pyinstaller server/main.py --onefile --name=server
 
 clean:
 	${RM} client.spec server.spec
