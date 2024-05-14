@@ -19,9 +19,12 @@ server:
 	${VENV_SCRIPT}python server/main.py
 
 exe-client:
-	${VENV_SCRIPT}pyinstaller client/main.py --onefile
+	${VENV_SCRIPT}pyinstaller --noconsole client/main.py --onefile --name=client
 
 exe-server:
-	${VENV_SCRIPT}pyinstaller server/main.py --onefile
+	${VENV_SCRIPT}pyinstaller server/main.py --onefile --name=server
+
+clean:
+
 
 .PHONY: client server exe-client exe-server
