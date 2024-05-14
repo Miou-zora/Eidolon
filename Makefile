@@ -1,55 +1,62 @@
-ifeq ($(OS),Windows_NT)
-PY 			=	py
+WIN := Windows_NT
+
+ifeq ($(OS),$(WIN))
+  PY = py
 else
-PY			=	python
+  PY = python
+endif
+
+ifeq ($(OS),$(WIN))
+  VENV_DIR = venv
+  VENV_SCRIPT = $(VENV_DIR)/Scripts/
+  VENV_PY = $(VENV_DIR)/Lib/site-packages/
+else
+  VENV_SCRIPT =
 endif
 
 ifeq ($(OS),Windows_NT)
-VENV_DIR	=	venv
-VENV_SCRIPT	=	${VENV_DIR}/Scripts/
-VENV_PY		=	${VENV_DIR}/Lib/site-packages/
+  RM = del /s /q /f
+  RM_DIR = rd /s /q
 else
-VENV_SCRIPT	=
+  RM_DIR = rm -rf
 endif
 
-ifeq ($(OS),Windows_NT)
-RM			=	del /s /q /f
-RM_DIR		=	rd /s /q
-else
-RM_DIR		=	rm -rf
-endif
+PROTO_FOLDER = ./proto
 
-PROTO_FOLDER	=	./proto
-
+.PHONY: proto
 proto:
-	${VENV_SCRIPT}pip install -e .
+	$(VENV_SCRIPT)pip install -e .
 
+.PHONY: server
 client: proto
-	${VENV_SCRIPT}python client/main.py
+	$(VENV_SCRIPT)python client/main.py
 
+.PHONY: server
 server: proto
-	${VENV_SCRIPT}python server/main.py
+	$(VENV_SCRIPT)python server/main.py
 
+.PHONY: exe-client
 exe-client: proto
-	${VENV_SCRIPT}pyinstaller --noconsole client/main.py --onefile --name=client
+	$(VENV_SCRIPT)pyinstaller --noconsole client/main.py --onefile --name=client
 
+.PHONY: exe-server
 exe-server: proto
-	${VENV_SCRIPT}pyinstaller server/main.py --onefile --name=server
+	$(VENV_SCRIPT)pyinstaller server/main.py --onefile --name=server
 
+.PHONY: clean
 clean:
-	${RM} client.spec server.spec
+	$(RM) client.spec server.spec
 
-ifeq ($(OS),Windows_NT)
-	if exist build ${RM_DIR} build
+ifeq ($(OS),$(WIN))
+	if exist build $(RM_DIR) build
 else
-	${RM_DIR} build
+	$(RM_DIR) build
 endif
 
+.PHONY: fclean
 fclean: clean
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS),$(WIN))
 	if exist dist ${RM_DIR} dist
 else
-	${RM_DIR} dist
+	$(RM_DIR) dist
 endif
-
-.PHONY: client server exe-client exe-server proto
