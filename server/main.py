@@ -1,5 +1,5 @@
 import esper
-from pyray import *
+import pyray
 
 import pymunk  # Import pymunk..
 
@@ -34,14 +34,14 @@ print(player)
 
 
 def main():
-    print("Hello world!")
-    init_window(800, 450, "Hello")
-    while not window_should_close():
-        begin_drawing()
-        clear_background(WHITE)
-        draw_text("Hello world", 190, 200, 20, VIOLET)
-        end_drawing()
-    close_window()
+    print("Hello world!: From server")
+    pyray.init_window(800, 450, "Hello")
+    while not pyray.window_should_close():
+        pyray.begin_drawing()
+        pyray.clear_background(pyray.WHITE)
+        pyray.draw_text("Hello world", 190, 200, 20, pyray.VIOLET)
+        pyray.end_drawing()
+    pyray.close_window()
 
 
 if __name__ == "__main__":

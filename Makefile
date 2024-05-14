@@ -12,10 +12,16 @@ VENV_SCRIPT	=
 endif
 
 
+client:
+	${VENV_SCRIPT}python client/main.py
 
-all:
-	${VENV_SCRIPT}python main.py
+server:
+	${VENV_SCRIPT}python server/main.py
 
-exe:
-	${VENV_SCRIPT}pyinstaller main.py --onefile
+exe-client:
+	${VENV_SCRIPT}pyinstaller client/main.py --onefile
 
+exe-server:
+	${VENV_SCRIPT}pyinstaller server/main.py --onefile
+
+.PHONY: client server exe-client exe-server

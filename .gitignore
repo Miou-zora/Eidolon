@@ -31,7 +31,18 @@
 *.out
 *.app
 
+# Virtual env python
 venv
+
+# nix
 .direnv
 .envrc
 .pre-commit-config.yaml
+
+# Exe build
+build
+dist
+main.spec
+
+# PyCharm IDE
+.idea
