@@ -42,7 +42,7 @@ venv
 # Exe build
 build
 dist
-main.spec
+*.spec
 
 # PyCharm IDE
 .idea
