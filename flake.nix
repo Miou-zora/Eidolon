@@ -41,6 +41,7 @@
         inherit (self.checks.${system}.pre-commit-check) shellHook;
 
         name = "Eidolon";
+        env.LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
         packages = with pkgs; [
           python312
           python312Packages.black
