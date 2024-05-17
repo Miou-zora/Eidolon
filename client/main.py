@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, TypeVar
 
 import esper
 from dataclasses import dataclass as component
@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 type Component = Any
 type TimeUnit = int
 type EntityId = int
+Processor = esper.Processor
+ProcessorClass = TypeVar("ProcessorClass", bound=Processor)
 
 
 @component
@@ -23,11 +25,11 @@ class Position:
         return f"Position({self.x},{self.y})"
 
 
-class LogProcessor(esper.Processor):
+class LogProcessor(Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, elapsed_time) -> None:
+    def process(self, elapsed_time: TimeUnit) -> None:
         for ent, pos in esper.get_component(Position):
             logger.debug(f"Entity {ent}: {pos}")
 
@@ -74,10 +76,13 @@ class UnitTimeProvider(TimeProvider):
 
 
 class Engine:
-    def __init__(self, time_provider=UnitTimeProvider()):
+    def __init__(self, time_provider: TimeProvider | None = None):
         self._running = False
         self.world: World = World(esper.current_world)
-        self.time_provider: TimeProvider = time_provider
+        if time_provider is None:
+            self.time_provider = UnitTimeProvider()
+        else:
+            self.time_provider: TimeProvider = time_provider
 
     def run(self) -> None:
         self._running = True
@@ -85,13 +90,13 @@ class Engine:
             self.time_provider.update()
             self.world.update(self.time_provider.get_elapsed_time())
 
-    def add_process(self, processor) -> None:
-        esper.add_processor(processor())
+    def add_process(self, processor: ProcessorClass) -> None:
+        esper.add_processor(processor)
 
 
 def run():
     engine: Engine = Engine()
-    engine.add_process(LogProcessor)
+    engine.add_process(LogProcessor())
     entity: Entity = Entity()
     entity.add_component(Position(1, 1))
     engine.run()
