@@ -1,7 +1,7 @@
 import esper
 from typing import Any
 
-type EntityId = int
+EntityId = int
 
 
 class Entity:

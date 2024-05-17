@@ -1,1 +1,1 @@
-type TimeUnit = int
+TimeUnit = int
