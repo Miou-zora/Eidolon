@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 type Component = Any
 type TimeUnit = int
+type EntityId = int
 
 
 @component
@@ -29,9 +30,6 @@ class LogProcessor(esper.Processor):
     def process(self, elapsed_time) -> None:
         for ent, pos in esper.get_component(Position):
             logger.debug(f"Entity {ent}: {pos}")
-
-
-type EntityId = int
 
 
 class Entity:
