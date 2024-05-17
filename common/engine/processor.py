@@ -1,5 +1,5 @@
-import esper
 from typing import TypeVar
 
-Processor = esper.Processor
+from esper import Processor
+
 ProcessorClass = TypeVar("ProcessorClass", bound=Processor)

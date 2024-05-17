@@ -1,8 +1,10 @@
+import logging
+
 import esper
-from common.engine.time import TimeUnit
+
 from common.components.position import Position
 from common.engine.processor import Processor
-import logging
+from common.engine.time import TimeUnit
 
 logger = logging.getLogger(__name__)
 

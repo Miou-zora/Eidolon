@@ -1,7 +1,8 @@
+import esper
+
+from common.engine.processor import ProcessorClass
 from common.engine.time_provider import TimeProvider
 from common.engine.world import World
-import esper
-from common.engine.processor import ProcessorClass
 
 # Ugly
 from common.utils.time_providers.unit_time_provider import UnitTimeProvider
@@ -14,7 +15,7 @@ class Engine:
         if time_provider is None:
             self.time_provider = UnitTimeProvider()
         else:
-            self.time_provider: TimeProvider = time_provider
+            self.time_provider = time_provider
 
     def run(self) -> None:
         self._running = True

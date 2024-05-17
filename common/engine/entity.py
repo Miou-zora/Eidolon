@@ -1,5 +1,6 @@
-import esper
 from typing import Any
+
+import esper
 
 EntityId = int
 

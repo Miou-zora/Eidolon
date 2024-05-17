@@ -1,6 +1,7 @@
 import esper
-from common.engine.time import TimeUnit
+
 from common.engine.entity import EntityId
+from common.engine.time import TimeUnit
 
 
 class World:

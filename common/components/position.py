@@ -1,4 +1,4 @@
-from common.engine.component import component
+from common.engine import component
 
 
 @component
