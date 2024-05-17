@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from common.engine.time import TimeUnit
+from .time import TimeUnit
 
 
 class TimeProvider(ABC):

@@ -1,7 +1,8 @@
 import esper
 
-from common.engine.entity import EntityId
-from common.engine.time import TimeUnit
+from .entity import EntityId
+from .resource import Resource
+from .time import TimeUnit
 
 
 class World:
@@ -12,5 +13,5 @@ class World:
     def create_entity() -> EntityId:
         return esper.create_entity()
 
-    def update(self, elapsed_time: TimeUnit) -> None:
-        esper.process(elapsed_time)
+    def update(self, resources: dict[str, Resource], elapsed_time: TimeUnit) -> None:
+        esper.process(resources, elapsed_time)

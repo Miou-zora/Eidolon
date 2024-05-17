@@ -2,6 +2,7 @@ from dataclasses import dataclass as component
 
 from .entity import Entity, EntityId
 from .processor import Processor, ProcessorClass
+from .resource import Resource
 from .time import TimeUnit
 from .time_provider import TimeProvider
 
@@ -13,4 +14,5 @@ __all__ = (
     "TimeUnit",
     "Processor",
     "ProcessorClass",
+    "Resource",
 )
