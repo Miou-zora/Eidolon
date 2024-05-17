@@ -9,6 +9,9 @@ import logging
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
+type Component = Any
+type TimeUnit = int
+
 
 @component
 class Position:
@@ -19,54 +22,56 @@ class Position:
         return f"Position({self.x},{self.y})"
 
 
-type Component = Any
-type TimeType = int
-
-
 class LogProcessor(esper.Processor):
     def __init__(self):
         super().__init__()
 
-    def process(self, elapsed_time):
+    def process(self, elapsed_time) -> None:
         for ent, pos in esper.get_component(Position):
             logger.debug(f"Entity {ent}: {pos}")
 
 
+type EntityId = int
+
+
 class Entity:
     def __init__(self):
-        self.id = esper.create_entity()
+        self.id: EntityId = esper.create_entity()
 
-    def add_component(self, component_instance: Any):
+    def add_component(self, component_instance: Any) -> None:
         esper.add_component(self.id, component_instance)
 
 
 class World:
     def __init__(self, name: str):
-        self.name = str
+        self.name = name
 
     @staticmethod
-    def create_entity():
+    def create_entity() -> EntityId:
         return esper.create_entity()
+
+    def update(self, elapsed_time: TimeUnit) -> None:
+        esper.process(elapsed_time)
 
 
 class TimeProvider(ABC):
     @abstractmethod
-    def update(self):
+    def update(self) -> None:
         pass
 
     @abstractmethod
-    def get_elapsed_time(self) -> TimeType:
+    def get_elapsed_time(self) -> TimeUnit:
         return 1
 
 
 class UnitTimeProvider(TimeProvider):
-    def __init__(self, unit: TimeType = 1):
-        self._unit: TimeType = unit
+    def __init__(self, unit: TimeUnit = 1):
+        self._unit: TimeUnit = unit
 
-    def update(self):
+    def update(self) -> None:
         pass
 
-    def get_elapsed_time(self) -> TimeType:
+    def get_elapsed_time(self) -> TimeUnit:
         return self._unit
 
 
@@ -76,16 +81,13 @@ class Engine:
         self.world: World = World(esper.current_world)
         self.time_provider: TimeProvider = time_provider
 
-    def run(self):
+    def run(self) -> None:
         self._running = True
         while self._running:
             self.time_provider.update()
-            self.update(self.time_provider.get_elapsed_time())
+            self.world.update(self.time_provider.get_elapsed_time())
 
-    def update(self, elapsed_time: TimeType):
-        esper.process(elapsed_time)
-
-    def add_process(self, processor):
+    def add_process(self, processor) -> None:
         esper.add_processor(processor())
 
 
