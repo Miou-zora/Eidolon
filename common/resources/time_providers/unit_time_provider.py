@@ -1,5 +1,5 @@
 from common.engine.time import TimeUnit
-from common.engine.time_provider import TimeProvider
+from common.resources.time_providers.time_provider import TimeProvider
 
 
 class UnitTimeProvider(TimeProvider):
