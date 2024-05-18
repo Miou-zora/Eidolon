@@ -2,16 +2,16 @@ import logging
 import os
 import sys
 
-from client.components.controllable import Controllable
-from client.components.drawable import Drawable
-from client.components.speed import Speed
-from client.processors.control_processor import ControlProcessor
-from client.processors.inputs_update_processor import InputsUpdateProcessor
-from client.processors.render_processor import RenderProcessor
-from client.processors.window_processor import WindowProcessor
-from client.resources.assets_manager import AssetsManager
-from client.resources.inputs_manager import InputsManager
-from client.resources.window_resource import WindowResource
+from components.controllable import Controllable
+from components.drawable import Drawable
+from components.speed import Speed
+from processors.control_processor import ControlProcessor
+from processors.inputs_update_processor import InputsUpdateProcessor
+from processors.render_processor import RenderProcessor
+from processors.window_processor import WindowProcessor
+from resources.assets_manager import AssetsManager
+from resources.inputs_manager import InputsManager
+from resources.window_resource import WindowResource
 from common.components.name import Name
 from common.components.position import Position
 from common.engine.engine import Engine
