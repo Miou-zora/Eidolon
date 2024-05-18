@@ -151,6 +151,35 @@
             hash = "sha256-1qnChZYsb0e5LnPhvs6a/R5Ammgj2HWFNe9625sBRo8=";
           };
         };
+
+        pyray = pkgs.python311Packages.buildPythonPackage rec {
+          pname = "pyray";
+          version = "5.0.0.2";
+
+          src = pkgs.fetchFromGitHub {
+            owner = "electronstudio";
+            repo = "raylib-python-cffi";
+            rev = "refs/tags/v${version}";
+            hash = "sha256-DlnZRJZ0ZnkLii09grA/lGsJHPUYrbaJ55BVWJ8JzfM=";
+          };
+
+          build-system = [
+            pkgs.python311Packages.setuptools
+            pkgs.python311Packages.cffi
+          ];
+
+          patches = [./fix-pyray-builder.patch];
+          nativeBuildInputs = [pkgs.pkg-config];
+
+          buildInputs = [
+            pkgs.python311
+            pkgs.glfw
+            pkgs.libffi
+            pkgs.raylib
+            packages.physac
+            packages.raygui
+          ];
+        };
       };
     });
 }
