@@ -38,11 +38,11 @@ $(COMMON_INSTALL_FILE):
 
 .PHONY: server
 client: common
-	$(VENV_SCRIPT)python client/main.py
+	$(VENV_SCRIPT)python client
 
 .PHONY: server
 server: common
-	$(VENV_SCRIPT)python server/main.py
+	$(VENV_SCRIPT)python server
 
 .PHONY: exe-client
 exe-client: common

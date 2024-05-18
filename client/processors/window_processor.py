@@ -1,6 +1,6 @@
 import pyray
 
-from client.resources.window_resource import WindowResource
+from resources.window_resource import WindowResource
 from common.engine.engine import Engine
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager

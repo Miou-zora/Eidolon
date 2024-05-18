@@ -1,8 +1,8 @@
 import logging
 
-from client.processors.render_processor import RenderProcessor
-from client.processors.window_processor import WindowProcessor
-from client.resources.window_resource import WindowResource
+from processors.render_processor import RenderProcessor
+from processors.window_processor import WindowProcessor
+from resources.window_resource import WindowResource
 from common.engine.engine import Engine
 from common.engine.entity import Entity
 from common.engine.processor import Processor
