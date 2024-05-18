@@ -31,6 +31,7 @@
           grpcio
           grpcio-tools
           (self.packages.${system}.esper)
+          (self.packages.${system}.pyray)
           pymunk
         ];
       };
@@ -55,10 +56,10 @@
         name = "Eidolon";
 
         env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
-          pkgs.glfw
-          pkgs.libglvnd
           pkgs.stdenv.cc.cc
+          pkgs.glfw
           pkgs.xorg.libX11
+          pkgs.libglvnd
         ];
 
         packages = with pkgs;
@@ -95,27 +96,28 @@
       };
 
       packages = let
-        mk-libheader = {
+        mk-header-lib = {
           name,
           version,
           src,
-          description,
-          pcfile,
+          meta,
         }:
-          pkgs.stdenv.mkDerivation rec {
-            inherit name version src;
+          pkgs.stdenv.mkDerivation {
+            inherit name version src meta;
 
             dontBuild = true;
             installPhase = ''
-              mkdir -p $out/{include,lib/pkgconfig}
+                mkdir -p $out/{include,lib/pkgconfig}
 
-              cp $src/src/physac.h $out/include/${name}.h
+                cp $src/src/${name}.h $out/include/${name}.h
 
               cat <<EOF > $out/lib/pkgconfig/${name}.pc
               prefix=$out
               includedir=$out/include
 
               Name: ${name}
+              Description: ${meta.description}
+              URL: ${meta.homepage}
               Version: ${version}
               Cflags: -I"{includedir}"
               EOF
@@ -133,19 +135,23 @@
           doCheck = false;
         };
 
-        physac = mk-libheader {
+        physac = mk-header-lib {
           name = "physac";
           version = "2.5-unstable-20240518";
-
           src = pkgs.fetchFromGitHub {
             owner = "victorfisac";
             repo = "Physac";
             rev = "29d9fc06860b54571a02402fff6fa8572d19bd12";
             hash = "sha256-PTlV1tT0axQbmGmJ7JD1n6wmbIxUdu7xho78EO0HNNk=";
           };
+
+          meta = {
+            description = "2D physics header-only library for raylib";
+            homepage = "https://github.com/victorfisac/Physac";
+          };
         };
 
-        raygui = mk-libheader {
+        raygui = mk-header-lib {
           name = "raygui";
           version = "4.0-unstable-25c8";
 
@@ -154,6 +160,11 @@
             repo = "raygui";
             rev = "25c8c65a6e5f0f4d4b564a0343861898c6f2778b";
             hash = "sha256-1qnChZYsb0e5LnPhvs6a/R5Ammgj2HWFNe9625sBRo8=";
+          };
+
+          meta = {
+            description = "A simple and easy-to-use immediate-mode gui library";
+            homepage = "https://github.com/raysan5/raygui";
           };
         };
 
@@ -174,7 +185,17 @@
           ];
 
           patches = [./fix-pyray-builder.patch];
-          nativeBuildInputs = [pkgs.pkg-config];
+
+          preBuild = ''
+            echo "$PKG_CONFIG_PATH"
+
+            ${pkgs.pkg-config}/bin/pkg-config --cflags 'raygui'
+
+          '';
+
+          nativeBuildInputs = [
+            pkgs.pkg-config
+          ];
 
           buildInputs = [
             pkgs.python311
