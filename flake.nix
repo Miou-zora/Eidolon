@@ -89,7 +89,34 @@
         '';
       };
 
-      packages = {
+      packages = let
+        mk-libheader = {
+          name,
+          version,
+          src,
+          description,
+          pcfile,
+        }:
+          pkgs.stdenv.mkDerivation rec {
+            inherit name version src;
+
+            dontBuild = true;
+            installPhase = ''
+              mkdir -p $out/{include,lib/pkgconfig}
+
+              cp $src/src/physac.h $out/include/${name}.h
+
+              cat <<EOF > $out/lib/pkgconfig/${name}.pc
+              prefix=$out
+              includedir=$out/include
+
+              Name: ${name}
+              Version: ${version}
+              Cflags: -I"{includedir}"
+              EOF
+            '';
+          };
+      in {
         esper = pkgs.python311Packages.buildPythonPackage {
           pname = "esper";
           version = "3.2";
@@ -101,7 +128,7 @@
           doCheck = false;
         };
 
-        physac = pkgs.stdenv.mkDerivation rec {
+        physac = mk-libheader {
           name = "physac";
           version = "2.5-unstable-20240518";
 
@@ -111,24 +138,18 @@
             rev = "29d9fc06860b54571a02402fff6fa8572d19bd12";
             hash = "sha256-PTlV1tT0axQbmGmJ7JD1n6wmbIxUdu7xho78EO0HNNk=";
           };
+        };
 
-          dontBuild = true;
-          installPhase = ''
-            mkdir -p $out/{include,lib/pkgconfig}
+        raygui = mk-libheader {
+          name = "raygui";
+          version = "4.0-unstable-25c8";
 
-            cp $src/src/physac.h $out/include/physac.h
-
-            cat <<EOF > $out/lib/pkgconfig/physac.pc
-            prefix=$out
-            includedir=$out/include
-
-            Name: physac
-            Description: 2D physics header-only library for raylib
-            URL: https://github.com/victorfisac/Physac
-            Version: ${version}
-            Cflags: -I"{includedir}"
-            EOF
-          '';
+          src = pkgs.fetchFromGitHub {
+            owner = "raysan5";
+            repo = "raygui";
+            rev = "25c8c65a6e5f0f4d4b564a0343861898c6f2778b";
+            hash = "sha256-1qnChZYsb0e5LnPhvs6a/R5Ammgj2HWFNe9625sBRo8=";
+          };
         };
       };
     });
