@@ -32,9 +32,9 @@ def run():
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
-    asset_manager.load_texture(
-        "randomImage", f"{base_path}/client/assets/randomImage.png"
-    )
+    asset_path = f"{base_path}/client/assets/randomImage.png"
+    asset_path_bytes = asset_path.encode("utf-8")
+    asset_manager.load_texture("randomImage", asset_path_bytes)
 
     engine.register_resource(asset_manager)
     engine.register_resource(InputsManager())
