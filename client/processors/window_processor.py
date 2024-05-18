@@ -1,4 +1,4 @@
-import raylib
+import pyray
 
 from client.resources.window_resource import WindowResource
 from common.engine.engine import Engine
@@ -17,6 +17,6 @@ class WindowProcessor(Processor):
             raise NotImplemented(
                 f"Resource not found: WindowResource:{window_resource}"
             )
-        if raylib.WindowShouldClose():
-            raylib.CloseWindow()
+        if pyray.window_should_close():
+            pyray.close_window()
             self.engine.stop()

@@ -1,5 +1,5 @@
 import esper
-import raylib
+import pyray as raylib
 
 from client.components.controllable import Controllable
 from client.components.speed import Speed
@@ -20,11 +20,11 @@ class ControlProcessor(Processor):
         if inputs_manager is None:
             raise NotImplemented(f"Resource not found: InputsManager:{inputs_manager}")
         for ent, (_, pos, speed) in esper.get_components(Controllable, Position, Speed):
-            if inputs_manager.is_key_pressed(raylib.KEY_W):
+            if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_W):
                 pos.y -= time_provider.get_elapsed_time() * speed.value
-            if inputs_manager.is_key_pressed(raylib.KEY_S):
+            if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_S):
                 pos.y += time_provider.get_elapsed_time() * speed.value
-            if inputs_manager.is_key_pressed(raylib.KEY_A):
+            if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_A):
                 pos.x -= time_provider.get_elapsed_time() * speed.value
-            if inputs_manager.is_key_pressed(raylib.KEY_D):
+            if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_D):
                 pos.x += time_provider.get_elapsed_time() * speed.value
