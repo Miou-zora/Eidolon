@@ -87,11 +87,7 @@
 
           source "${venvDir}/bin/activate"
           ${venvDir}/bin/pip install -r requirements.txt
-        '';
-
-        postVenvCreation = ''
-          pip install -r ./requirements.txt
-          pip install -e .
+          ${venvDir}/bin/pip install -e .
         '';
       };
 
