@@ -30,9 +30,9 @@
         deps = with pkgs.python311.pkgs; [
           grpcio
           grpcio-tools
+          pymunk
           (self.packages.${system}.esper)
           (self.packages.${system}.pyray)
-          pymunk
         ];
       };
     in rec {
@@ -124,6 +124,33 @@
             '';
           };
       in {
+        default = packages.eidolon-common;
+
+        eidolon-common = pkgs.python311Packages.buildPythonPackage {
+          pname = "common";
+          version = with builtins; let
+            matched = match ".*(0.0.1).*" (readFile ./setup.cfg);
+          in
+            if match == []
+            then "master"
+            else head matched;
+
+          pyproject = true;
+          build-system = [pkgs.python311Packages.setuptools];
+
+          src = ./.;
+          propagatedBuildInputs =
+            (with pkgs.python311Packages; [
+              grpcio
+              grpcio-tools
+              pymunk
+            ])
+            ++ [
+              packages.pyray
+              packages.esper
+            ];
+        };
+
         esper = pkgs.python311Packages.buildPythonPackage {
           pname = "esper";
           version = "3.2";
