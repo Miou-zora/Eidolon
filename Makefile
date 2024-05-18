@@ -46,7 +46,7 @@ server: common
 
 .PHONY: exe-client
 exe-client: common
-	$(VENV_SCRIPT)pyinstaller --noconsole client/main.py --onefile --name=client --paths=$(VENV_PY) --paths=common
+	$(VENV_SCRIPT)pyinstaller --noconsole client/main.py --onefile --name=client --paths=$(VENV_PY) --paths=common --add-data=client/assets;client/assets
 
 .PHONY: exe-server
 exe-server: common
