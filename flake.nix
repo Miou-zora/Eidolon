@@ -27,13 +27,17 @@
 
       py = {
         env = pkgs.python311.withPackages (p: py.deps);
-        deps = with pkgs.python311.pkgs; [
-          grpcio
-          grpcio-tools
-          pymunk
-          (self.packages.${system}.esper)
-          (self.packages.${system}.pyray)
-        ];
+        deps = with pkgs.python311.pkgs;
+          [
+            grpcio
+            grpcio-tools
+            pymunk
+          ]
+          ++ (with self.packages.${system}; [
+            esper
+            pyray
+            eidolon-common
+          ]);
       };
     in rec {
       formatter = pkgs.alejandra;
@@ -120,7 +124,32 @@
             '';
           };
       in {
-        default = packages.eidolon-common;
+        default = packages.eidolon-client;
+
+        eidolon-client = pkgs.stdenv.mkDerivation {
+          name = "client";
+
+          src = ./client;
+          buildPhase = ''
+            cp -r $src lib
+
+            chmod +w lib
+            rm -rf lib/__main__.py
+          '';
+
+          installPhase = ''
+            mkdir -p $out
+            cp -r lib $out/lib
+
+            echo -e "#!${py.env}/bin/python" \
+              | cat - $src/__main__.py > $out/lib/__main__.py
+
+            mkdir -p $out/bin
+
+            ln -s $out/lib/__main__.py $out/bin/client
+            chmod +x $out/bin/client
+          '';
+        };
 
         eidolon-common = pkgs.python311Packages.buildPythonPackage {
           pname = "common";
