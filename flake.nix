@@ -54,7 +54,12 @@
       devShells.default = pkgs.mkShell rec {
         name = "Eidolon";
 
-        env.LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
+        env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+          pkgs.glfw
+          pkgs.libglvnd
+          pkgs.stdenv.cc.cc
+          pkgs.xorg.libX11
+        ];
 
         packages = with pkgs;
           [
