@@ -13,6 +13,7 @@ class Engine:
     def __init__(self, time_provider: TimeProvider | None = None):
         self._running = False
         self.world: World = World(esper.current_world)
+        # TODO: add time provider to resource manager
         if time_provider is None:
             self.time_provider = UnitTimeProvider()
         else:
