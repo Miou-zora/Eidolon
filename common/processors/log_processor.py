@@ -18,10 +18,6 @@ class LogProcessor(Processor):
 
     def process(self, r: ResourceManager) -> None:
         time_provider: UnitTimeProvider = r.get_resource(TimeProvider)
-        if time_provider is None:
-            raise NotImplemented(
-                f"Resource not found: UnitTimeProvider:{time_provider}"
-            )
         logger.info(f"Elapsed time: {time_provider.get_elapsed_time()}")
         for ent, (pos, name) in esper.get_components(Position, Name):
             logger.debug(f"{name}: {pos}")

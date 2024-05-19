@@ -10,8 +10,4 @@ class InputsUpdateProcessor(Processor):
 
     def process(self, r: ResourceManager) -> None:
         inputs_manager: InputsManager = r.get_resource(InputsManager)
-        if inputs_manager is None:
-            raise NotImplementedError(
-                f"Resource not found: InputsManager:{inputs_manager}"
-            )
         inputs_manager.update()

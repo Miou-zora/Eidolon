@@ -17,8 +17,6 @@ class ControlProcessor(Processor):
     def process(self, r: ResourceManager) -> None:
         inputs_manager: InputsManager = r.get_resource(InputsManager)
         time_provider: TimeProvider = r.get_resource(TimeProvider)
-        if inputs_manager is None:
-            raise NotImplemented(f"Resource not found: InputsManager:{inputs_manager}")
         for ent, (_, pos, speed) in esper.get_components(Controllable, Position, Speed):
             if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_W):
                 pos.y -= time_provider.get_elapsed_time() * speed.value
