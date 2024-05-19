@@ -1,5 +1,6 @@
 import logging
 
+from resources.network_manager import NetworkManager
 from common.components.name import Name
 from common.components.position import Position
 from common.engine.engine import Engine
@@ -18,6 +19,7 @@ from processors.control_processor import ControlProcessor
 from processors.inputs_update_processor import InputsUpdateProcessor
 from processors.render_processor import RenderProcessor
 from processors.window_processor import WindowProcessor
+from processors.connection_processor import ConnectionProcessor
 from resources.assets_manager import AssetsManager
 from resources.inputs_manager import InputsManager
 from resources.window_resource import WindowResource
@@ -32,9 +34,12 @@ class Setup(Processor):
 
     def process(self, r: ResourceManager) -> None:
         asset_manager: AssetsManager = r.get_resource(AssetsManager)
+        network_manager: NetworkManager = r.get_resource(NetworkManager)
 
         asset_name = "randomImage"
         asset_manager.load_texture(asset_name, f"assets/randomImage.png")
+
+        network_manager.launch()
 
         _: Entity = Entity().add_components(
             Position(300, 300),
@@ -53,6 +58,7 @@ def run():
         AssetsManager,
         InputsManager,
         RealTimeProvider,
+        NetworkManager,
     ).add_processors(
         ScheduleLabel.Startup,
         Setup(),
@@ -64,6 +70,7 @@ def run():
         InputsUpdateProcessor(),
         ControlProcessor(),
         LogProcessor(),
+        ConnectionProcessor(),
     )
 
     engine.run()

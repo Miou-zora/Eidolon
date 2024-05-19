@@ -1,4 +1,5 @@
 import dataclasses
+import json
 import logging
 import threading
 import time
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 class ClientData:
     pos: Position = field(default_factory=Position)
     name: str = field(default_factory=str)
+    inbound_buffer: bytes = field(default_factory=bytes)
 
 
 clients = dict()
@@ -28,16 +30,28 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         logger.debug(f"Got {len(data)} bytes from {self.client_address[0]}")
         if self.client_address not in clients:
             clients[self.client_address] = ClientData()
-        stuff = srv_pck.Packet(
-            t="MoveToPosition",
-            data=srv_pck.MoveToPosition(),
-        )
-        other_stuff = srv_pck.Packet(
-            t="Connection",
-            data=srv_pck.Connection(name=data.decode()),
-        )
-        socket.sendto(stuff.ser(), self.client_address)
-        socket.sendto(other_stuff.ser(), self.client_address)
+
+        cli = clients[self.client_address]
+
+        cli.inbound_buffer += data
+        buffer_length = len(cli.inbound_buffer)
+        if buffer_length < 4:
+            return
+        length = int.from_bytes(cli.inbound_buffer[:4], signed=False)
+        if buffer_length < length + 4:
+            return
+        pck = json.loads(cli.inbound_buffer[4 : 4 + length])
+        cli.inbound_buffer = cli.inbound_buffer[4 + length :]
+
+        if pck["t"] == "Connection":
+            clients[self.client_address].name = pck["data"]["name"]
+            socket.sendto(
+                srv_pck.Packet(
+                    t="ConfirmConnection",
+                    data=srv_pck.ConfirmConnection(id=hash(self.client_address)),
+                ).ser(),
+                self.client_address,
+            )
 
 
 def serve() -> None:
