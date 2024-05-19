@@ -23,14 +23,26 @@ class Engine:
         while self._running:
             self.world.update(ScheduleLabel.Update, self.resource_manager)
 
-    def register_resource(self, resource: Type[Resource]) -> "Engine":
-        self.resource_manager.add_resource(resource(engine=self))
+    def __insert_resource(self, resource: Type[Resource]) -> "Engine":
+        self.resource_manager.insert_resource(resource(engine=self))
         return self
 
-    def add_processor(
+    def insert_resources(self, *resources: Type[Resource]) -> "Engine":
+        for resource in resources:
+            self.__insert_resource(resource)
+        return self
+
+    def __add_processor(
         self, schedule: ScheduleLabel, processor: ProcessorClass
     ) -> "Engine":
         self.world.add_processor(schedule, processor)
+        return self
+
+    def add_processors(
+        self, schedule: ScheduleLabel, *processors: ProcessorClass
+    ) -> "Engine":
+        for processor in processors:
+            self.__add_processor(schedule, processor)
         return self
 
     def stop(self):

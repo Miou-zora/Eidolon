@@ -9,17 +9,17 @@ class ResourceManager:
     def __init__(self):
         self.resources: list[Resource] = []
 
-    def get_resource_safe(self, resource):
+    def get_resource_safe(self, resource: type[Resource]):
         for res in self.resources:
             if isinstance(res, resource):
                 return res
         return None
 
-    def get_resource(self, resource):
+    def get_resource(self, resource: type[Resource]):
         for res in self.resources:
             if isinstance(res, resource):
                 return res
         raise ResourceManager.ResourceNotFoundError(resource)
 
-    def add_resource(self, resource):
+    def insert_resource(self, resource):
         self.resources.append(resource)

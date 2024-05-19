@@ -30,31 +30,37 @@ class Setup(Processor):
 
     def process(self, r: ResourceManager) -> None:
         asset_manager: AssetsManager = r.get_resource(AssetsManager)
-        asset_manager.load_texture("randomImage", f"assets/randomImage.png")
+
+        asset_name = "randomImage"
+        asset_manager.load_texture(asset_name, f"assets/randomImage.png")
+
+        _: Entity = Entity().add_components(
+            Position(300, 300),
+            Name("First Entity"),
+            Drawable(asset_name),
+            Controllable(),
+            Speed(1),
+        )
 
 
 def run():
-    engine: Engine = (
-        Engine()
-        .register_resource(WindowResource)
-        .register_resource(AssetsManager)
-        .register_resource(InputsManager)
-        .register_resource(UnitTimeProvider)
-    )
-    engine.add_processor(ScheduleLabel.Startup, Setup())
-    engine.add_processor(ScheduleLabel.Update, WindowProcessor(engine))
-    engine.add_processor(ScheduleLabel.Update, RenderProcessor())
-    engine.add_processor(ScheduleLabel.Update, InputsUpdateProcessor())
-    engine.add_processor(ScheduleLabel.Update, ControlProcessor())
-    engine.add_processor(ScheduleLabel.Update, LogProcessor())
+    engine: Engine = Engine()
 
-    _: Entity = (
-        Entity()
-        .add_component(Position(300, 300))
-        .add_component(Name("First Entity"))
-        .add_component(Drawable("randomImage"))
-        .add_component(Controllable())
-        .add_component(Speed(1))
+    engine.insert_resources(
+        WindowResource,
+        AssetsManager,
+        InputsManager,
+        UnitTimeProvider,
+    ).add_processors(
+        ScheduleLabel.Startup,
+        Setup(),
+    ).add_processors(
+        ScheduleLabel.Update,
+        WindowProcessor(engine),
+        RenderProcessor(),
+        InputsUpdateProcessor(),
+        ControlProcessor(),
+        LogProcessor(),
     )
 
     engine.run()
