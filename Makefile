@@ -46,11 +46,11 @@ server: common
 
 .PHONY: exe-client
 exe-client: common
-	$(VENV_SCRIPT)pyinstaller --noconsole client/main.py --onefile --name=client --paths=$(VENV_PY) --paths=common --add-data=client/assets;client/assets
+	$(VENV_SCRIPT)pyinstaller client/__main__.py --onefile --name=client --noconsole --add-data=client/assets;client/assets
 
 .PHONY: exe-server
 exe-server: common
-	$(VENV_SCRIPT)pyinstaller server/main.py --onefile --name=server --paths=$(VENV_PY) --paths=common
+	$(VENV_SCRIPT)pyinstaller server/__main__.py --onefile --name=server
 
 .PHONY: clean
 clean:

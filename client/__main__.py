@@ -2,6 +2,11 @@ import logging
 import os
 import sys
 
+from common.components.name import Name
+from common.components.position import Position
+from common.engine.engine import Engine
+from common.engine.entity import Entity
+from common.resources.time_providers.unit_time_provider import UnitTimeProvider
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
@@ -12,11 +17,6 @@ from processors.window_processor import WindowProcessor
 from resources.assets_manager import AssetsManager
 from resources.inputs_manager import InputsManager
 from resources.window_resource import WindowResource
-from common.components.name import Name
-from common.components.position import Position
-from common.engine.engine import Engine
-from common.engine.entity import Entity
-from common.resources.time_providers.unit_time_provider import UnitTimeProvider
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)

@@ -1,9 +1,9 @@
 import esper
 import pyray as raylib
+from components.controllable import Controllable
+from components.speed import Speed
+from resources.inputs_manager import InputsManager
 
-from client.components.controllable import Controllable
-from client.components.speed import Speed
-from client.resources.inputs_manager import InputsManager
 from common.components.position import Position
 from common.engine import Processor
 from common.engine.resource_manager import ResourceManager

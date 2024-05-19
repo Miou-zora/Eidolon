@@ -1,8 +1,8 @@
 import esper
 import pyray
+from components.drawable import Drawable
+from resources.assets_manager import AssetsManager
 
-from client.components.drawable import Drawable
-from client.resources.assets_manager import AssetsManager
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
