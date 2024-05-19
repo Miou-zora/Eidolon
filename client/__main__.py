@@ -29,12 +29,12 @@ def run():
     asset_manager: AssetsManager = AssetsManager()
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
+        base_path = sys._MEIPASS + "/client"
     except Exception:
-        base_path = os.path.abspath(".")
-    asset_manager.load_texture(
-        "randomImage", f"{base_path}/client/assets/randomImage.png"
-    )
+        base_path = os.path.abspath(".")  # This allows to run __main__ directly
+        if not base_path.endswith("client"):
+            base_path = os.path.abspath("./client")
+    asset_manager.load_texture("randomImage", f"{base_path}/assets/randomImage.png")
 
     engine.register_resource(asset_manager)
     engine.register_resource(InputsManager())
