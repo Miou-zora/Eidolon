@@ -27,6 +27,13 @@ else
   TOUCH = touch
 endif
 
+ifeq ($(OS),$(WIN))
+  ADD_DATA_SEPARATOR = ;
+else
+  ADD_DATA_SEPARATOR = :
+endif
+
+
 COMMON_INSTALL_FILE = .install
 
 .PHONY: common
@@ -46,7 +53,7 @@ server: common
 
 .PHONY: exe-client
 exe-client: common
-	$(VENV_SCRIPT)pyinstaller client/__main__.py --onefile --name=client --noconsole --add-data=client/assets;client/assets
+	$(VENV_SCRIPT)pyinstaller client/__main__.py --onefile --name=client --noconsole --add-data=client/assets$(ADD_DATA_SEPARATOR)client/assets
 
 .PHONY: exe-server
 exe-server: common
