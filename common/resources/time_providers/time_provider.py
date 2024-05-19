@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
+from common.engine.resource import Resource
 from common.engine.time import TimeUnit
 
 
-class TimeProvider(ABC):
+class TimeProvider(ABC, Resource):
     @abstractmethod
     def update(self) -> None:
         pass

@@ -27,8 +27,6 @@ else
   TOUCH = touch
 endif
 
-PROTO_FOLDER = ./proto
-
 COMMON_INSTALL_FILE = .install
 
 .PHONY: common
@@ -40,19 +38,19 @@ $(COMMON_INSTALL_FILE):
 
 .PHONY: server
 client: common
-	$(VENV_SCRIPT)python client/main.py
+	$(VENV_SCRIPT)python client
 
 .PHONY: server
 server: common
-	$(VENV_SCRIPT)python server/main.py
+	$(VENV_SCRIPT)python server
 
 .PHONY: exe-client
 exe-client: common
-	$(VENV_SCRIPT)pyinstaller --noconsole client/main.py --onefile --name=client
+	$(VENV_SCRIPT)pyinstaller --noconsole client/main.py --onefile --name=client --paths=$(VENV_PY) --paths=common
 
 .PHONY: exe-server
 exe-server: common
-	$(VENV_SCRIPT)pyinstaller server/main.py --onefile --name=server
+	$(VENV_SCRIPT)pyinstaller server/main.py --onefile --name=server --paths=$(VENV_PY) --paths=common
 
 .PHONY: clean
 clean:
