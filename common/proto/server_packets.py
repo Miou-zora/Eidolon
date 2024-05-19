@@ -1,7 +1,6 @@
 from dataclasses import asdict, dataclass, field
 from common.components.position import Position
 from typing import Any
-from enum import Enum
 import json
 
 
@@ -22,6 +21,12 @@ class Disconnection:
 
 @dataclass
 class ConfirmConnection:
+    id: int
+
+
+@dataclass
+class OMoveToPosition:
+    new_pos: Position
     id: int
 
 

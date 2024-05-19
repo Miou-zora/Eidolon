@@ -1,6 +1,7 @@
+from common.components.position import Position
 from common.engine.resource import Resource
 from common.engine.engine import Engine
-from common.proto.server_packets import ConfirmConnection, Packet
+from common.proto.server_packets import ConfirmConnection, OMoveToPosition, Packet
 
 import common.proto.server_packets as srv_pck
 
@@ -14,7 +15,6 @@ class NetworkManager(Resource):
     def __init__(self, engine: Engine):
         super().__init__(engine)
         self.connected: bool = False
-        self.client_id: int = 0
         self._network_thread: Thread = Thread(target=self._run)
         self._network_thread.daemon = True
         self._inbound_queue_lock: Lock = Lock()
@@ -48,6 +48,20 @@ class NetworkManager(Resource):
                             data=ConfirmConnection(id=data["data"]["id"]),
                         )
                     )
+            elif data["t"] == "OMoveToPosition":
+                with self._inbound_queue_lock:
+                    self._inbound_queue.append(
+                        Packet(
+                            t=data["t"],
+                            data=OMoveToPosition(
+                                id=data["data"]["id"],
+                                new_pos=Position(
+                                    x=data["data"]["new_pos"]["x"],
+                                    y=data["data"]["new_pos"]["y"],
+                                )
+                            )
+                        )
+                    )
 
     def _send_packet(self, pck: Packet) -> None:
         self._client_socket.sendto(pck.ser(), (self._server_ip, self._server_port))
@@ -60,6 +74,14 @@ class NetworkManager(Resource):
             Packet(
                 t="Connection",
                 data=srv_pck.Connection(name=name),
+            )
+        )
+
+    def send_movement(self, pos: Position) -> None:
+        self._send_packet(
+            Packet(
+                t="MoveToPosition",
+                data=srv_pck.MoveToPosition(new_pos=pos),
             )
         )
 

@@ -2,6 +2,7 @@ import dataclasses
 import json
 import logging
 import threading
+import socket
 import time
 import socketserver
 from dataclasses import dataclass, field
@@ -18,6 +19,7 @@ class ClientData:
     pos: Position = field(default_factory=Position)
     name: str = field(default_factory=str)
     inbound_buffer: bytes = field(default_factory=bytes)
+    sock: socket.socket = field(default_factory=socket.socket)
 
 
 clients = dict()
@@ -29,7 +31,7 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         socket = self.request[1]
         logger.debug(f"Got {len(data)} bytes from {self.client_address[0]}")
         if self.client_address not in clients:
-            clients[self.client_address] = ClientData()
+            clients[self.client_address] = ClientData(sock=socket)
 
         cli = clients[self.client_address]
 
@@ -52,6 +54,23 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
                 ).ser(),
                 self.client_address,
             )
+        elif pck["t"] == "MoveToPosition":
+            for soc, c in clients.items():
+                if soc == self.client_address:
+                    continue
+                c.sock.sendto(
+                    srv_pck.Packet(
+                        t="OMoveToPosition",
+                        data=srv_pck.OMoveToPosition(
+                            id=hash(self.client_address),
+                            new_pos=Position(
+                                x=pck["data"]["new_pos"]["x"],
+                                y=pck["data"]["new_pos"]["y"],
+                            )
+                        )
+                    ).ser(),
+                    soc,
+                )
 
 
 def serve() -> None:
