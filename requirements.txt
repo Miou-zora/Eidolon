@@ -4,4 +4,3 @@ raylib >= 5.0.0.2
 pymunk >= 6.8.0
 isort >=5.13.2
 setuptools >= 69.5.1
-pycapnp >= 2.0.0

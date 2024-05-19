@@ -1,13 +1,24 @@
+import dataclasses
 import logging
-import capnp
-import common.proto.global_capnp as gproto
 import threading
 import time
 import socketserver
+from dataclasses import dataclass, field
+from common.components.position import Position
+import common.proto.server_packets as srv_pck
 
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ClientData:
+    pos: Position = field(default_factory=Position)
+    name: str = field(default_factory=str)
+
+
+clients = dict()
 
 
 class MyUDPHandler(socketserver.BaseRequestHandler):
@@ -15,7 +26,18 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         data = self.request[0]
         socket = self.request[1]
         logger.debug(f"Got {len(data)} bytes from {self.client_address[0]}")
-        socket.sendto(data, self.client_address)
+        if self.client_address not in clients:
+            clients[self.client_address] = ClientData()
+        stuff = srv_pck.Packet(
+            t="MoveToPosition",
+            data=srv_pck.MoveToPosition(),
+        )
+        other_stuff = srv_pck.Packet(
+            t="Connection",
+            data=srv_pck.Connection(name=data.decode()),
+        )
+        socket.sendto(stuff.ser(), self.client_address)
+        socket.sendto(other_stuff.ser(), self.client_address)
 
 
 def serve() -> None:
