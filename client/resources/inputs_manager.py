@@ -1,10 +1,12 @@
 import pyray as raylib
 
+from common.engine.engine import Engine
 from common.engine.resource import Resource
 
 
 class InputsManager(Resource):
-    def __init__(self):
+    def __init__(self, engine: Engine):
+        super().__init__(engine)
         self._keys: dict[raylib.KeyboardKey, bool] = {}
         self._mouse_buttons: dict[raylib.MouseButton, bool] = {}
         self._mouse_wheel: int = 0
