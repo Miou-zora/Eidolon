@@ -5,8 +5,9 @@ import threading
 import time
 import socketserver
 
+
 class MyUDPHandler(socketserver.BaseRequestHandler):
-    def handle(self):
+    def handle(self) -> None:
         data = self.request[0]
         socket = self.request[1]
         print(f"Got {len(data)} bytes from {self.client_address[0]}")
@@ -20,7 +21,7 @@ def serve() -> None:
 
 
 def game_loop() -> None:
-    while (1):
+    while 1:
         time.sleep(1)
 
 
