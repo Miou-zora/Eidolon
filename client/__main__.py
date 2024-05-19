@@ -34,11 +34,13 @@ class Setup(Processor):
 
 
 def run():
-    engine: Engine = Engine()
-    engine.register_resource(WindowResource)
-    engine.register_resource(AssetsManager)
-    engine.register_resource(InputsManager)
-    engine.register_resource(UnitTimeProvider)
+    engine: Engine = (
+        Engine()
+        .register_resource(WindowResource)
+        .register_resource(AssetsManager)
+        .register_resource(InputsManager)
+        .register_resource(UnitTimeProvider)
+    )
     engine.add_processor(ScheduleLabel.Startup, Setup())
     engine.add_processor(ScheduleLabel.Update, WindowProcessor(engine))
     engine.add_processor(ScheduleLabel.Update, RenderProcessor())
@@ -46,12 +48,14 @@ def run():
     engine.add_processor(ScheduleLabel.Update, ControlProcessor())
     engine.add_processor(ScheduleLabel.Update, LogProcessor())
 
-    entity: Entity = Entity()
-    entity.add_component(Position(300, 300))
-    entity.add_component(Name("First Entity"))
-    entity.add_component(Drawable("randomImage"))
-    entity.add_component(Controllable())
-    entity.add_component(Speed(1))
+    _: Entity = (
+        Entity()
+        .add_component(Position(300, 300))
+        .add_component(Name("First Entity"))
+        .add_component(Drawable("randomImage"))
+        .add_component(Controllable())
+        .add_component(Speed(1))
+    )
 
     engine.run()
 
