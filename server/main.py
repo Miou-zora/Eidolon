@@ -1,9 +1,8 @@
-from concurrent import futures
 import logging
+from concurrent import futures
 
 import grpc
-from proto import core_pb2
-from proto import core_pb2_grpc
+from proto import core_pb2, core_pb2_grpc
 
 
 class Greeter(core_pb2_grpc.GreeterServicer):

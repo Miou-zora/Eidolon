@@ -21,26 +21,37 @@ else
   RM_DIR = rm -rf
 endif
 
+ifeq ($(OS),$(WIN))
+  TOUCH = type nul >
+else
+  TOUCH = touch
+endif
+
 PROTO_FOLDER = ./proto
 
-.PHONY: proto
-proto:
+COMMON_INSTALL_FILE = .install
+
+.PHONY: common
+common: $(COMMON_INSTALL_FILE)
+
+$(COMMON_INSTALL_FILE):
+	$(TOUCH) $(COMMON_INSTALL_FILE)
 	$(VENV_SCRIPT)pip install -e .
 
 .PHONY: server
-client: proto
+client: common
 	$(VENV_SCRIPT)python client/main.py
 
 .PHONY: server
-server: proto
+server: common
 	$(VENV_SCRIPT)python server/main.py
 
 .PHONY: exe-client
-exe-client: proto
+exe-client: common
 	$(VENV_SCRIPT)pyinstaller --noconsole client/main.py --onefile --name=client
 
 .PHONY: exe-server
-exe-server: proto
+exe-server: common
 	$(VENV_SCRIPT)pyinstaller server/main.py --onefile --name=server
 
 .PHONY: clean
