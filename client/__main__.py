@@ -1,6 +1,5 @@
 import logging
 
-from resources.network_manager import NetworkManager
 from common.components.name import Name
 from common.components.position import Position
 from common.engine.engine import Engine
@@ -8,20 +7,20 @@ from common.engine.entity import Entity
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
 from common.engine.schedule_label import ScheduleLabel
-from common.processors.log_processor import LogProcessor
 from common.processors.real_time_provider_processor import \
     RealTimeProviderProcessor
 from common.resources.time_providers.real_time_provider import RealTimeProvider
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
+from processors.connection_processor import ConnectionProcessor
 from processors.control_processor import ControlProcessor
 from processors.inputs_update_processor import InputsUpdateProcessor
 from processors.render_processor import RenderProcessor
 from processors.window_processor import WindowProcessor
-from processors.connection_processor import ConnectionProcessor
 from resources.assets_manager import AssetsManager
 from resources.inputs_manager import InputsManager
+from resources.network_manager import NetworkManager
 from resources.window_resource import WindowResource
 
 logging.basicConfig(level=logging.NOTSET)
@@ -69,7 +68,7 @@ def run():
         RenderProcessor(),
         InputsUpdateProcessor(),
         ControlProcessor(),
-        LogProcessor(),
+        # LogProcessor(),
         ConnectionProcessor(),
     )
 

@@ -1,7 +1,8 @@
-from dataclasses import asdict, dataclass, field
-from common.components.position import Position
-from typing import Any
 import json
+from dataclasses import asdict, dataclass, field
+from typing import Any
+
+from common.components.position import Position
 
 
 @dataclass
@@ -15,8 +16,7 @@ class Connection:
 
 
 @dataclass
-class Disconnection:
-    ...
+class Disconnection: ...
 
 
 @dataclass
@@ -39,4 +39,4 @@ class Packet:
     def ser(self) -> bytes:
         data = str.encode(json.dumps(asdict(self)))
         length = len(data)
-        return length.to_bytes(length=4, signed=False) + data
+        return length.to_bytes(length=4, signed=False, byteorder="big") + data

@@ -1,19 +1,19 @@
 import logging
-from common.proto.server_packets import OMoveToPosition
-from resources.network_manager import NetworkManager
-from common.engine.processor import Processor
-from common.engine.resource_manager import ResourceManager
-from common.engine.entity import Entity
-from common.components.position import Position
-from common.components.name import Name
-from components.drawable import Drawable
-from components.server_id import ServerID
-
 
 import esper
+from components.drawable import Drawable
+from components.server_id import ServerID
+from resources.network_manager import NetworkManager
 
+from common.components.name import Name
+from common.components.position import Position
+from common.engine.entity import Entity
+from common.engine.processor import Processor
+from common.engine.resource_manager import ResourceManager
+from common.proto.server_packets import OMoveToPosition
 
 logger = logging.getLogger(__name__)
+
 
 class ConnectionProcessor(Processor):
     def __init__(self):
@@ -30,8 +30,8 @@ class ConnectionProcessor(Processor):
             if packet.t == "OMoveToPosition":
                 pck: OMoveToPosition = packet.data
                 found_ent = False
-                for ent, (id, pos) in esper.get_components(ServerID, Position):
-                    if id == pck.id:
+                for ent, (serverId, pos) in esper.get_components(ServerID, Position):
+                    if serverId.id == pck.id:
                         found_ent = True
                         pos = pck.new_pos
                 if not found_ent:
@@ -44,7 +44,5 @@ class ConnectionProcessor(Processor):
                     logger.debug(f"{a.id=}")
                 logger.debug(f"Got other movement: {pck=} {found_ent=}")
 
-
         if not network_manager.connected:
             network_manager.connect(name="JAAJ")
-

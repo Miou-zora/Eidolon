@@ -1,14 +1,14 @@
-from common.components.position import Position
-from common.engine.resource import Resource
-from common.engine.engine import Engine
-from common.proto.server_packets import ConfirmConnection, OMoveToPosition, Packet
+import json
+import random
+import socket
+from threading import Thread, Lock
 
 import common.proto.server_packets as srv_pck
-
-from threading import Thread, Lock
-import socket
-import random
-import json
+from common.components.position import Position
+from common.engine.engine import Engine
+from common.engine.resource import Resource
+from common.proto.server_packets import ConfirmConnection, OMoveToPosition, \
+    Packet
 
 
 class NetworkManager(Resource):
@@ -35,7 +35,9 @@ class NetworkManager(Resource):
             buffer_length = len(self._inbound_buffer)
             if buffer_length < 4:
                 continue
-            length = int.from_bytes(self._inbound_buffer[:4], signed=False)
+            length = int.from_bytes(
+                self._inbound_buffer[:4], signed=False, byteorder="big"
+            )
             if buffer_length < length + 4:
                 continue
             data = json.loads(self._inbound_buffer[4 : 4 + length])
@@ -58,8 +60,8 @@ class NetworkManager(Resource):
                                 new_pos=Position(
                                     x=data["data"]["new_pos"]["x"],
                                     y=data["data"]["new_pos"]["y"],
-                                )
-                            )
+                                ),
+                            ),
                         )
                     )
 

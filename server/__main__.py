@@ -1,14 +1,13 @@
-import dataclasses
 import json
 import logging
-import threading
 import socket
-import time
 import socketserver
+import threading
+import time
 from dataclasses import dataclass, field
-from common.components.position import Position
-import common.proto.server_packets as srv_pck
 
+import common.proto.server_packets as srv_pck
+from common.components.position import Position
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
@@ -39,7 +38,7 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         buffer_length = len(cli.inbound_buffer)
         if buffer_length < 4:
             return
-        length = int.from_bytes(cli.inbound_buffer[:4], signed=False)
+        length = int.from_bytes(cli.inbound_buffer[:4], signed=False, byteorder="big")
         if buffer_length < length + 4:
             return
         pck = json.loads(cli.inbound_buffer[4 : 4 + length])
@@ -66,8 +65,8 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
                             new_pos=Position(
                                 x=pck["data"]["new_pos"]["x"],
                                 y=pck["data"]["new_pos"]["y"],
-                            )
-                        )
+                            ),
+                        ),
                     ).ser(),
                     soc,
                 )
