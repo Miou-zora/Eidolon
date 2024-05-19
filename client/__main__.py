@@ -8,7 +8,9 @@ from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
 from common.engine.schedule_label import ScheduleLabel
 from common.processors.log_processor import LogProcessor
-from common.resources.time_providers.unit_time_provider import UnitTimeProvider
+from common.processors.real_time_provider_processor import \
+    RealTimeProviderProcessor
+from common.resources.time_providers.real_time_provider import RealTimeProvider
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
@@ -39,7 +41,7 @@ class Setup(Processor):
             Name("First Entity"),
             Drawable(asset_name),
             Controllable(),
-            Speed(1),
+            Speed(300),
         )
 
 
@@ -50,12 +52,13 @@ def run():
         WindowResource,
         AssetsManager,
         InputsManager,
-        UnitTimeProvider,
+        RealTimeProvider,
     ).add_processors(
         ScheduleLabel.Startup,
         Setup(),
     ).add_processors(
         ScheduleLabel.Update,
+        RealTimeProviderProcessor(),
         WindowProcessor(engine),
         RenderProcessor(),
         InputsUpdateProcessor(),
