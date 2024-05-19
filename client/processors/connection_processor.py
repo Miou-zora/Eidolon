@@ -33,7 +33,8 @@ class ConnectionProcessor(Processor):
                 for ent, (serverId, pos) in esper.get_components(ServerID, Position):
                     if serverId.id == pck.id:
                         found_ent = True
-                        pos = pck.new_pos
+                        pos.x = pck.new_pos.x
+                        pos.y = pck.new_pos.y
                 if not found_ent:
                     a = Entity().add_components(
                         Position(x=pck.new_pos.x, y=pck.new_pos.y),
