@@ -1,6 +1,9 @@
+from typing import Set
 from typing import Type
 
 import esper
+
+from .plugin import Plugin
 
 # Ugly
 from .processor import ProcessorClass
@@ -16,8 +19,11 @@ class Engine:
         self._running = False
         self.world: World = World(esper.current_world)
         self.resource_manager: ResourceManager = ResourceManager()
+        self.plugins: Set[Type["Plugin"]] = set()
 
     def run(self) -> None:
+        for plugin in self.plugins:
+            plugin().build(self)
         self._running = True
         self.world.update(ScheduleLabel.Startup, self.resource_manager)
         while self._running:
@@ -47,3 +53,11 @@ class Engine:
 
     def stop(self):
         self._running = False
+
+    def __add_plugin(self, plugin: Type[Plugin]) -> "Engine":
+        self.plugins.add(plugin)
+
+    def add_plugins(self, *plugins):
+        for plugin in plugins:
+            self.__add_plugin(plugin)
+        return self
