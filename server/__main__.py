@@ -26,8 +26,7 @@ clients = {}
 
 class MyUDPHandler(socketserver.BaseRequestHandler):
     def handle(self) -> None:
-        data = self.request[0]
-        socket = self.request[1]
+        data, socket = self.request
         logger.debug(f"Got {len(data)} bytes from {self.client_address[0]}")
         if self.client_address not in clients:
             clients[self.client_address] = ClientData(sock=socket)
