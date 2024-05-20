@@ -9,7 +9,6 @@ from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
 from common.engine.schedule_label import ScheduleLabel
 from common.processors.log_processor import LogProcessor
-from common.resources.time_providers.real_time_provider import RealTimeProvider
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
