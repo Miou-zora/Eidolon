@@ -29,21 +29,17 @@ class ConnectionProcessor(Processor):
                 continue
             if packet.t == "OMoveToPosition":
                 pck: OMoveToPosition = packet.data
-                found_ent = False
-                for ent, (serverId, pos) in esper.get_components(ServerID, Position):
+                for _, (serverId, pos) in esper.get_components(ServerID, Position):
                     if serverId.id == pck.id:
-                        found_ent = True
                         pos.x = pck.new_pos.x
                         pos.y = pck.new_pos.y
-                if not found_ent:
-                    a = Entity().add_components(
+                else:
+                    Entity().add_components(
                         Position(x=pck.new_pos.x, y=pck.new_pos.y),
                         Name("other player"),
                         Drawable("randomImage"),
                         ServerID(pck.id),
                     )
-                    logger.debug(f"{a.id=}")
-                logger.debug(f"Got other movement: {pck=} {found_ent=}")
 
         if not network_manager.connected:
             network_manager.connect(name="JAAJ")
