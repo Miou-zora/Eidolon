@@ -17,18 +17,18 @@ from common.proto.server_packets import (
 class NetworkManager(Resource):
     def __init__(self, engine: Engine):
         super().__init__(engine)
-        self.connected: bool = False
-        self._network_thread: Thread = Thread(target=self._run)
+        self.connected = False
+        self._network_thread = Thread(target=self._run)
         self._network_thread.daemon = True
         self._inbound_queue_lock: Lock = Lock()
-        self._inbound_queue: list[Packet] = list()
+        self._inbound_queue: list[Packet] = []
         self._server_ip = "127.0.0.1"
         self._server_port = 25565
         self._client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._client_port = random.randint(6000, 10000)
         self._client_ip = "0.0.0.0"
         self._client_socket.bind((self._client_ip, self._client_port))
-        self._inbound_buffer: bytes = bytes()
+        self._inbound_buffer = bytes()
 
     def _run(self) -> None:
         while True:

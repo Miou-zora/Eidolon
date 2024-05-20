@@ -21,7 +21,7 @@ class ClientData:
     sock: socket.socket = field(default_factory=socket.socket)
 
 
-clients = dict()
+clients = {}
 
 
 class MyUDPHandler(socketserver.BaseRequestHandler):
