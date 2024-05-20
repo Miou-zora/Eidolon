@@ -16,9 +16,9 @@ class ControlProcessor(Processor):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
-        inputs_manager: InputsManager = r.get_resource(InputsManager)
-        time_provider: TimeProvider = r.get_resource(TimeProvider)
-        network_manager: NetworkManager = r.get_resource(NetworkManager)
+        inputs_manager = r.get_resource(InputsManager)
+        time_provider = r.get_resource(TimeProvider)
+        network_manager = r.get_resource(NetworkManager)
         for ent, (_, pos, speed) in esper.get_components(Controllable, Position, Speed):
             if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_W):
                 pos.y -= time_provider.get_elapsed_time() * speed.value

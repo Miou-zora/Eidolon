@@ -9,5 +9,5 @@ class InputsUpdateProcessor(Processor):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
-        inputs_manager: InputsManager = r.get_resource(InputsManager)
+        inputs_manager = r.get_resource(InputsManager)
         inputs_manager.update()

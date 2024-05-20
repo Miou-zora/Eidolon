@@ -20,7 +20,7 @@ class ConnectionProcessor(Processor):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
-        network_manager: NetworkManager = r.get_resource(NetworkManager)
+        network_manager = r.get_resource(NetworkManager)
         packets = network_manager.get_inbound_packets()
         for packet in packets:
             if packet.t == "ConfirmConnection":

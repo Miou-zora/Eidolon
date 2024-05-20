@@ -32,8 +32,8 @@ class Setup(Processor):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
-        asset_manager: AssetsManager = r.get_resource(AssetsManager)
-        network_manager: NetworkManager = r.get_resource(NetworkManager)
+        asset_manager = r.get_resource(AssetsManager)
+        network_manager = r.get_resource(NetworkManager)
 
         asset_name = "randomImage"
         asset_manager.load_texture(asset_name, f"assets/randomImage.png")

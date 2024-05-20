@@ -12,7 +12,7 @@ class WindowProcessor(Processor):
         self.engine: Engine = engine
 
     def process(self, r: ResourceManager) -> None:
-        window_resource: WindowResource = r.get_resource(WindowResource)
+        window_resource = r.get_resource(WindowResource)
         if pyray.window_should_close():
             pyray.close_window()
             self.engine.stop()
