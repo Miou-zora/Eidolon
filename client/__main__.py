@@ -13,6 +13,8 @@ from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
 from plugins.default_plugin import DefaultPlugin
+from plugins.window_plugin import WindowPlugin
+from processors.control_processor import ControlProcessor
 from resources.assets_manager import AssetsManager
 
 logging.basicConfig(level=logging.NOTSET)
@@ -46,6 +48,7 @@ class ClientPlugin(Plugin):
         ).add_processors(
             ScheduleLabel.Update,
             LogProcessor(),
+            ControlProcessor(),
         )
 
 
@@ -53,7 +56,7 @@ def run():
     engine: Engine = Engine()
 
     engine.add_plugins(
-        DefaultPlugin,
+        DefaultPlugin().build().disable(WindowPlugin).enable(WindowPlugin),
         ClientPlugin,
     )
 

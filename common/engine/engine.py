@@ -1,16 +1,17 @@
-from typing import Set
+import logging
 from typing import Type
 
 import esper
 
 from .plugin import Plugin
-
-# Ugly
+from .plugin_group_builder import PluginGroupBuilder
 from .processor import ProcessorClass
 from .resource import Resource
 from .resource_manager import ResourceManager
 from .schedule_label import ScheduleLabel
 from .world import World
+
+logger = logging.getLogger(__name__)
 
 
 class Engine:
@@ -19,11 +20,8 @@ class Engine:
         self._running = False
         self.world: World = World(esper.current_world)
         self.resource_manager: ResourceManager = ResourceManager()
-        self.plugins: Set[Type["Plugin"]] = set()
 
     def run(self) -> None:
-        for plugin in self.plugins:
-            plugin().build(self)
         self._running = True
         self.world.update(ScheduleLabel.Startup, self.resource_manager)
         while self._running:
@@ -54,10 +52,10 @@ class Engine:
     def stop(self):
         self._running = False
 
-    def __add_plugin(self, plugin: Type[Plugin]) -> "Engine":
-        self.plugins.add(plugin)
-
-    def add_plugins(self, *plugins):
+    def add_plugins(self, *plugins) -> "Engine":
         for plugin in plugins:
-            self.__add_plugin(plugin)
+            if isinstance(plugin, Plugin) or isinstance(plugin, PluginGroupBuilder):
+                plugin.add_to_app(self)
+            else:
+                plugin().add_to_app(self)
         return self
