@@ -1,17 +1,13 @@
 import json
 import random
 import socket
-from threading import Thread, Lock
+from threading import Lock, Thread
 
 import common.proto.server_packets as srv_pck
 from common.components.position import Position
 from common.engine.engine import Engine
 from common.engine.resource import Resource
-from common.proto.server_packets import (
-    ConfirmConnection,
-    OMoveToPosition,
-    Packet,
-)
+from common.proto.server_packets import ConfirmConnection, OMoveToPosition, Packet
 
 
 class NetworkManager(Resource):

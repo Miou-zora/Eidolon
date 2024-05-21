@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from inspect import signature
-from typing import TypeVar, Optional, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Type, TypeVar
 
 from common.engine.plugin import Plugin as Pl
 from common.engine.plugin_group import PluginGroup

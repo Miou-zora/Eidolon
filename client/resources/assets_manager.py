@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import Optional
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import pyray as raylib
 
