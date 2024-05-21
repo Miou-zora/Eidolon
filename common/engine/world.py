@@ -1,11 +1,21 @@
-from typing import Type
+from __future__ import annotations
+
+import logging
+from typing import TYPE_CHECKING
 
 import esper
 
-from .entity import EntityId
-from .processor import Processor
-from .resource_manager import ResourceManager
 from .schedule_label import ScheduleLabel
+
+if TYPE_CHECKING:
+    from typing import Type, TypeVar
+    from .entity import EntityId
+    from .processor import Processor
+    from .resource_manager import ResourceManager
+
+    RM = TypeVar("RM", bound=ResourceManager)
+
+logger = logging.getLogger(__name__)
 
 
 class World:
@@ -20,9 +30,7 @@ class World:
     def create_entity() -> EntityId:
         return esper.create_entity()
 
-    def update(
-        self, schedule: ScheduleLabel, resource_manager: ResourceManager
-    ) -> None:
+    def update(self, schedule: ScheduleLabel, resource_manager: RM) -> None:
         esper.clear_dead_entities()
         for processor in self.processors[schedule]:
             processor.process(resource_manager)

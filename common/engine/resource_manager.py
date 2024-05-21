@@ -1,28 +1,31 @@
-from .resource import Resource
+from __future__ import annotations
 
-from typing import TypeVar
+from typing import TYPE_CHECKING
 
-GenericResource = TypeVar("GenericResource", bound=Resource)
+if TYPE_CHECKING:
+    from typing import TypeVar
+    from .resource import Resource
+
+    GenericResource = TypeVar("GenericResource", bound=Resource)
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class ResourceManager:
     class ResourceNotFoundError(Exception):
-        def __init__(self, resource):
-            super().__init__(f"Resource {resource} not found")
+        def __init__(self, resource: type[Resource]):
+            super().__init__("Resource %s not found", resource.__name__)
 
     def __init__(self):
-        self.resources: list[Resource] = []
+        self.resources: dict[int, Resource] = {}
 
     def get_resource_safe(self, resource: type[Resource]):
-        for res in self.resources:
-            if isinstance(res, resource):
-                return res
-        return None
+        return self.resources.get(id(resource), None)
 
     def get_resource(self, resource: type[GenericResource]) -> GenericResource:
-        for res in self.resources:
-            if isinstance(res, resource):
-                return res
-        raise ResourceManager.ResourceNotFoundError(resource)
+        return self.resources[id(resource)]
 
-    def insert_resource(self, resource):
-        self.resources.append(resource)
+    def insert_resource(self, resource: GenericResource):
+        self.resources[id(resource.__class__)] = resource

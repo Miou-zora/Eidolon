@@ -1,27 +1,26 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from common.components.name import Name
 from common.components.position import Position
 from common.engine.engine import Engine
 from common.engine.entity import Entity
+from common.engine.plugin import Plugin
 from common.engine.processor import Processor
-from common.engine.resource_manager import ResourceManager
 from common.engine.schedule_label import ScheduleLabel
-from common.processors.real_time_provider_processor import \
-    RealTimeProviderProcessor
-from common.resources.time_providers.real_time_provider import RealTimeProvider
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
+from plugins.default_plugin import DefaultPlugin
 from processors.connection_processor import ConnectionProcessor
 from processors.control_processor import ControlProcessor
-from processors.inputs_update_processor import InputsUpdateProcessor
-from processors.render_processor import RenderProcessor
-from processors.window_processor import WindowProcessor
 from resources.assets_manager import AssetsManager
-from resources.inputs_manager import InputsManager
+
+if TYPE_CHECKING:
+    from common.engine.resource_manager import ResourceManager
 from resources.network_manager import NetworkManager
-from resources.window_resource import WindowResource
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
@@ -49,27 +48,25 @@ class Setup(Processor):
         )
 
 
+class ClientPlugin(Plugin):
+    def build(self, engine: Engine) -> None:
+        engine.add_processors(
+            ScheduleLabel.Startup,
+            Setup(),
+        ).add_processors(
+            ScheduleLabel.Update,
+            # LogProcessor(),
+            ControlProcessor(),
+            ConnectionProcessor(),
+        ).insert_resources(NetworkManager)
+
+
 def run():
     engine: Engine = Engine()
 
-    engine.insert_resources(
-        WindowResource,
-        AssetsManager,
-        InputsManager,
-        RealTimeProvider,
-        NetworkManager,
-    ).add_processors(
-        ScheduleLabel.Startup,
-        Setup(),
-    ).add_processors(
-        ScheduleLabel.Update,
-        RealTimeProviderProcessor(),
-        WindowProcessor(engine),
-        RenderProcessor(),
-        InputsUpdateProcessor(),
-        ControlProcessor(),
-        # LogProcessor(),
-        ConnectionProcessor(),
+    engine.add_plugins(
+        DefaultPlugin().build(),
+        ClientPlugin,
     )
 
     engine.run()
