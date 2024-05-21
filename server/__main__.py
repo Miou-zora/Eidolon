@@ -37,7 +37,11 @@ class MyUDPHandler(socketserver.BaseRequestHandler):
         buffer_length = len(cli.inbound_buffer)
         if buffer_length < 4:
             return
-        length = int.from_bytes(cli.inbound_buffer[:4], signed=False, byteorder="big")
+        length = int.from_bytes(
+            cli.inbound_buffer[:4],
+            signed=False,
+            byteorder="big",
+        )
         if buffer_length < length + 4:
             return
         pck = json.loads(cli.inbound_buffer[4 : 4 + length])

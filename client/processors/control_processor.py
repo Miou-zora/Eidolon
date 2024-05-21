@@ -1,14 +1,14 @@
 import esper
 import pyray as raylib
+from components.controllable import Controllable
+from components.speed import Speed
+from resources.inputs_manager import InputsManager
+from resources.network_manager import NetworkManager
 
 from common.components.position import Position
 from common.engine import Processor
 from common.engine.resource_manager import ResourceManager
 from common.resources.time_providers.real_time_provider import RealTimeProvider
-from components.controllable import Controllable
-from components.speed import Speed
-from resources.inputs_manager import InputsManager
-from resources.network_manager import NetworkManager
 
 
 class ControlProcessor(Processor):

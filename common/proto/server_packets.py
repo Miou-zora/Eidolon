@@ -5,8 +5,7 @@ from typing import Any
 from common.components.position import Position
 
 
-class PacketData:
-    ...
+class PacketData: ...
 
 
 @dataclass

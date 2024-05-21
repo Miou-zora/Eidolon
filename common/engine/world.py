@@ -9,6 +9,7 @@ from .schedule_label import ScheduleLabel
 
 if TYPE_CHECKING:
     from typing import Type, TypeVar
+
     from .entity import EntityId
     from .processor import Processor
     from .resource_manager import ResourceManager

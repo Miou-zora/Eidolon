@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import TypeVar
+
     from .resource import Resource
 
     GenericResource = TypeVar("GenericResource", bound=Resource)

@@ -3,13 +3,6 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from common.components.name import Name
-from common.components.position import Position
-from common.engine.engine import Engine
-from common.engine.entity import Entity
-from common.engine.plugin import Plugin
-from common.engine.processor import Processor
-from common.engine.schedule_label import ScheduleLabel
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
@@ -18,8 +11,17 @@ from processors.connection_processor import ConnectionProcessor
 from processors.control_processor import ControlProcessor
 from resources.assets_manager import AssetsManager
 
+from common.components.name import Name
+from common.components.position import Position
+from common.engine.engine import Engine
+from common.engine.entity import Entity
+from common.engine.plugin import Plugin
+from common.engine.processor import Processor
+from common.engine.schedule_label import ScheduleLabel
+
 if TYPE_CHECKING:
     from common.engine.resource_manager import ResourceManager
+
 from resources.network_manager import NetworkManager
 
 logging.basicConfig(level=logging.NOTSET)
