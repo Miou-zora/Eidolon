@@ -1,22 +1,5 @@
 {
   "nodes": {
-    "esper": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1704436472,
-        "narHash": "sha256-oH3POxrQPge9BZHG5Y/n9/sWjiCA19mqpoCZfPM6BzA=",
-        "owner": "benmoran56",
-        "repo": "esper",
-        "rev": "923533eb73e39c4bfe6684854bfed7fe56d481e2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "benmoran56",
-        "ref": "v3.2",
-        "repo": "esper",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -148,7 +131,6 @@
     },
     "root": {
       "inputs": {
-        "esper": "esper",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
         "pre-commit-hooks": "pre-commit-hooks"
