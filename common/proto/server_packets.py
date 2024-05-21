@@ -5,27 +5,31 @@ from typing import Any
 from common.components.position import Position
 
 
+class PacketData:
+    ...
+
+
 @dataclass
-class MoveToPosition:
+class MoveToPosition(PacketData):
     new_pos: Position = field(default_factory=Position)
 
 
 @dataclass
-class Connection:
+class Connection(PacketData):
     name: str
 
 
 @dataclass
-class Disconnection: ...
+class Disconnection(PacketData): ...
 
 
 @dataclass
-class ConfirmConnection:
+class ConfirmConnection(PacketData):
     id: int
 
 
 @dataclass
-class OMoveToPosition:
+class OMoveToPosition(PacketData):
     new_pos: Position
     id: int
 
@@ -34,7 +38,7 @@ class OMoveToPosition:
 class Packet:
     t: str
     # TODO: Type this omegalul
-    data: Any
+    data: PacketData
 
     def ser(self) -> bytes:
         data = str.encode(json.dumps(asdict(self)))
