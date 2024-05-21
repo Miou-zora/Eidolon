@@ -35,7 +35,7 @@
           ]
           ++ (with self.packages.${system}; [
             esper
-            pyray
+            raylib-python-cffi
             eidolon-common
           ]);
       };
@@ -95,168 +95,28 @@
         '';
       };
 
-      packages = let
-        mk-header-lib = {
-          name,
-          version,
-          src,
-          meta,
-        }:
-          pkgs.stdenv.mkDerivation {
-            inherit name version src meta;
+      packages = {
+        default = self.packages.${system}.eidolon-client;
 
-            dontBuild = true;
-            installPhase = ''
-                mkdir -p $out/{include,lib/pkgconfig}
-
-                cp $src/src/${name}.h $out/include/${name}.h
-
-              cat <<EOF > $out/lib/pkgconfig/${name}.pc
-              prefix=$out
-              includedir=$out/include
-
-              Name: ${name}
-              Description: ${meta.description}
-              URL: ${meta.homepage}
-              Version: ${version}
-              Cflags: -I"{includedir}"
-              EOF
-            '';
-          };
-      in {
-        default = packages.eidolon-client;
-
-        eidolon-client = pkgs.stdenv.mkDerivation {
-          name = "client";
-
-          src = ./client;
-          buildPhase = ''
-            cp -r $src lib
-
-            chmod +w lib
-            rm -rf lib/__main__.py
-          '';
-
-          installPhase = ''
-            mkdir -p $out
-            cp -r lib $out/lib
-
-            echo -e "#!${py.env}/bin/python" \
-              | cat - $src/__main__.py > $out/lib/__main__.py
-
-            mkdir -p $out/bin
-
-            ln -s $out/lib/__main__.py $out/bin/client
-            chmod +x $out/bin/client
-          '';
+        eidolon-client = pkgs.callPackage ./nix/eidolon-client.nix {
+          pyenv = py.env;
         };
 
-        eidolon-common = pkgs.python311Packages.buildPythonPackage {
-          pname = "common";
-          version = with builtins; let
-            matched = match ".*(0.0.1).*" (readFile ./setup.cfg);
-          in
-            if match == []
-            then "master"
-            else head matched;
-
-          pyproject = true;
-          build-system = [pkgs.python311Packages.setuptools];
-
-          src = ./.;
-          propagatedBuildInputs =
-            (with pkgs.python311Packages; [
-              grpcio
-              grpcio-tools
-              pymunk
-            ])
-            ++ [
-              packages.pyray
-              packages.esper
-            ];
+        eidolon-common = pkgs.callPackage ./nix/eidolon-common.nix {
+          inherit (pkgs.python3Packages) buildPythonPackage grpcio grpcio-tools pymunk setuptools;
+          inherit (self.packages.${system}) raylib-python-cffi esper;
         };
 
-        esper = pkgs.python311Packages.buildPythonPackage {
-          pname = "esper";
-          version = "3.2";
-          pyproject = true;
-
-          src = esper;
-
-          build-system = [py.env.pkgs.flit-core];
-          doCheck = false;
+        esper = pkgs.callPackage ./nix/esper.nix {
+          inherit (pkgs.python3Packages) buildPythonPackage flit-core pytestCheckHook;
         };
 
-        physac = mk-header-lib {
-          name = "physac";
-          version = "2.5-unstable-20240518";
-          src = pkgs.fetchFromGitHub {
-            owner = "victorfisac";
-            repo = "Physac";
-            rev = "29d9fc06860b54571a02402fff6fa8572d19bd12";
-            hash = "sha256-PTlV1tT0axQbmGmJ7JD1n6wmbIxUdu7xho78EO0HNNk=";
-          };
+        physac = pkgs.callPackage ./nix/header-libs/physac.nix {};
+        raygui = pkgs.callPackage ./nix/header-libs/raygui.nix {};
 
-          meta = {
-            description = "2D physics header-only library for raylib";
-            homepage = "https://github.com/victorfisac/Physac";
-          };
-        };
-
-        raygui = mk-header-lib {
-          name = "raygui";
-          version = "4.0-unstable-25c8";
-
-          src = pkgs.fetchFromGitHub {
-            owner = "raysan5";
-            repo = "raygui";
-            rev = "25c8c65a6e5f0f4d4b564a0343861898c6f2778b";
-            hash = "sha256-1qnChZYsb0e5LnPhvs6a/R5Ammgj2HWFNe9625sBRo8=";
-          };
-
-          meta = {
-            description = "A simple and easy-to-use immediate-mode gui library";
-            homepage = "https://github.com/raysan5/raygui";
-          };
-        };
-
-        pyray = pkgs.python311Packages.buildPythonPackage rec {
-          pname = "pyray";
-          version = "5.0.0.2";
-
-          src = pkgs.fetchFromGitHub {
-            owner = "electronstudio";
-            repo = "raylib-python-cffi";
-            rev = "refs/tags/v${version}";
-            hash = "sha256-DlnZRJZ0ZnkLii09grA/lGsJHPUYrbaJ55BVWJ8JzfM=";
-          };
-
-          build-system = [
-            pkgs.python311Packages.setuptools
-            pkgs.python311Packages.cffi
-          ];
-
-          patches = [./fix-pyray-builder.patch];
-
-          preBuild = ''
-            echo "$PKG_CONFIG_PATH"
-
-            ${pkgs.pkg-config}/bin/pkg-config --cflags 'raygui'
-
-          '';
-
-          nativeBuildInputs = [
-            pkgs.pkg-config
-          ];
-
-          buildInputs = [
-            pkgs.python311
-            pkgs.glfw
-            pkgs.libffi
-            pkgs.raylib
-            packages.physac
-            packages.raygui
-          ];
+        raylib-python-cffi = pkgs.callPackage ./nix/raylib-python-cffi.nix {
+          inherit (self.packages.${system}) physac raygui;
+          inherit (pkgs.python3Packages) buildPythonPackage cffi setuptools;
         };
       };
     });
