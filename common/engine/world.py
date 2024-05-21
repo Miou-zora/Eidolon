@@ -1,15 +1,20 @@
+from __future__ import annotations
+
 import logging
-from typing import Type
-from typing import TypeVar
+from typing import TYPE_CHECKING
 
 import esper
 
-from .entity import EntityId
-from .processor import Processor
-from .resource_manager import ResourceManager
 from .schedule_label import ScheduleLabel
 
-RM = TypeVar("RM", bound=ResourceManager)
+if TYPE_CHECKING:
+    from typing import Type, TypeVar
+    from .entity import EntityId
+    from .processor import Processor
+    from .resource_manager import ResourceManager
+
+    RM = TypeVar("RM", bound=ResourceManager)
+
 logger = logging.getLogger(__name__)
 
 

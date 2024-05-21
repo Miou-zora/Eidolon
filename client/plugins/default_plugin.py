@@ -8,11 +8,10 @@ from .window_plugin import WindowPlugin
 
 class DefaultPlugin(PluginGroup):
     def build(self) -> PluginGroupBuilder:
-        gb = (
+        return (
             PluginGroupBuilder(self.__class__)
             .add(WindowPlugin())
             .add(AssetsPlugin())
             .add(TimePlugin())
             .add(InputsPlugin())
         )
-        return gb

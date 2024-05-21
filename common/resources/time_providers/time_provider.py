@@ -1,7 +1,11 @@
-from abc import ABC, abstractmethod
+from __future__ import annotations
 
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from common.engine.time import TimeUnit
 from common.engine.resource import Resource
-from common.engine.time import TimeUnit
 
 
 class TimeProvider(ABC, Resource):

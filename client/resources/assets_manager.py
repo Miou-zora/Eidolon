@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import os
 import sys
-from typing import Union
+from typing import Optional
+from typing import TYPE_CHECKING
 
 import pyray as raylib
 
-from common.engine.engine import Engine
 from common.engine.resource import Resource
+
+if TYPE_CHECKING:
+    from common.engine.engine import Engine
 
 
 class AssetsManager(Resource):
@@ -29,16 +34,14 @@ class AssetsManager(Resource):
         if not raylib.is_window_ready():
             raise ValueError("Raylib is not ready to load textures")
         texture: raylib.Texture = raylib.load_texture(
-            self.base_path + "/" + texture_path
+            os.path.join(self.base_path, texture_path)
         )
-        result: bool = raylib.is_texture_ready(texture)
+        result = raylib.is_texture_ready(texture)
         if not result:
             raise ValueError(
                 f"Texture {self.base_path + '/' + texture_path} not loaded"
             )
         self.textures[texture_name] = texture
 
-    def get_texture(self, texture_name: str) -> Union[raylib.Texture, None]:
-        if texture_name in self.textures:
-            return self.textures[texture_name]
-        return None
+    def get_texture(self, texture_name: str) -> Optional[raylib.Texture]:
+        return self.textures[texture_name]

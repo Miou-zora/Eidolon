@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 from common.components.name import Name
 from common.components.position import Position
@@ -6,16 +9,16 @@ from common.engine.engine import Engine
 from common.engine.entity import Entity
 from common.engine.plugin import Plugin
 from common.engine.processor import Processor
-from common.engine.resource_manager import ResourceManager
 from common.engine.schedule_label import ScheduleLabel
-from common.processors.log_processor import LogProcessor
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
 from plugins.default_plugin import DefaultPlugin
-from plugins.window_plugin import WindowPlugin
 from processors.control_processor import ControlProcessor
 from resources.assets_manager import AssetsManager
+
+if TYPE_CHECKING:
+    from common.engine.resource_manager import ResourceManager
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
@@ -41,13 +44,13 @@ class Setup(Processor):
 
 
 class ClientPlugin(Plugin):
-    def build(self, engine: "Engine") -> None:
+    def build(self, engine: Engine) -> None:
         engine.add_processors(
             ScheduleLabel.Startup,
             Setup(),
         ).add_processors(
             ScheduleLabel.Update,
-            LogProcessor(),
+            # LogProcessor(),
             ControlProcessor(),
         )
 
@@ -56,7 +59,7 @@ def run():
     engine: Engine = Engine()
 
     engine.add_plugins(
-        DefaultPlugin().build().disable(WindowPlugin).enable(WindowPlugin),
+        DefaultPlugin().build(),
         ClientPlugin,
     )
 

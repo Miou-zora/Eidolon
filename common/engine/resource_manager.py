@@ -1,10 +1,15 @@
-from .resource import Resource
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .resource import Resource
 
 
 class ResourceManager:
     class ResourceNotFoundError(Exception):
-        def __init__(self, resource):
-            super().__init__(f"Resource {resource} not found")
+        def __init__(self, resource: type[Resource]):
+            super().__init__("Resource %s not found", resource.__name__)
 
     def __init__(self):
         self.resources: list[Resource] = []
