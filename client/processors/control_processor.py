@@ -1,14 +1,14 @@
 import esper
 import pyray as raylib
-from resources.network_manager import NetworkManager
-from components.controllable import Controllable
-from components.speed import Speed
-from resources.inputs_manager import InputsManager
 
 from common.components.position import Position
 from common.engine import Processor
 from common.engine.resource_manager import ResourceManager
-from common.resources.time_providers.time_provider import TimeProvider
+from common.resources.time_providers.real_time_provider import RealTimeProvider
+from components.controllable import Controllable
+from components.speed import Speed
+from resources.inputs_manager import InputsManager
+from resources.network_manager import NetworkManager
 
 
 class ControlProcessor(Processor):
@@ -17,7 +17,7 @@ class ControlProcessor(Processor):
 
     def process(self, r: ResourceManager) -> None:
         inputs_manager = r.get_resource(InputsManager)
-        time_provider = r.get_resource(TimeProvider)
+        time_provider = r.get_resource(RealTimeProvider)
         network_manager = r.get_resource(NetworkManager)
         for ent, (_, pos, speed) in esper.get_components(Controllable, Position, Speed):
             if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_W):
@@ -30,4 +30,3 @@ class ControlProcessor(Processor):
                 pos.x += time_provider.get_elapsed_time() * speed.value
             # TODO: Change that :3
             network_manager.send_movement(pos)
-
