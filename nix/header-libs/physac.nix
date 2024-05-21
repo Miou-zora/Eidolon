@@ -1,9 +1,9 @@
 {
-  stdenvNoCC,
+  mkHeaderLib,
   fetchFromGitHub,
   lib,
 }:
-stdenvNoCC.mkDerivation (finalAttrs: {
+mkHeaderLib {
   name = "physac";
   version = "2.5-unstable-2024-05-21";
 
@@ -14,21 +14,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     hash = "sha256-PTlV1tT0axQbmGmJ7JD1n6wmbIxUdu7xho78EO0HNNk=";
   };
 
-  dontBuild = true;
-  installPhase = ''
-    mkdir -p $out/{include,lib/pkgconfig}
-    install -Dm644 $src/src/physac.h $out/include/physac.h
-    cat <<EOF > $out/lib/pkgconfig/physac.pc
-    prefix=$out
-    includedir=$out/include
-    Name: physac
-    Description: ${finalAttrs.meta.description}
-    URL: ${finalAttrs.meta.homepage}
-    Version: ${finalAttrs.version}
-    Cflags: -I"{includedir}"
-    EOF
-  '';
-
   meta = {
     description = "2D physics header-only library for raylib";
     homepage = "https://github.com/victorfisac/Physac";
@@ -36,4 +21,4 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     maintainers = with lib.maintainers; [sigmanificient];
     platforms = lib.platforms.unix;
   };
-})
+}

@@ -1,9 +1,9 @@
 {
-  stdenvNoCC,
+  mkHeaderLib,
   fetchFromGitHub,
   lib,
 }:
-stdenvNoCC.mkDerivation (finalAttrs: {
+mkHeaderLib {
   name = "raygui";
   version = "4.0-unstable-2024-05-21";
 
@@ -14,21 +14,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     hash = "sha256-1qnChZYsb0e5LnPhvs6a/R5Ammgj2HWFNe9625sBRo8=";
   };
 
-  dontBuild = true;
-  installPhase = ''
-    mkdir -p $out/{include,lib/pkgconfig}
-    install -Dm644 $src/src/raygui.h $out/include/raygui.h
-    cat <<EOF > $out/lib/pkgconfig/raygui.pc
-    prefix=$out
-    includedir=$out/include
-    Name: raygui
-    Description: ${finalAttrs.meta.description}
-    URL: ${finalAttrs.meta.homepage}
-    Version: ${finalAttrs.version}
-    Cflags: -I"{includedir}"
-    EOF
-  '';
-
   meta = {
     description = "A simple and easy-to-use immediate-mode gui library";
     homepage = "https://github.com/raysan5/raygui";
@@ -36,4 +21,4 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     maintainers = with lib.maintainers; [sigmanificient];
     platforms = lib.platforms.unix;
   };
-})
+}
