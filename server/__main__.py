@@ -27,7 +27,7 @@ clients = {}
 class MyUDPHandler(socketserver.BaseRequestHandler):
     def handle(self) -> None:
         data, socket = self.request
-        logger.debug(f"Got {len(data)} bytes from {self.client_address[0]}")
+        logger.debug("Got %s bytes from %s", len(data), self.client_address[0])
         if self.client_address not in clients:
             clients[self.client_address] = ClientData(sock=socket)
 
@@ -86,5 +86,5 @@ if __name__ == "__main__":
     server_thread = threading.Thread(target=serve)
     server_thread.daemon = True
     server_thread.start()
-    logger.debug(f"Server loop running in thread: {server_thread.name}")
+    logger.debug("Server loop running in thread: %s", server_thread.name)
     game_loop()
