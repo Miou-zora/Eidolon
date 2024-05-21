@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  ci:
+    strategy:
+      matrix:
+        python: [ '3.10', '3.11', '3.12' ]
+        os: [ ubuntu, windows, macos ]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}-latest
+
+    name: Nox - py ${{ matrix.python-version }} - ${{ matrix.os }})
+    steps:
+      - uses: actions/checkout@v2
+      - name: Python Setup
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: 'x64'
+      - name: Install nox
+        run: pip install nox
+      - name: Run nox
+        run: nox -s format
