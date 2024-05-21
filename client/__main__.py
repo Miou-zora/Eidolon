@@ -10,9 +10,6 @@ from common.engine.entity import Entity
 from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
-from common.processors.real_time_provider_processor import \
-    RealTimeProviderProcessor
-from common.resources.time_providers.real_time_provider import RealTimeProvider
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
@@ -23,9 +20,7 @@ from resources.assets_manager import AssetsManager
 
 if TYPE_CHECKING:
     from common.engine.resource_manager import ResourceManager
-from resources.inputs_manager import InputsManager
 from resources.network_manager import NetworkManager
-from resources.window_resource import WindowResource
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
@@ -63,9 +58,7 @@ class ClientPlugin(Plugin):
             # LogProcessor(),
             ControlProcessor(),
             ConnectionProcessor(),
-        ).insert_resources(
-        NetworkManager
-        )
+        ).insert_resources(NetworkManager)
 
 
 def run():
