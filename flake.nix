@@ -25,20 +25,19 @@
     (system: let
       pkgs = nixpkgs.legacyPackages.${system};
 
-      py = {
-        env = pkgs.python311.withPackages (p: py.deps);
-        deps = with pkgs.python311.pkgs;
-          [
-            grpcio
-            grpcio-tools
-            pymunk
-          ]
-          ++ (with self.packages.${system}; [
-            esper
-            raylib-python-cffi
-            eidolon-common
-          ]);
-      };
+      selectPythonPackages = ps:
+        [
+          ps.grpcio
+          ps.grpcio-tools
+          ps.pymunk
+        ]
+        ++ (with self.packages.${system}; [
+          esper
+          raylib-python-cffi
+          eidolon-common
+        ]);
+
+      pyenv = pkgs.python311.withPackages selectPythonPackages;
     in rec {
       formatter = pkgs.alejandra;
 
@@ -66,15 +65,12 @@
           pkgs.libglvnd
         ];
 
-        packages = with pkgs;
-          [
-            py.env
-            py.env.pkgs.venvShellHook
-          ]
-          ++ (with python312Packages; [
-            black
-          ])
-          ++ [pkgs.raylib];
+        inputsFrom = pkgs.lib.attrsets.attrValues self.packages.${system};
+        packages = with pkgs; [
+          black
+          pyenv
+          pyenv.pkgs.venvShellHook
+        ];
 
         venvDir = "venv";
         shellHook = ''
@@ -86,7 +82,7 @@
             echo "Skipping venv creation, '${venvDir}' already exists"
           else
             echo "Creating new venv environment in path: '${venvDir}'"
-            ${py.env.python.interpreter} -m venv "${venvDir}"
+            ${pyenv.python.interpreter} -m venv "${venvDir}"
           fi
 
           source "${venvDir}/bin/activate"
@@ -95,29 +91,27 @@
         '';
       };
 
-      packages = {
-        default = self.packages.${system}.eidolon-client;
+      packages = let
+        ps = pkgs.python311.pkgs;
+      in
+        {
+          eidolon-common = ps.callPackage ./nix/eidolon-common.nix {
+            inherit (self.packages.${system}) raylib-python-cffi esper;
+          };
 
-        eidolon-client = pkgs.callPackage ./nix/eidolon-client.nix {
-          pyenv = py.env;
-        };
+          esper = ps.callPackage ./nix/esper.nix {};
 
-        eidolon-common = pkgs.callPackage ./nix/eidolon-common.nix {
-          inherit (pkgs.python3Packages) buildPythonPackage grpcio grpcio-tools pymunk setuptools;
-          inherit (self.packages.${system}) raylib-python-cffi esper;
-        };
+          raylib-python-cffi = ps.callPackage ./nix/raylib-python-cffi.nix {
+            inherit (self.packages.${system}) physac raygui;
+          };
+        }
+        // {
+          default = self.packages.${system}.eidolon-client;
 
-        esper = pkgs.callPackage ./nix/esper.nix {
-          inherit (pkgs.python3Packages) buildPythonPackage flit-core pytestCheckHook;
-        };
-
-        physac = pkgs.callPackage ./nix/header-libs/physac.nix {};
-        raygui = pkgs.callPackage ./nix/header-libs/raygui.nix {};
-
-        raylib-python-cffi = pkgs.callPackage ./nix/raylib-python-cffi.nix {
-          inherit (self.packages.${system}) physac raygui;
-          inherit (pkgs.python3Packages) buildPythonPackage cffi setuptools;
-        };
-      };
+          eidolon-client = pkgs.callPackage ./nix/eidolon-client.nix {
+            pyenv = pyenv;
+          };
+        }
+        // (import ./nix/header-libs {inherit pkgs;});
     });
 }
