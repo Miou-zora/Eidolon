@@ -21,3 +21,6 @@ dist
 
 # common pkg
 .install
+
+# nix
+result

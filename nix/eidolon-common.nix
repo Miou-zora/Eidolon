@@ -31,7 +31,7 @@ buildPythonPackage {
 
   meta = {
     homepage = "https://github.com/Miou-zora/Eidolon";
-    license = lib.licenses.gpl2Only;
+    license = lib.licenses.gpl3Only;
     maintainers = with lib.maintainers; [sigmanificient];
     platforms = lib.platforms.unix;
   };
