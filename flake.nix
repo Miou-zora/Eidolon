@@ -1,48 +1,33 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
 
     pre-commit-hooks = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    esper = {
-      url = "github:benmoran56/esper?ref=v3.2";
-      flake = false;
     };
   };
 
   outputs = {
     self,
     nixpkgs,
-    flake-utils,
     pre-commit-hooks,
-    esper,
-  }:
-    flake-utils.lib.eachSystem ["x86_64-linux"]
-    (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+  }: let
+    defaultSystems = [
+      "aarch64-linux"
+      "aarch64-darwin"
+      "x86_64-darwin"
+      "x86_64-linux"
+    ];
 
-      py = {
-        env = pkgs.python311.withPackages (p: py.deps);
-        deps = with pkgs.python311.pkgs;
-          [
-            grpcio
-            grpcio-tools
-            pymunk
-          ]
-          ++ (with self.packages.${system}; [
-            esper
-            pyray
-            eidolon-common
-          ]);
-      };
-    in rec {
-      formatter = pkgs.alejandra;
+    forAllSystems = function:
+      nixpkgs.lib.genAttrs defaultSystems
+      (system: function nixpkgs.legacyPackages.${system});
+  in
+    {
+      formatter = forAllSystems (pkgs: pkgs.alejandra);
 
-      checks = let
+      checks = forAllSystems (pkgs: let
         hooks = {
           alejandra.enable = true;
           check-merge-conflicts.enable = true;
@@ -50,214 +35,25 @@
           check-added-large-files.enable = true;
         };
       in {
-        pre-commit-check = pre-commit-hooks.lib.${system}.run {
+        pre-commit-check = pre-commit-hooks.lib.${pkgs.system}.run {
           inherit hooks;
           src = ./.;
         };
+      });
+    }
+    // (let
+      outputs =
+        forAllSystems
+        (pkgs: import ./nix {inherit self pkgs;});
+
+      mapVals = f: attr: builtins.mapAttrs (_: f) attr;
+
+      transforms = {
+        devShells = out: {default = out.shell;};
+        packages = out: out.packages;
       };
-
-      devShells.default = pkgs.mkShell rec {
-        name = "Eidolon";
-
-        env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
-          pkgs.stdenv.cc.cc
-          pkgs.glfw
-          pkgs.xorg.libX11
-          pkgs.libglvnd
-        ];
-
-        packages = with pkgs;
-          [
-            py.env
-            py.env.pkgs.venvShellHook
-          ]
-          ++ (with python312Packages; [
-            black
-          ])
-          ++ [pkgs.raylib];
-
-        venvDir = "venv";
-        shellHook = ''
-          ${checks.pre-commit-check.shellHook}
-
-          SOURCE_DATE_EPOCH=$(date +%s)
-
-          if [ -d "${venvDir}" ]; then
-            echo "Skipping venv creation, '${venvDir}' already exists"
-          else
-            echo "Creating new venv environment in path: '${venvDir}'"
-            ${py.env.python.interpreter} -m venv "${venvDir}"
-          fi
-
-          source "${venvDir}/bin/activate"
-          ${venvDir}/bin/pip install -r requirements.txt
-          ${venvDir}/bin/pip install -e .
-        '';
-      };
-
-      packages = let
-        mk-header-lib = {
-          name,
-          version,
-          src,
-          meta,
-        }:
-          pkgs.stdenv.mkDerivation {
-            inherit name version src meta;
-
-            dontBuild = true;
-            installPhase = ''
-                mkdir -p $out/{include,lib/pkgconfig}
-
-                cp $src/src/${name}.h $out/include/${name}.h
-
-              cat <<EOF > $out/lib/pkgconfig/${name}.pc
-              prefix=$out
-              includedir=$out/include
-
-              Name: ${name}
-              Description: ${meta.description}
-              URL: ${meta.homepage}
-              Version: ${version}
-              Cflags: -I"{includedir}"
-              EOF
-            '';
-          };
-      in {
-        default = packages.eidolon-client;
-
-        eidolon-client = pkgs.stdenv.mkDerivation {
-          name = "client";
-
-          src = ./client;
-          buildPhase = ''
-            cp -r $src lib
-
-            chmod +w lib
-            rm -rf lib/__main__.py
-          '';
-
-          installPhase = ''
-            mkdir -p $out
-            cp -r lib $out/lib
-
-            echo -e "#!${py.env}/bin/python" \
-              | cat - $src/__main__.py > $out/lib/__main__.py
-
-            mkdir -p $out/bin
-
-            ln -s $out/lib/__main__.py $out/bin/client
-            chmod +x $out/bin/client
-          '';
-        };
-
-        eidolon-common = pkgs.python311Packages.buildPythonPackage {
-          pname = "common";
-          version = with builtins; let
-            matched = match ".*(0.0.1).*" (readFile ./setup.cfg);
-          in
-            if match == []
-            then "master"
-            else head matched;
-
-          pyproject = true;
-          build-system = [pkgs.python311Packages.setuptools];
-
-          src = ./.;
-          propagatedBuildInputs =
-            (with pkgs.python311Packages; [
-              grpcio
-              grpcio-tools
-              pymunk
-            ])
-            ++ [
-              packages.pyray
-              packages.esper
-            ];
-        };
-
-        esper = pkgs.python311Packages.buildPythonPackage {
-          pname = "esper";
-          version = "3.2";
-          pyproject = true;
-
-          src = esper;
-
-          build-system = [py.env.pkgs.flit-core];
-          doCheck = false;
-        };
-
-        physac = mk-header-lib {
-          name = "physac";
-          version = "2.5-unstable-20240518";
-          src = pkgs.fetchFromGitHub {
-            owner = "victorfisac";
-            repo = "Physac";
-            rev = "29d9fc06860b54571a02402fff6fa8572d19bd12";
-            hash = "sha256-PTlV1tT0axQbmGmJ7JD1n6wmbIxUdu7xho78EO0HNNk=";
-          };
-
-          meta = {
-            description = "2D physics header-only library for raylib";
-            homepage = "https://github.com/victorfisac/Physac";
-          };
-        };
-
-        raygui = mk-header-lib {
-          name = "raygui";
-          version = "4.0-unstable-25c8";
-
-          src = pkgs.fetchFromGitHub {
-            owner = "raysan5";
-            repo = "raygui";
-            rev = "25c8c65a6e5f0f4d4b564a0343861898c6f2778b";
-            hash = "sha256-1qnChZYsb0e5LnPhvs6a/R5Ammgj2HWFNe9625sBRo8=";
-          };
-
-          meta = {
-            description = "A simple and easy-to-use immediate-mode gui library";
-            homepage = "https://github.com/raysan5/raygui";
-          };
-        };
-
-        pyray = pkgs.python311Packages.buildPythonPackage rec {
-          pname = "pyray";
-          version = "5.0.0.2";
-
-          src = pkgs.fetchFromGitHub {
-            owner = "electronstudio";
-            repo = "raylib-python-cffi";
-            rev = "refs/tags/v${version}";
-            hash = "sha256-DlnZRJZ0ZnkLii09grA/lGsJHPUYrbaJ55BVWJ8JzfM=";
-          };
-
-          build-system = [
-            pkgs.python311Packages.setuptools
-            pkgs.python311Packages.cffi
-          ];
-
-          patches = [./fix-pyray-builder.patch];
-
-          preBuild = ''
-            echo "$PKG_CONFIG_PATH"
-
-            ${pkgs.pkg-config}/bin/pkg-config --cflags 'raygui'
-
-          '';
-
-          nativeBuildInputs = [
-            pkgs.pkg-config
-          ];
-
-          buildInputs = [
-            pkgs.python311
-            pkgs.glfw
-            pkgs.libffi
-            pkgs.raylib
-            packages.physac
-            packages.raygui
-          ];
-        };
-      };
-    });
+    in
+      mapVals
+      (value: forAllSystems (pkgs: value outputs.${pkgs.system}))
+      transforms);
 }
