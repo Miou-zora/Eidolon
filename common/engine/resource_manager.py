@@ -1,5 +1,8 @@
 from .resource import Resource
 
+from typing import TypeVar
+
+GenericResource = TypeVar("GenericResource", bound=Resource)
 
 class ResourceManager:
     class ResourceNotFoundError(Exception):
@@ -15,7 +18,7 @@ class ResourceManager:
                 return res
         return None
 
-    def get_resource(self, resource: type[Resource]):
+    def get_resource(self, resource: type[GenericResource]) -> GenericResource:
         for res in self.resources:
             if isinstance(res, resource):
                 return res

@@ -7,19 +7,20 @@ from common.engine.entity import Entity
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
 from common.engine.schedule_label import ScheduleLabel
-from common.processors.log_processor import LogProcessor
 from common.processors.real_time_provider_processor import \
     RealTimeProviderProcessor
 from common.resources.time_providers.real_time_provider import RealTimeProvider
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
+from processors.connection_processor import ConnectionProcessor
 from processors.control_processor import ControlProcessor
 from processors.inputs_update_processor import InputsUpdateProcessor
 from processors.render_processor import RenderProcessor
 from processors.window_processor import WindowProcessor
 from resources.assets_manager import AssetsManager
 from resources.inputs_manager import InputsManager
+from resources.network_manager import NetworkManager
 from resources.window_resource import WindowResource
 
 logging.basicConfig(level=logging.NOTSET)
@@ -31,10 +32,13 @@ class Setup(Processor):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
-        asset_manager: AssetsManager = r.get_resource(AssetsManager)
+        asset_manager = r.get_resource(AssetsManager)
+        network_manager = r.get_resource(NetworkManager)
 
         asset_name = "randomImage"
         asset_manager.load_texture(asset_name, f"assets/randomImage.png")
+
+        network_manager.launch()
 
         _: Entity = Entity().add_components(
             Position(300, 300),
@@ -53,6 +57,7 @@ def run():
         AssetsManager,
         InputsManager,
         RealTimeProvider,
+        NetworkManager,
     ).add_processors(
         ScheduleLabel.Startup,
         Setup(),
@@ -63,7 +68,8 @@ def run():
         RenderProcessor(),
         InputsUpdateProcessor(),
         ControlProcessor(),
-        LogProcessor(),
+        # LogProcessor(),
+        ConnectionProcessor(),
     )
 
     engine.run()
