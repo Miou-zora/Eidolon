@@ -1,7 +1,6 @@
 {
   self,
   pkgs,
-  system,
 }: let
   py = pkgs.python311;
 
@@ -11,7 +10,7 @@
       ps.grpcio-tools
       ps.pymunk
     ]
-    ++ (with self.packages.${system}; [
+    ++ (with self.packages.${pkgs.system}; [
       esper
       raylib-python-cffi
       eidolon-common
@@ -19,7 +18,7 @@
 
   pyenv = py.withPackages selectPythonPackages;
 
-  pkgs' = self.packages.${system};
+  pkgs' = self.packages.${pkgs.system};
 in {
   shell = pkgs.mkShell rec {
     name = "Eidolon";
@@ -31,7 +30,7 @@ in {
       pkgs.libglvnd
     ];
 
-    inputsFrom = pkgs.lib.attrsets.attrValues self.packages.${system};
+    inputsFrom = pkgs.lib.attrsets.attrValues self.packages.${pkgs.system};
     packages = with pkgs; [
       black
       pyenv
@@ -40,7 +39,7 @@ in {
 
     venvDir = "venv";
     shellHook = ''
-      ${self.checks.${system}.pre-commit-check.shellHook}
+      ${self.checks.${pkgs.system}.pre-commit-check.shellHook}
 
       SOURCE_DATE_EPOCH=$(date +%s)
 
@@ -57,6 +56,7 @@ in {
       ${venvDir}/bin/pip install -e .
     '';
   };
+
   packages =
     {
       eidolon-common = py.pkgs.callPackage ./eidolon-common.nix {
