@@ -1,7 +1,15 @@
-name: CI
+name: nox
 
 on:
-  pull_request:
+  workflow_dispatch:
+  push:
+    paths:
+      - "client/**.py"
+      - "common/**.py"
+      - "server/**.py"
+      - "setup.py"
+      - "nox.py"
+      - ".github/workflows/nox.yml"
 
 jobs:
   ci:
