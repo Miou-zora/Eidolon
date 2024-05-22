@@ -6,7 +6,16 @@ Commit should be structured as a succinct description describing the change:
 
 * use the imperative, present tense: "change" not "changed" nor "changes"
 * capitalize the first letter
-* no dot (.) at the end
+* no period (.) at the end
+
+You can insure you commit follow the guideline using the
+`check_commit_msg_format.py` script. Set it as a git hook using the following
+command:
+
+```
+cp check_commit_mst_format.py .git/hooks/commit-msg
+```
+
 
 ## GitHub Branches
 
