@@ -79,4 +79,4 @@ After, you can find the executable in the `dist` directory.
 
 ### :heart: Contributors
 
-![alt](https://contrib.nn.ci/api?repo=Miou-zora/Eidolon)
+![alt](https://contrib.nn.ci/api?repo=Miou-zora/Zaytracer)
