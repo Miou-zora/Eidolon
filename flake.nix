@@ -28,7 +28,19 @@
       formatter = forAllSystems (pkgs: pkgs.alejandra);
 
       checks = forAllSystems (pkgs: let
+        commit-name = {
+          enable = true;
+          name = "commit name";
+          entry = ''
+            ${pkgs.python310}/bin/python3 ${./check_commit_msg_format.py}
+          '';
+
+          stages = ["commit-msg"];
+        };
+
         hooks = {
+          inherit commit-name;
+
           alejandra.enable = true;
           check-merge-conflicts.enable = true;
           check-shebang-scripts-are-executable.enable = true;
