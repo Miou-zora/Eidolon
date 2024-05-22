@@ -1,0 +1,18 @@
+[metadata]
+name = common
+version = 0.0.1
+platform = linux, osx, windows
+classifiers =
+    Programming Language :: Python :: 3 :: Only
+
+[options]
+include_package_data = True
+packages =
+    ${subpackages}
+
+python_requires = >=3.10
+zip_safe = no
+
+[isort]
+profile = hug
+src_paths = isort,test
