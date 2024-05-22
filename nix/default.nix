@@ -35,6 +35,7 @@ in {
       black
       pyenv
       pyenv.pkgs.venvShellHook
+      python3Packages.nox
     ];
 
     venvDir = "venv";
