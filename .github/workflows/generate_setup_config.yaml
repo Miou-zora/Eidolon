@@ -1,0 +1,49 @@
+name: update setup.cfg
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "common/**.py"
+      - "setup.cfg"
+      - "setup.cfg.in"
+      - ".github/workflows/generate_setup_config.yaml"
+
+env:
+  GH_BOT_ACC_EMAIL:
+    41898282+github-actions[bot]@users.noreply.github.com
+  GH_BOT_ACC_NAME:
+    github-actions[bot]
+
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch name
+        id: branch-names
+        uses: tj-actions/branch-names@v7.0.7
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.branch-names.outputs.head_ref_branch }}
+
+      - name: setup git
+        run: |
+          git config --local user.email $GH_BOT_ACC_EMAIL
+          git config --local user.name $GH_BOT_ACC_NAME
+
+      - uses: cachix/install-nix-action@v26
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: generate setup.cfg
+        run: |
+          make setup.cfg
+
+      - name: push changes
+        run: |
+          git commit -am "Update setup.cfg file [skip ci]" || echo "no changes"
+          git push || echo "No changes to push"
+
