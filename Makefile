@@ -51,6 +51,10 @@ client: common
 server: common
 	$(VENV_SCRIPT)python server
 
+.PHONY: test-common
+tests: common
+	$(VENV_SCRIPT)pytest -s
+
 .PHONY: exe-client
 exe-client: common
 	$(VENV_SCRIPT)pyinstaller client/__main__.py --onefile --name=client --noconsole --add-data=client/assets$(ADD_DATA_SEPARATOR)client/assets
