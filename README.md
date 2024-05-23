@@ -50,6 +50,8 @@ nix develop
 
 ### :rocket: <samp>Running</samp>
 
+#### With local dependencies
+
 ```sh
 make client
 # or / and
@@ -57,6 +59,7 @@ make server
 ```
 
 #### With :cherry_blossom: <samp>nix</samp>
+
 ```sh
 nix run 
 ```
