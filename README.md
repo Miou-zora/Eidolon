@@ -23,34 +23,45 @@ If you get an error about it, consider this command:
 
 ### :wrench: <samp>Setup</samp>
 
-#### With local dependencies
-
-Clone this repository and install the dependencies with pip
+Start by cloning this repository
 
 ```sh
-git clone
+git clone git clone https://github.com/Miou-zora/Eidolon.git
 cd Eidolon
-pip install -r requirements.txt
-make
+```
+
+#### With local dependencies
+
+Install the dependencies with pip
+
+```sh
+python -m venv venv
+venv/bin/pip install -r requirements.txt
+venv/bin/pip install -e .
 ```
 
 #### With :cherry_blossom: <samp>nix</samp>
 
-Clone this repository and run `nix develop` to enter the development environment
+Run the client directly
 
 ```sh
-git clone https://github.com/Miou-zora/Eidolon.git
-cd Eidolon
 nix develop
-make
 ```
 
 ### :rocket: <samp>Running</samp>
+
+#### With local dependencies
 
 ```sh
 make client
 # or / and
 make server
+```
+
+#### With :cherry_blossom: <samp>nix</samp>
+
+```sh
+nix run 
 ```
 
 ### :heavy_plus_sign: <samp>Using direnv</samp>

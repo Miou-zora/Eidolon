@@ -18,7 +18,7 @@ stdenvNoCC.mkDerivation {
     mkdir -p $out
     cp -r lib $out/lib
 
-    echo -e "#!${pyenv}/bin/python" \
+    echo -e "#!${pyenv.python.interpreter}" \
       | cat - $src/__main__.py > $out/lib/__main__.py
 
     mkdir -p $out/bin
