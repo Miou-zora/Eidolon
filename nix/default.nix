@@ -2,7 +2,7 @@
   self,
   pkgs,
 }: let
-  py = pkgs.python311;
+  py = pkgs.pypy310;
 
   selectPythonPackages = ps:
     [
