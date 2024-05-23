@@ -7,9 +7,10 @@ on:
       - "client/**.py"
       - "common/**.py"
       - "server/**.py"
+      - "tests/**.py"
       - "setup.py"
-      - "nox.py"
-      - ".github/workflows/nox.yml"
+      - "noxfile.py"
+      - ".github/workflows/nox.yaml"
 
 jobs:
   ci:
@@ -30,5 +31,7 @@ jobs:
           architecture: 'x64'
       - name: Install nox
         run: pip install nox
-      - name: Run nox
+      - name: Run nox format
         run: nox -s format
+      - name: Run nox test
+        run: nox -s test

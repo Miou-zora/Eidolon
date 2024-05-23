@@ -6,6 +6,7 @@
 
   selectPythonPackages = ps:
     [
+      ps.pytest
       ps.pymunk
     ]
     ++ (with self.packages.${pkgs.system}; [
