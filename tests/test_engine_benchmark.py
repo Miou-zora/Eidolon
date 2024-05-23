@@ -105,7 +105,7 @@ def test_engine_benchmark_moving_entities():
 
     engine = Engine()
 
-    for e in range(NUMBER_OF_ENTITIES):
+    for _ in range(NUMBER_OF_ENTITIES):
         Entity().add_components(Position())
 
     engine.add_processors(ScheduleLabel.Update, MoveProcessor(engine))
