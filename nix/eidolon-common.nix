@@ -3,8 +3,6 @@
   setuptools,
   raylib-python-cffi,
   esper,
-  grpcio,
-  grpcio-tools,
   pymunk,
   lib,
 }:
@@ -20,8 +18,6 @@ buildPythonPackage {
   src = ./..;
   propagatedBuildInputs =
     [
-      grpcio
-      grpcio-tools
       pymunk
     ]
     ++ [
