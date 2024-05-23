@@ -51,8 +51,8 @@ client: common
 server: common
 	$(VENV_SCRIPT)python server
 
-.PHONY: test-common
-tests: common
+.PHONY: test
+test: common
 	$(VENV_SCRIPT)pytest -s
 
 .PHONY: exe-client
