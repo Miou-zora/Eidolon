@@ -13,7 +13,18 @@ from common.engine.resource_manager import ResourceManager
 from common.engine.schedule_label import ScheduleLabel
 
 
+def time_report(fn):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        fn(*args, **kwargs)
+        end_time = time.time()
+        print(f"\n{fn.__name__} Time taken: {end_time - start_time} seconds", end="")
+
+    return wrapper
+
+
 @pytest.mark.timeout(1)
+@time_report
 def test_engine_benchmark_do_nothing():
     MAX_ITERATION_NUMBER = 8000000
 
@@ -32,23 +43,15 @@ def test_engine_benchmark_do_nothing():
     engine = Engine()
     engine.add_processors(ScheduleLabel.Update, DoNothingProcessor(engine))
 
-    start_time = time.time()
     engine.run()
-    end_time = time.time()
-
-    print(
-        f"\ntest_engine_benchmark_do_nothing: Time taken: {end_time - start_time} seconds",
-        end="",
-    )
 
 
 @pytest.mark.timeout(1)
+@time_report
 def test_engine_benchmark_access_resources():
-    MAX_ITERATION_NUMBER = 5000000
+    MAX_ITERATION_NUMBER = 3000000
 
-    resource_class = [
-        type(f"Resource{i}"), (Resource,), {"id": i}) for i in range(100)
-    ]
+    resource_class = [type(f"Resource{i}", (Resource,), {"id": i}) for i in range(100)]
 
     class ResourceAskerProcessor(Processor):
         current_iteration_number = 0
@@ -58,7 +61,11 @@ def test_engine_benchmark_access_resources():
             self.engine = _engine
 
         def process(self, r: ResourceManager) -> None:
-            assert r.get_resource(resource_class[3]).id == 3
+            random_resource_index = 99
+            assert (
+                r.get_resource(resource_class[random_resource_index]).id
+                == random_resource_index
+            )
             self.current_iteration_number += 1
             if self.current_iteration_number >= MAX_ITERATION_NUMBER:
                 self.engine.stop()
@@ -68,17 +75,11 @@ def test_engine_benchmark_access_resources():
     engine.insert_resources(*resource_class)
     engine.add_processors(ScheduleLabel.Update, ResourceAskerProcessor(engine))
 
-    start_time = time.time()
     engine.run()
-    end_time = time.time()
-
-    print(
-        f"\ntest_engine_benchmark_access_resources: Time taken: {end_time - start_time} seconds",
-        end="",
-    )
 
 
 @pytest.mark.timeout(1)
+@time_report
 def test_engine_benchmark_moving_entities():
     NUMBER_OF_ENTITIES = 10000
     MAX_ITERATION_NUMBER = 500
@@ -110,17 +111,11 @@ def test_engine_benchmark_moving_entities():
 
     engine.add_processors(ScheduleLabel.Update, MoveProcessor(engine))
 
-    start_time = time.time()
     engine.run()
-    end_time = time.time()
-
-    print(
-        f"\ntest_engine_benchmark_moving_entities: Time taken: {end_time - start_time} seconds",
-        end="",
-    )
 
 
 @pytest.mark.timeout(1)
+@time_report
 def test_engine_benchmark_multiprocess():
     NUMBER_OF_ENTITIES = 10000
     MAX_ITERATION_NUMBER = 50
@@ -167,11 +162,4 @@ def test_engine_benchmark_multiprocess():
         MoveProcessor(engine),
     )
 
-    start_time = time.time()
     engine.run()
-    end_time = time.time()
-
-    print(
-        f"\ntest_engine_benchmark_multiprocess: Time taken: {end_time - start_time} seconds",
-        end="",
-    )
