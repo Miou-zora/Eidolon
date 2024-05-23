@@ -6,8 +6,6 @@
 
   selectPythonPackages = ps:
     [
-      ps.grpcio
-      ps.grpcio-tools
       ps.pymunk
     ]
     ++ (with self.packages.${pkgs.system}; [
