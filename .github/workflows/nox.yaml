@@ -7,9 +7,10 @@ on:
       - "client/**.py"
       - "common/**.py"
       - "server/**.py"
+      - "tests/**.py"
       - "setup.py"
-      - "nox.py"
-      - ".github/workflows/nox.yml"
+      - "noxfile.py"
+      - ".github/workflows/nox.yaml"
 
 jobs:
   ci:
