@@ -47,7 +47,7 @@ def test_engine_benchmark_access_resources():
     MAX_ITERATION_NUMBER = 5000000
 
     resource_class = [
-        type("Resource" + str(i), (Resource,), {"id": i}) for i in range(100)
+        type(f"Resource{i}"), (Resource,), {"id": i}) for i in range(100)
     ]
 
     class ResourceAskerProcessor(Processor):
@@ -105,7 +105,7 @@ def test_engine_benchmark_moving_entities():
 
     engine = Engine()
 
-    for e in range(NUMBER_OF_ENTITIES):
+    for _ in range(NUMBER_OF_ENTITIES):
         Entity().add_components(Position())
 
     engine.add_processors(ScheduleLabel.Update, MoveProcessor(engine))
