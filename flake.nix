@@ -32,7 +32,7 @@
           enable = true;
           name = "commit name";
           entry = ''
-            ${pkgs.python310}/bin/python3 ${./check_commit_msg_format.py}
+            ${pkgs.python310.interpreter} ${./check_commit_msg_format.py}
           '';
 
           stages = ["commit-msg"];
