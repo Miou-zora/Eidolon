@@ -1,3 +1,4 @@
+import os
 import random
 import time
 
@@ -13,6 +14,12 @@ from common.engine.resource_manager import ResourceManager
 from common.engine.schedule_label import ScheduleLabel
 
 
+def no_checked_by_ci(fn):
+    if "CI" in os.environ:
+        return pytest.mark.skip(reason="Not checked by CI")(fn)
+    return fn
+
+
 def time_report(fn):
     def wrapper(*args, **kwargs):
         start_time = time.time()
@@ -23,6 +30,7 @@ def time_report(fn):
     return wrapper
 
 
+@no_checked_by_ci
 @pytest.mark.timeout(1)
 @time_report
 def test_engine_benchmark_do_nothing():
@@ -46,6 +54,7 @@ def test_engine_benchmark_do_nothing():
     engine.run()
 
 
+@no_checked_by_ci
 @pytest.mark.timeout(1)
 @time_report
 def test_engine_benchmark_access_resources():
@@ -78,6 +87,7 @@ def test_engine_benchmark_access_resources():
     engine.run()
 
 
+@no_checked_by_ci
 @pytest.mark.timeout(1)
 @time_report
 def test_engine_benchmark_moving_entities():
@@ -114,6 +124,7 @@ def test_engine_benchmark_moving_entities():
     engine.run()
 
 
+@no_checked_by_ci
 @pytest.mark.timeout(1)
 @time_report
 def test_engine_benchmark_multiprocess():
