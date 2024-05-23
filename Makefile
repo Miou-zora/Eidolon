@@ -76,3 +76,9 @@ ifeq ($(OS),$(WIN))
 else
 	$(RM_DIR) dist
 endif
+
+# we want to make sure it always update regardless of the previous state
+.PHONY: setup.cfg
+setup.cfg:
+	nix build .#setup-cfg
+	cat result | tee $@

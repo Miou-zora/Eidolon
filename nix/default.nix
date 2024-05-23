@@ -76,6 +76,9 @@ in {
       eidolon-client =
         pkgs.callPackage ./eidolon-client.nix
         {inherit pyenv;};
+
+      setup-cfg =
+        pkgs.callPackage ./generate_setup_config.nix {};
     }
     // (import ./header-libs {inherit pkgs;});
 }
