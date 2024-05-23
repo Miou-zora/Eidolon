@@ -15,19 +15,15 @@ env:
   GH_BOT_ACC_NAME:
     github-actions[bot]
 
-
 jobs:
   check:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Get branch name
-        id: branch-names
-        uses: tj-actions/branch-names@v7.0.7
-
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          ref: ${{ steps.branch-names.outputs.head_ref_branch }}
+          ref: ${{ github.head_ref }}
 
       - name: setup git
         run: |
