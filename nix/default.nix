@@ -2,12 +2,10 @@
   self,
   pkgs,
 }: let
-  py = pkgs.python311;
+  py = pkgs.pypy310;
 
   selectPythonPackages = ps:
     [
-      ps.grpcio
-      ps.grpcio-tools
       ps.pymunk
     ]
     ++ (with self.packages.${pkgs.system}; [
