@@ -3,22 +3,29 @@
   pkgs,
 }: let
   py = pkgs.python310;
+  pkgs' = self.packages.${pkgs.system};
 
   selectPythonPackages = ps:
-    [
-      ps.pytest
-      ps.pymunk
-      ps.sphinx
-    ]
-    ++ (with self.packages.${pkgs.system}; [
+    [ps.pymunk]
+    ++ (with pkgs'; [
       esper
       raylib-python-cffi
       eidolon-common
     ]);
 
-  pyenv = py.withPackages selectPythonPackages;
+  devPyPkgs = ps:
+    (selectPythonPackages ps)
+    ++ [
+      ps.black
+      ps.nox
+      ps.sphinx
+      ps.pytest
+    ]
+    ++ (with self.packages.${pkgs.system}; [
+      eidolon-common
+    ]);
 
-  pkgs' = self.packages.${pkgs.system};
+  pyenv = py.withPackages selectPythonPackages;
 in {
   shell = pkgs.mkShell rec {
     name = "Eidolon";
@@ -31,11 +38,11 @@ in {
     ];
 
     inputsFrom = pkgs.lib.attrsets.attrValues self.packages.${pkgs.system};
-    packages = with pkgs; [
-      black
-      pyenv
-      pyenv.pkgs.venvShellHook
-      python3Packages.nox
+    packages = let
+      pyenv-dev = py.withPackages devPyPkgs;
+    in [
+      pyenv-dev
+      pyenv-dev.pkgs.venvShellHook
     ];
 
     venvDir = "venv";
