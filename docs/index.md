@@ -11,4 +11,6 @@
 :maxdepth: 2
 
 genindex
+README
+CONTRIBUTING
 ```

@@ -19,3 +19,9 @@ html_theme = "sphinxawesome_theme"
 
 set_type_checking_flag = True
 source_suffix = ".md"
+
+md_prolog = """
+```{eval-rst}
+.. :rocker: replace:: 🚀
+```
+"""
