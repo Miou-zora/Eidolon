@@ -44,7 +44,3 @@ class AssetsManager(Resource):
 
     def get_texture(self, texture_name: str) -> Optional[raylib.Texture]:
         return self.textures[texture_name]
-
-    def get_texture_size(self, asset_name) -> (int, int):
-        texture = self.get_texture(asset_name)
-        return texture.width, texture.height

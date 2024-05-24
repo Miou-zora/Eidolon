@@ -1,14 +1,11 @@
 import esper
 import pyray
+from components.drawable import Drawable
+from resources.assets_manager import AssetsManager
 
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
-from components.box_collider import BoxCollider
-from components.drawable import Drawable
-from resources.assets_manager import AssetsManager
-
-DEBUG_COLLIDER = True
 
 
 class RenderProcessor(Processor):
@@ -25,16 +22,4 @@ class RenderProcessor(Processor):
             texture = r.get_resource(AssetsManager).get_texture(drawable.texture_name)
             if texture is not None:
                 pyray.draw_texture(texture, int(pos.x), int(pos.y), pyray.WHITE)
-            if (
-                DEBUG_COLLIDER
-                and (collider := esper.component_for_entity(ent, BoxCollider))
-                is not None
-            ):
-                pyray.draw_rectangle_lines_ex(
-                    pyray.Rectangle(
-                        int(pos.x), int(pos.y), collider.width, collider.height
-                    ),
-                    1,
-                    pyray.RED,
-                )
         pyray.end_drawing()
