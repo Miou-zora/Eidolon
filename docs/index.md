@@ -13,4 +13,5 @@
 genindex
 README
 CONTRIBUTING
+api/index
 ```
