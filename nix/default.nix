@@ -21,8 +21,8 @@
       ps.sphinx
       ps.pytest
     ]
-    ++ (with self.packages.${pkgs.system}; [
-      eidolon-common
+    ++ (with pkgs'; [
+      sphinxawesome-theme
     ]);
 
   pyenv = py.withPackages selectPythonPackages;
@@ -78,6 +78,7 @@ in {
       };
 
       docs = py.pkgs.callPackage ./docs {};
+      sphinxawesome-theme = py.pkgs.callPackage ./docs/sphinxawesome-theme.nix {};
     }
     // {
       default = pkgs'.eidolon-client;

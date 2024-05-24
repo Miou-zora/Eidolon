@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(".."))
 
 extensions = [
     "myst_parser",
+    "sphinxawesome_theme.highlighting",
 ]
 
 myst_enable_extensions = [
@@ -13,6 +14,8 @@ myst_enable_extensions = [
     "linkify",
     "tasklist",
 ]
+
+html_theme = "sphinxawesome_theme"
 
 set_type_checking_flag = True
 source_suffix = ".md"
