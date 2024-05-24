@@ -2,12 +2,13 @@
   self,
   pkgs,
 }: let
-  py = pkgs.pypy310;
+  py = pkgs.python310;
 
   selectPythonPackages = ps:
     [
       ps.pytest
       ps.pymunk
+      ps.sphinx
     ]
     ++ (with self.packages.${pkgs.system}; [
       esper
@@ -68,6 +69,8 @@ in {
       raylib-python-cffi = py.pkgs.callPackage ./raylib-python-cffi.nix {
         inherit (pkgs') physac raygui;
       };
+
+      docs = py.pkgs.callPackage ./docs {};
     }
     // {
       default = pkgs'.eidolon-client;
