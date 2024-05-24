@@ -3,6 +3,8 @@
   linkify-it-py,
   myst-parser,
   sphinx,
+  sphinxawesome-theme,
+  sphinxcontrib-trio,
 }:
 stdenv.mkDerivation {
   name = "eidolon-docs";
@@ -12,6 +14,8 @@ stdenv.mkDerivation {
     linkify-it-py
     myst-parser
     sphinx
+    sphinxawesome-theme
+    sphinxcontrib-trio
   ];
 
   installPhase = ''

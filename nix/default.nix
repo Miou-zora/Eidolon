@@ -23,6 +23,7 @@
     ]
     ++ (with pkgs'; [
       sphinxawesome-theme
+      sphinxcontrib-trio
     ]);
 
   pyenv = py.withPackages selectPythonPackages;
@@ -77,8 +78,13 @@ in {
         inherit (pkgs') physac raygui;
       };
 
-      docs = py.pkgs.callPackage ./docs {};
       sphinxawesome-theme = py.pkgs.callPackage ./docs/sphinxawesome-theme.nix {};
+
+      sphinxcontrib-trio = py.pkgs.callPackage ./docs/sphinxcontrib-trio.nix {};
+
+      docs = py.pkgs.callPackage ./docs {
+        inherit (pkgs') sphinxawesome-theme sphinxcontrib-trio;
+      };
     }
     // {
       default = pkgs'.eidolon-client;
