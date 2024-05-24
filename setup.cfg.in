@@ -1,7 +1,11 @@
 [metadata]
 name = common
 version = 0.0.1
+license = GPL3Only
 platform = linux, osx, windows
+description = Eidolon is a Terraria replica made in Python using custom game engine using Raylib and Esper.
+long_description = file: docs/README.md
+long_description_content_type = text/markdown
 classifiers =
     Programming Language :: Python :: 3 :: Only
 
@@ -16,3 +20,21 @@ zip_safe = no
 [isort]
 profile = hug
 src_paths = isort,test
+
+[options.extras_require]
+dev =
+    black >= 23.9.0
+    isort >= 5.13.0
+    nox >= 2024.4.15
+testing =
+    pytest >= 8.2.0
+    pytest-timeout >= 2.3.0
+docs =
+    sphinx >= 7.2.6
+    sphinxawesome_theme >= 5.1.4
+    sphinxcontrib-trio >= 1.1.2
+    myst-parser >= 2.0.0
+    linkify-it-py >= 2.0.0
+
+[options.package_data]
+common = py.typed
