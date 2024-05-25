@@ -16,7 +16,6 @@ command:
 cp check_commit_mst_format.py .git/hooks/commit-msg
 ```
 
-
 ## GitHub Branches
 
 If you want to work on a feature you have to create a branch for it. To create a
