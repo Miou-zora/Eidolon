@@ -1,8 +1,4 @@
-pyinstaller >= 6.1.0
 esper >= 3.2
 raylib >= 5.0.0.2
 pymunk >= 6.8.0
-isort >=5.13.2
 setuptools >= 69.5.1
-pytest >= 8.2.1
-pytest-timeout >= 2.3.1
