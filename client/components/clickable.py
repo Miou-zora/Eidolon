@@ -11,9 +11,12 @@ if TYPE_CHECKING:
 @component
 class Clickable:
     # maybe have an async callback function here
-    call: Callable[[], None] = lambda: None
+    __call: Callable[[], None] = lambda: None
 
     def __str__(self) -> str:
-        if self.call.__name__ == "<lambda>":
-            return f"ClickableComponent(call:lambda({id(self.call):x}))"
-        return f"ClickableComponent(call:{self.call.__name__})"
+        if self.__call.__name__ == "<lambda>":
+            return f"ClickableComponent(call:lambda({id(self.__call):x}))"
+        return f"ClickableComponent(call:{self.__call.__name__})"
+
+    def __call__(self):
+        self.__call()

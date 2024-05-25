@@ -19,17 +19,16 @@ class ClickProcessor(Processor):
 
     def process(self, r: ResourceManager) -> None:
         window_resource = r.get_resource(WindowResource)
-        rl = window_resource.is_mouse_button_down_released(
+        if not window_resource.is_mouse_button_down_released(
             raylib.MouseButton.MOUSE_BUTTON_LEFT
-        )
-        if not rl:
+        ):
             return
         mouse_position: raylib.Vector2 = window_resource.get_mouse_position()
         for ent, (clickable, collider, position) in esper.get_components(
             Clickable, BoxCollider, Position
         ):
             if self.are_position_matching(mouse_position, position, collider):
-                clickable.call()
+                clickable()
 
     def are_position_matching(
         self, mouse_position: raylib.Vector2, position: Position, collider: BoxCollider
