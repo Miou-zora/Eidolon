@@ -14,4 +14,6 @@ class Clickable:
     call: Callable[[], None] = lambda: None
 
     def __str__(self) -> str:
-        return f"ClickableComponent(call:{self.call})"
+        if self.call.__name__ == "<lambda>":
+            return f"ClickableComponent(call:lambda({id(self.call):x}))"
+        return f"ClickableComponent(call:{self.call.__name__})"

@@ -32,7 +32,7 @@ class RenderProcessor(Processor):
             ):
                 pyray.draw_rectangle_lines_ex(
                     pyray.Rectangle(
-                        int(pos.x), int(pos.y), collider.width, collider.height
+                        int(pos.x), int(pos.y), collider.size.x, collider.size.y
                     ),
                     1,
                     pyray.RED,

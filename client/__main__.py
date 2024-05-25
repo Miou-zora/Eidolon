@@ -39,7 +39,7 @@ class Setup(Processor):
         network_manager = r.get_resource(NetworkManager)
 
         asset_name = "randomImage"
-        asset_manager.load_texture(asset_name, f"assets/randomImage.png")
+        asset_manager.load_texture(asset_name, "assets/randomImage.png")
         asset_size = asset_manager.get_texture_size(asset_name)
 
         network_manager.launch()
@@ -54,7 +54,7 @@ class Setup(Processor):
             Name("First Entity"),
             Drawable(asset_name),
             Clickable(TestClickableFunction),
-            BoxCollider(asset_size[0], asset_size[1]),
+            BoxCollider(asset_size),
             Controllable(),
             Speed(300),
         )

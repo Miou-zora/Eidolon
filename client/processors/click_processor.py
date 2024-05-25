@@ -35,6 +35,6 @@ class ClickProcessor(Processor):
         self, mouse_position: raylib.Vector2, position: Position, collider: BoxCollider
     ) -> bool:
         return (
-            position.x <= mouse_position.x <= position.x + collider.width
-            and position.y <= mouse_position.y <= position.y + collider.height
+            position.x <= mouse_position.x <= position.x + collider.size.x
+            and position.y <= mouse_position.y <= position.y + collider.size.y
         )

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Optional
 import pyray as raylib
 
 from common.engine.resource import Resource
+from common.utils.vector2 import Vector2
 
 if TYPE_CHECKING:
     from common.engine.engine import Engine
@@ -45,6 +46,6 @@ class AssetsManager(Resource):
     def get_texture(self, texture_name: str) -> Optional[raylib.Texture]:
         return self.textures[texture_name]
 
-    def get_texture_size(self, asset_name) -> (int, int):
+    def get_texture_size(self, asset_name) -> Vector2:
         texture = self.get_texture(asset_name)
-        return texture.width, texture.height
+        return Vector2(texture.width, texture.height)
