@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class Scene(ABC):
     @abstractmethod
     def on_start(self) -> None:
-        #  maybe add some parameters like engine to kill entity (for example)
+        # maybe add some parameters like engine to kill entity (for example)
         pass
 
     @abstractmethod
