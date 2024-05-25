@@ -54,12 +54,10 @@ class Setup(Processor):
 
 
 class TestScene(Scene):
-    @staticmethod
-    def on_start() -> None:
+    def on_start(self) -> None:
         logger.info("TestScene started")
 
-    @staticmethod
-    def on_exit() -> None:
+    def on_exit(self) -> None:
         logger.info("TestScene exited")
 
 
@@ -74,7 +72,7 @@ class TestSceneProcessor(Processor):
         time_provider = r.get_resource(RealTimeProvider)
         self.chrono += time_provider.get_elapsed_time()
         if self.chrono >= self.time_to_change_scene:
-            scene_manager.switch_to(TestScene)
+            scene_manager.switch_to(TestScene())
             self.chrono -= self.time_to_change_scene
 
 
