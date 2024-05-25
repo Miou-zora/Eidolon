@@ -11,16 +11,18 @@ from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
 from common.resources.time_providers.real_time_provider import RealTimeProvider
+from components.box_collider import BoxCollider
+from components.clickable import Clickable
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
 from plugins.default_plugin import DefaultPlugin
 from plugins.scene_plugin import ScenePlugin
+from processors.click_processor import ClickProcessor
 from processors.connection_processor import ConnectionProcessor
 from processors.control_processor import ControlProcessor
 from resources.assets_manager import AssetsManager
-from resources.scene_manager import Scene
-from resources.scene_manager import SceneManager
+from resources.scene_manager import SceneManager, Scene
 
 if TYPE_CHECKING:
     from common.engine.resource_manager import ResourceManager
@@ -40,14 +42,22 @@ class Setup(Processor):
         network_manager = r.get_resource(NetworkManager)
 
         asset_name = "randomImage"
-        asset_manager.load_texture(asset_name, f"assets/randomImage.png")
+        asset_manager.load_texture(asset_name, "assets/randomImage.png")
+        asset_size = asset_manager.get_texture_size(asset_name)
 
         network_manager.launch()
 
+        def TestClickableFunction():
+            TestClickableFunction.i += 1
+            logger.debug("Clicked %i", TestClickableFunction.i)
+
+        TestClickableFunction.i = 0
         _: Entity = Entity().add_components(
             Position(300, 300),
             Name("First Entity"),
             Drawable(asset_name),
+            Clickable(TestClickableFunction),
+            BoxCollider(asset_size),
             Controllable(),
             Speed(300),
         )
@@ -86,10 +96,9 @@ class ClientPlugin(Plugin):
             # LogProcessor(),
             ControlProcessor(),
             ConnectionProcessor(),
+            ClickProcessor(),
             TestSceneProcessor(),
-        ).insert_resources(
-            NetworkManager,
-        )
+        ).insert_resources(NetworkManager)
 
 
 def run():
@@ -98,7 +107,7 @@ def run():
     engine.add_plugins(
         DefaultPlugin().build(),
         ClientPlugin,
-        ScenePlugin,
+        ScenePlugin(),
     )
 
     engine.run()
