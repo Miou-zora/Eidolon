@@ -4,24 +4,29 @@ Eidolon is a Terraria replica made in Python using custom game engine
 using [Raylib](https://www.raylib.com/)
 and [Esper](https://pypi.org/project/esper/).
 
-## :bookmark_tabs: <samp>Requirements</samp>
+## 📑 <samp>Requirements</samp>
 
 You have the choice between using nix or local dependencies.
 
-### :wrench: <samp>Dependencies</samp>
+### 🔧 <samp>Dependencies</samp>
 
 - [Python 3.10+](https://www.python.org/downloads/) (with pip)
 - [Make](https://www.gnu.org/software/make/)
 
-### :cherry_blossom: <samp>[Nix](https://nixos.org/download.html) user</samp>
+### 🌸 <samp>[Nix](https://nixos.org/download.html) user</samp>
 
 You will need to enable `nix-command` and `flakes`experimental features
 If you get an error about it, consider this command:
-`mkdir -p ~/.config/nix && echo "experimental-features = nix-command flakes" | tee ~/.config/nix/nix.conf`
 
-## :zap: <samp>Usage</samp>
+```sh
+mkdir -p ~/.config/nix
+echo "experimental-features = nix-command flakes" \
+    | tee ~/.config/nix/nix.conf
+```
 
-### :wrench: <samp>Setup</samp>
+## ⚡ <samp>Usage</samp>
+
+### 🔧 <samp>Setup</samp>
 
 Start by cloning this repository
 
@@ -40,7 +45,7 @@ venv/bin/pip install -r requirements.txt
 venv/bin/pip install -e .
 ```
 
-#### With :cherry_blossom: <samp>nix</samp>
+#### With 🌸 <samp>nix</samp>
 
 Run the client directly
 
@@ -48,7 +53,7 @@ Run the client directly
 nix develop
 ```
 
-### :rocket: <samp>Running</samp>
+### 🚀 <samp>Running</samp>
 
 #### With local dependencies
 
@@ -58,13 +63,13 @@ make client
 make server
 ```
 
-#### With :cherry_blossom: <samp>nix</samp>
+#### With 🌸 <samp>nix</samp>
 
 ```sh
 nix run 
 ```
 
-### :heavy_plus_sign: <samp>Using direnv</samp>
+### ➕ <samp>Using direnv</samp>
 
 You may load the devShell automatically using [direnv](https://direnv.net)
 shell integration.
@@ -76,7 +81,7 @@ direnv allow
 
 ```
 
-### :construction_worker: <samp>Building</samp>
+### 👷 <samp>Building</samp>
 
 #### Release
 
@@ -88,6 +93,6 @@ make exe-server
 
 After, you can find the executable in the `dist` directory.
 
-### :heart: Contributors
+### 🩵 Contributors
 
-![alt](https://contrib.nn.ci/api?repo=Miou-zora/Zaytracer)
+![alt](https://contrib.rocks/image?repo=Miou-zora/Eidolon)

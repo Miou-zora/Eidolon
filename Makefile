@@ -9,7 +9,6 @@ endif
 ifeq ($(OS),$(WIN))
   VENV_DIR = venv
   VENV_SCRIPT = $(VENV_DIR)/Scripts/
-  VENV_PY = $(VENV_DIR)/Lib/site-packages/
 else
   VENV_SCRIPT =
 endif

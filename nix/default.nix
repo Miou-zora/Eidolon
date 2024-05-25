@@ -2,22 +2,31 @@
   self,
   pkgs,
 }: let
-  py = pkgs.pypy310;
+  py = pkgs.python310;
+  pkgs' = self.packages.${pkgs.system};
 
   selectPythonPackages = ps:
-    [
-      ps.pytest
-      ps.pymunk
-    ]
-    ++ (with self.packages.${pkgs.system}; [
+    [ps.pymunk]
+    ++ (with pkgs'; [
       esper
       raylib-python-cffi
       eidolon-common
     ]);
 
-  pyenv = py.withPackages selectPythonPackages;
+  devPyPkgs = ps:
+    (selectPythonPackages ps)
+    ++ [
+      ps.black
+      ps.nox
+      ps.sphinx
+      ps.pytest
+    ]
+    ++ (with pkgs'; [
+      sphinxawesome-theme
+      sphinxcontrib-trio
+    ]);
 
-  pkgs' = self.packages.${pkgs.system};
+  pyenv = py.withPackages selectPythonPackages;
 in {
   shell = pkgs.mkShell rec {
     name = "Eidolon";
@@ -30,11 +39,11 @@ in {
     ];
 
     inputsFrom = pkgs.lib.attrsets.attrValues self.packages.${pkgs.system};
-    packages = with pkgs; [
-      black
-      pyenv
-      pyenv.pkgs.venvShellHook
-      python3Packages.nox
+    packages = let
+      pyenv-dev = py.withPackages devPyPkgs;
+    in [
+      pyenv-dev
+      pyenv-dev.pkgs.venvShellHook
     ];
 
     venvDir = "venv";
@@ -67,6 +76,14 @@ in {
 
       raylib-python-cffi = py.pkgs.callPackage ./raylib-python-cffi.nix {
         inherit (pkgs') physac raygui;
+      };
+
+      sphinxawesome-theme = py.pkgs.callPackage ./docs/sphinxawesome-theme.nix {};
+
+      sphinxcontrib-trio = py.pkgs.callPackage ./docs/sphinxcontrib-trio.nix {};
+
+      docs = py.pkgs.callPackage ./docs {
+        inherit (pkgs') sphinxawesome-theme sphinxcontrib-trio;
       };
     }
     // {
