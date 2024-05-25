@@ -13,4 +13,5 @@ def format(session: nox.Session):
 @nox.session
 def test(session: nox.Session):
     session.install("-r", "requirements.txt")
+    session.install("-e", ".[testing]")
     session.run("pytest", "-s")
