@@ -15,6 +15,7 @@ from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
 from common.utils.vector2 import Vector2
 from components.box_collider import BoxCollider
+from components.camera import Camera2D
 from components.clickable import Clickable
 from components.controllable import Controllable
 from components.drawable import Drawable
@@ -51,6 +52,11 @@ class Setup(Processor):
         window = r.get_resource(WindowResource)
         window.background_color = raylib.DARKGRAY
 
+        camera = Entity().add_components(
+            Camera2D(Vector2(0, 0), 0, 1),
+            Position(0, 0),
+        )
+
 
 class GameScene(Scene):
     def __init__(self):
@@ -61,9 +67,10 @@ class GameScene(Scene):
     def on_start(self, r: ResourceManager) -> None:
         asset_manager = r.get_resource(AssetsManager)
         player_texture_name = "Player"
+        player_spawn_pos = Vector2(300, 300)
         self.entities = [
             Entity().add_components(
-                Position(300, 300),
+                Position(player_spawn_pos.x, player_spawn_pos.y),
                 Name("First Entity"),
                 Drawable(player_texture_name),
                 BoxCollider(asset_manager.get_texture_size(player_texture_name)),
@@ -71,6 +78,20 @@ class GameScene(Scene):
                 Speed(300),
             )
         ]
+        window = r.get_resource(WindowResource)
+        for ent, (pos, cam) in esper.get_components(Position, Camera2D):
+            # TODO: create follow system / component
+            logger.info(f"Camera found at {pos.x}, {pos.y}")
+            pos.x = (
+                player_spawn_pos.x
+                + asset_manager.get_texture_size(player_texture_name).x / 2
+            )
+            pos.y = (
+                player_spawn_pos.y
+                + asset_manager.get_texture_size(player_texture_name).y / 2
+            )
+            cam.offset.x = window.get_size().x / 2
+            cam.offset.y = window.get_size().y / 2
 
     def on_exit(self, r: ResourceManager) -> None:
         for ent in self.entities:
