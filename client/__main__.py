@@ -3,6 +3,9 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
+import esper
+import raylib
+
 from common.components.name import Name
 from common.components.position import Position
 from common.engine.engine import Engine
@@ -10,19 +13,16 @@ from common.engine.entity import Entity
 from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
-from common.resources.time_providers.real_time_provider import RealTimeProvider
+from common.utils.vector2 import Vector2
 from components.box_collider import BoxCollider
 from components.clickable import Clickable
-from components.controllable import Controllable
 from components.drawable import Drawable
-from components.speed import Speed
 from plugins.default_plugin import DefaultPlugin
 from plugins.scene_plugin import ScenePlugin
 from processors.click_processor import ClickProcessor
-from processors.connection_processor import ConnectionProcessor
-from processors.control_processor import ControlProcessor
 from resources.assets_manager import AssetsManager
-from resources.scene_manager import SceneManager, Scene
+from resources.scene_manager import Scene, SceneManager
+from resources.window_resource import WindowResource
 
 if TYPE_CHECKING:
     from common.engine.resource_manager import ResourceManager
@@ -39,51 +39,74 @@ class Setup(Processor):
 
     def process(self, r: ResourceManager) -> None:
         asset_manager = r.get_resource(AssetsManager)
-        network_manager = r.get_resource(NetworkManager)
 
-        asset_name = "randomImage"
-        asset_manager.load_texture(asset_name, "assets/randomImage.png")
-        asset_size = asset_manager.get_texture_size(asset_name)
+        asset_manager.load_texture("StartButton", "assets/StartButton.png")
+        asset_manager.load_texture("ExitButton", "assets/ExitButton.png")
 
-        network_manager.launch()
-
-        def TestClickableFunction():
-            TestClickableFunction.i += 1
-            logger.debug("Clicked %i", TestClickableFunction.i)
-
-        TestClickableFunction.i = 0
-        _: Entity = Entity().add_components(
-            Position(300, 300),
-            Name("First Entity"),
-            Drawable(asset_name),
-            Clickable(TestClickableFunction),
-            BoxCollider(asset_size),
-            Controllable(),
-            Speed(300),
-        )
+        window = r.get_resource(WindowResource)
+        window.background_color = raylib.DARKGRAY
 
 
-class TestScene(Scene):
-    def on_start(self) -> None:
-        logger.info("TestScene started")
-
-    def on_exit(self) -> None:
-        logger.info("TestScene exited")
-
-
-class TestSceneProcessor(Processor):
+class GameScene(Scene):
     def __init__(self):
         super().__init__()
-        self.chrono = 0
-        self.time_to_change_scene = 5  # seconds
 
+    def on_start(self, r: ResourceManager) -> None:
+        pass
+
+    def on_exit(self, r: ResourceManager) -> None:
+        pass
+
+
+class MainMenu(Scene):
+    def __init__(self):
+        super().__init__()
+        self.buttons: list[Entity] = []
+
+    def on_start(self, r: ResourceManager) -> None:
+        assets_manager = r.get_resource(AssetsManager)
+        window = r.get_resource(WindowResource)
+        window_size: Vector2 = window.get_size()
+        start_button_name = "StartButton"
+        start_button_size = assets_manager.get_texture_size(start_button_name)
+        start_button_pos = Vector2(
+            window_size.x / 2 - start_button_size.x / 2,
+            window_size.y / 2 - start_button_size.y / 2,
+        )
+        self.buttons.append(
+            Entity().add_components(
+                Position(start_button_pos.x, start_button_pos.y),
+                Name("Play Button"),
+                Drawable(start_button_name),
+                Clickable(lambda: r.get_resource(SceneManager).switch_to(GameScene())),
+                BoxCollider(start_button_size),
+            )
+        )
+        exit_button_name = "ExitButton"
+        exit_button_size = assets_manager.get_texture_size(exit_button_name)
+        exit_button_pos = Vector2(
+            window_size.x / 2 - exit_button_size.x / 2,
+            window_size.y / 2 - exit_button_size.y / 2 + 100,
+        )
+        self.buttons.append(
+            Entity().add_components(
+                Position(exit_button_pos.x, exit_button_pos.y),
+                Name("Exit Button"),
+                Drawable(exit_button_name),
+                Clickable(lambda: r.get_resource(SceneManager).exit()),
+                BoxCollider(exit_button_size),
+            )
+        )
+
+    def on_exit(self, r: ResourceManager) -> None:
+        for ent in self.buttons:
+            esper.delete_entity(ent.id)
+
+
+class StartProcessor(Processor):
     def process(self, r: ResourceManager) -> None:
         scene_manager = r.get_resource(SceneManager)
-        time_provider = r.get_resource(RealTimeProvider)
-        self.chrono += time_provider.get_elapsed_time()
-        if self.chrono >= self.time_to_change_scene:
-            scene_manager.switch_to(TestScene())
-            self.chrono -= self.time_to_change_scene
+        scene_manager.switch_to(MainMenu())
 
 
 class ClientPlugin(Plugin):
@@ -91,23 +114,25 @@ class ClientPlugin(Plugin):
         engine.add_processors(
             ScheduleLabel.Startup,
             Setup(),
+            StartProcessor(),
         ).add_processors(
             ScheduleLabel.Update,
-            # LogProcessor(),
-            ControlProcessor(),
-            ConnectionProcessor(),
             ClickProcessor(),
-            TestSceneProcessor(),
-        ).insert_resources(NetworkManager)
+        ).insert_resources(
+            NetworkManager
+        )
 
 
 def run():
     engine: Engine = Engine()
-
+    # add common resources
     engine.add_plugins(
         DefaultPlugin().build(),
+    )
+
+    engine.add_plugins(
+        ScenePlugin,
         ClientPlugin,
-        ScenePlugin(),
     )
 
     engine.run()
