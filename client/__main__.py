@@ -26,6 +26,7 @@ from resources.window_resource import WindowResource
 
 if TYPE_CHECKING:
     from common.engine.resource_manager import ResourceManager
+    from typing import Callable
 
 from resources.network_manager import NetworkManager
 
@@ -66,36 +67,63 @@ class MainMenu(Scene):
     def on_start(self, r: ResourceManager) -> None:
         assets_manager = r.get_resource(AssetsManager)
         window = r.get_resource(WindowResource)
+        scene_manager = r.get_resource(SceneManager)
         window_size: Vector2 = window.get_size()
+
+        self.buttons = [
+            MainMenu.__create_start_button(assets_manager, window_size, scene_manager),
+            MainMenu.__create_exit_button(assets_manager, window_size, scene_manager),
+        ]
+
+    @staticmethod
+    def __create_start_button(
+        assets_manager: AssetsManager,
+        window_size: Vector2,
+        scene_manager: SceneManager,
+    ) -> Entity:
         start_button_name = "StartButton"
         start_button_size = assets_manager.get_texture_size(start_button_name)
         start_button_pos = Vector2(
             window_size.x / 2 - start_button_size.x / 2,
-            window_size.y / 2 - start_button_size.y / 2,
+            window_size.y / 2 - start_button_size.y / 2 - 100,
         )
-        self.buttons.append(
-            Entity().add_components(
-                Position(start_button_pos.x, start_button_pos.y),
-                Name("Play Button"),
-                Drawable(start_button_name),
-                Clickable(lambda: r.get_resource(SceneManager).switch_to(GameScene())),
-                BoxCollider(start_button_size),
-            )
+        return MainMenu.__create_button(
+            start_button_name,
+            start_button_pos,
+            start_button_size,
+            lambda: scene_manager.switch_to(GameScene()),
         )
+
+    @staticmethod
+    def __create_exit_button(
+        assets_manager: AssetsManager,
+        window_size: Vector2,
+        scene_manager: SceneManager,
+    ) -> Entity:
         exit_button_name = "ExitButton"
         exit_button_size = assets_manager.get_texture_size(exit_button_name)
         exit_button_pos = Vector2(
             window_size.x / 2 - exit_button_size.x / 2,
-            window_size.y / 2 - exit_button_size.y / 2 + 100,
+            window_size.y / 2 - exit_button_size.y / 2,
         )
-        self.buttons.append(
-            Entity().add_components(
-                Position(exit_button_pos.x, exit_button_pos.y),
-                Name("Exit Button"),
-                Drawable(exit_button_name),
-                Clickable(lambda: r.get_resource(SceneManager).exit()),
-                BoxCollider(exit_button_size),
-            )
+        return MainMenu.__create_button(
+            exit_button_name,
+            exit_button_pos,
+            exit_button_size,
+            lambda: scene_manager.exit(),
+        )
+
+    @staticmethod
+    def __create_button(
+        name: str, pos: Vector2, size: Vector2, callback: Callable[[], None]
+    ) -> Entity:
+        # We will maybe create a proper Button creator in the future (and use raygui)
+        return Entity().add_components(
+            Position(pos.x, pos.y),
+            Name(name),
+            Drawable(name),
+            Clickable(callback),
+            BoxCollider(size),
         )
 
     def on_exit(self, r: ResourceManager) -> None:
