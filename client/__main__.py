@@ -16,10 +16,13 @@ from common.engine.schedule_label import ScheduleLabel
 from common.utils.vector2 import Vector2
 from components.box_collider import BoxCollider
 from components.clickable import Clickable
+from components.controllable import Controllable
 from components.drawable import Drawable
+from components.speed import Speed
 from plugins.default_plugin import DefaultPlugin
 from plugins.scene_plugin import ScenePlugin
 from processors.click_processor import ClickProcessor
+from processors.control_processor import ControlProcessor
 from resources.assets_manager import AssetsManager
 from resources.scene_manager import Scene, SceneManager
 from resources.window_resource import WindowResource
@@ -43,6 +46,7 @@ class Setup(Processor):
 
         asset_manager.load_texture("StartButton", "assets/StartButton.png")
         asset_manager.load_texture("ExitButton", "assets/ExitButton.png")
+        asset_manager.load_texture("Player", "assets/Player.png")
 
         window = r.get_resource(WindowResource)
         window.background_color = raylib.DARKGRAY
@@ -51,12 +55,26 @@ class Setup(Processor):
 class GameScene(Scene):
     def __init__(self):
         super().__init__()
+        # Maybe inherit from Scene class
+        self.entities: list[Entity] = []
 
     def on_start(self, r: ResourceManager) -> None:
-        pass
+        asset_manager = r.get_resource(AssetsManager)
+        player_texture_name = "Player"
+        self.entities = [
+            Entity().add_components(
+                Position(300, 300),
+                Name("First Entity"),
+                Drawable(player_texture_name),
+                BoxCollider(asset_manager.get_texture_size(player_texture_name)),
+                Controllable(),
+                Speed(300),
+            )
+        ]
 
     def on_exit(self, r: ResourceManager) -> None:
-        pass
+        for ent in self.entities:
+            esper.delete_entity(ent.id)
 
 
 class MainMenu(Scene):
@@ -146,6 +164,7 @@ class ClientPlugin(Plugin):
         ).add_processors(
             ScheduleLabel.Update,
             ClickProcessor(),
+            ControlProcessor(),
         ).insert_resources(
             NetworkManager
         )
