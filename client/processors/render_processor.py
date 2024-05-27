@@ -41,15 +41,10 @@ class RenderProcessor(Processor):
             texture = r.get_resource(AssetsManager).get_texture(drawable.texture_name)
             if texture is not None:
                 pyray.draw_texture(texture, int(pos.x), int(pos.y), pyray.WHITE)
-            if (
-                DEBUG_COLLIDER
-                and (collider := esper.component_for_entity(ent, BoxCollider))
-                is not None
-            ):
+        if DEBUG_COLLIDER:
+            for ent, (pos, collider) in esper.get_components(Position, BoxCollider):
                 pyray.draw_rectangle_lines_ex(
-                    pyray.Rectangle(
-                        int(pos.x), int(pos.y), collider.size.x, collider.size.y
-                    ),
+                    pyray.Rectangle(int(pos.x), int(pos.y), collider.x, collider.y),
                     1,
                     pyray.RED,
                 )

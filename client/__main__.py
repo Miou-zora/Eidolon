@@ -92,6 +92,21 @@ class GameScene(Scene):
             )
             cam.offset.x = window.get_size().x / 2
             cam.offset.y = window.get_size().y / 2
+        self.entities = [
+            Entity().add_components(
+                Position(player_spawn_pos.x, player_spawn_pos.y),
+                Name("Player"),
+                Drawable(player_texture_name),
+                BoxCollider(asset_manager.get_texture_size(player_texture_name)),
+                Controllable(),
+                Speed(300),
+            ),
+            Entity().add_components(
+                Position(player_spawn_pos.x - 100, player_spawn_pos.y + 100),
+                Name("Second Entity"),
+                BoxCollider.from_size(300, 50),
+            ),
+        ]
 
     def on_exit(self, r: ResourceManager) -> None:
         for ent in self.entities:
