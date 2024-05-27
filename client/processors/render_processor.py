@@ -3,10 +3,10 @@ import logging
 import esper
 import pyray
 
+from common.components.box_collider import BoxCollider
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
-from components.box_collider import BoxCollider
 from components.camera import Camera2D
 from components.drawable import Drawable
 from resources.assets_manager import AssetsManager

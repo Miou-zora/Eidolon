@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import esper
 import raylib
 
+from common.components.box_collider import BoxCollider
 from common.components.name import Name
 from common.components.position import Position
 from common.engine.engine import Engine
@@ -13,8 +14,8 @@ from common.engine.entity import Entity
 from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
+from common.processors.collision_processor import CollisionProcessor
 from common.utils.vector2 import Vector2
-from components.box_collider import BoxCollider
 from components.camera import Camera2D
 from components.clickable import Clickable
 from components.controllable import Controllable
@@ -68,16 +69,6 @@ class GameScene(Scene):
         asset_manager = r.get_resource(AssetsManager)
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
-        self.entities = [
-            Entity().add_components(
-                Position(player_spawn_pos.x, player_spawn_pos.y),
-                Name("First Entity"),
-                Drawable(player_texture_name),
-                BoxCollider(asset_manager.get_texture_size(player_texture_name)),
-                Controllable(),
-                Speed(300),
-            )
-        ]
         window = r.get_resource(WindowResource)
         for ent, (pos, cam) in esper.get_components(Position, Camera2D):
             # TODO: create follow system / component
@@ -103,7 +94,7 @@ class GameScene(Scene):
             ),
             Entity().add_components(
                 Position(player_spawn_pos.x - 100, player_spawn_pos.y + 100),
-                Name("Second Entity"),
+                Name("Box"),
                 BoxCollider.from_size(300, 50),
             ),
         ]
@@ -199,6 +190,7 @@ class ClientPlugin(Plugin):
             StartProcessor(),
         ).add_processors(
             ScheduleLabel.Update,
+            CollisionProcessor(),
             ClickProcessor(),
             ControlProcessor(),
         ).insert_resources(

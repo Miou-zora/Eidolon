@@ -3,10 +3,10 @@ import logging
 import esper
 import pyray as raylib
 
+from common.components.box_collider import BoxCollider
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
-from components.box_collider import BoxCollider
 from components.clickable import Clickable
 from resources.window_resource import WindowResource
 
