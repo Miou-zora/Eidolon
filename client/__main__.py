@@ -15,11 +15,15 @@ from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
 from common.utils.vector2 import Vector2
 from components.box_collider import BoxCollider
+from components.camera import Camera2D
 from components.clickable import Clickable
+from components.controllable import Controllable
 from components.drawable import Drawable
+from components.speed import Speed
 from plugins.default_plugin import DefaultPlugin
 from plugins.scene_plugin import ScenePlugin
 from processors.click_processor import ClickProcessor
+from processors.control_processor import ControlProcessor
 from resources.assets_manager import AssetsManager
 from resources.scene_manager import Scene, SceneManager
 from resources.window_resource import WindowResource
@@ -43,20 +47,55 @@ class Setup(Processor):
 
         asset_manager.load_texture("StartButton", "assets/StartButton.png")
         asset_manager.load_texture("ExitButton", "assets/ExitButton.png")
+        asset_manager.load_texture("Player", "assets/Player.png")
 
         window = r.get_resource(WindowResource)
         window.background_color = raylib.DARKGRAY
+
+        camera = Entity().add_components(
+            Camera2D(Vector2(0, 0), 0, 1),
+            Position(0, 0),
+        )
 
 
 class GameScene(Scene):
     def __init__(self):
         super().__init__()
+        # Maybe inherit from Scene class
+        self.entities: list[Entity] = []
 
     def on_start(self, r: ResourceManager) -> None:
-        pass
+        asset_manager = r.get_resource(AssetsManager)
+        player_texture_name = "Player"
+        player_spawn_pos = Vector2(300, 300)
+        self.entities = [
+            Entity().add_components(
+                Position(player_spawn_pos.x, player_spawn_pos.y),
+                Name("First Entity"),
+                Drawable(player_texture_name),
+                BoxCollider(asset_manager.get_texture_size(player_texture_name)),
+                Controllable(),
+                Speed(300),
+            )
+        ]
+        window = r.get_resource(WindowResource)
+        for ent, (pos, cam) in esper.get_components(Position, Camera2D):
+            # TODO: create follow system / component
+            logger.info(f"Camera found at {pos.x}, {pos.y}")
+            pos.x = (
+                player_spawn_pos.x
+                + asset_manager.get_texture_size(player_texture_name).x / 2
+            )
+            pos.y = (
+                player_spawn_pos.y
+                + asset_manager.get_texture_size(player_texture_name).y / 2
+            )
+            cam.offset.x = window.get_size().x / 2
+            cam.offset.y = window.get_size().y / 2
 
     def on_exit(self, r: ResourceManager) -> None:
-        pass
+        for ent in self.entities:
+            esper.delete_entity(ent.id)
 
 
 class MainMenu(Scene):
@@ -146,6 +185,7 @@ class ClientPlugin(Plugin):
         ).add_processors(
             ScheduleLabel.Update,
             ClickProcessor(),
+            ControlProcessor(),
         ).insert_resources(
             NetworkManager
         )
