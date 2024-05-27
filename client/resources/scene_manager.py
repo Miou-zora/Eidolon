@@ -8,6 +8,7 @@ from typing import final
 
 from common.engine.engine import Engine
 from common.engine.resource import Resource
+from common.engine.resource_manager import ResourceManager
 
 if TYPE_CHECKING:
     pass
@@ -17,21 +18,21 @@ logger = logging.getLogger(__name__)
 
 class Scene(ABC):
     @abstractmethod
-    def on_start(self) -> None:
+    def on_start(self, _: ResourceManager) -> None:
         # maybe add some parameters like engine to kill entity (for example)
         pass
 
     @abstractmethod
-    def on_exit(self) -> None:
+    def on_exit(self, _: ResourceManager) -> None:
         pass
 
 
 @final
 class DefaultScene(Scene):
-    def on_start(self) -> None:
+    def on_start(self, _: ResourceManager) -> None:
         pass
 
-    def on_exit(self) -> None:
+    def on_exit(self, _: ResourceManager) -> None:
         pass
 
 
@@ -56,18 +57,25 @@ class SceneManager(Resource):
     def __add_scene_to_history(self, scene: Scene) -> None:
         self.scene_history.append(scene)
 
+    @staticmethod
+    def __switch_to_scene(fn) -> callable:
+        def wrapper(self, *args, **kwargs) -> None:
+            self.scene_history[self.index].on_exit(self._engine.resource_manager)
+            fn(self, *args, **kwargs)
+            self.scene_history[self.index].on_start(self._engine.resource_manager)
+
+        return wrapper
+
+    @__switch_to_scene
     def __switch_to_next_scene(self) -> None:
-        self.scene_history[self.index].on_exit()
         if self.index != len(self.scene_history) - 1:
             self.scene_history = self.scene_history[: self.index + 1]
         self.index += 1
         self.scene_history.append(self.next_scene)
-        self.scene_history[self.index].on_start()
 
+    @__switch_to_scene
     def __switch_to_previous_scene(self) -> None:
-        self.scene_history[self.index].on_exit()
         self.index -= 1
-        self.scene_history[self.index].on_start()
 
     def update_scene(self) -> None:
         if self.rollback_scene:
@@ -76,3 +84,7 @@ class SceneManager(Resource):
             self.__switch_to_next_scene()
         self.next_scene = None
         self.rollback_scene = False
+
+    def exit(self) -> None:
+        # TODO: use event system to exit
+        self._engine.stop()

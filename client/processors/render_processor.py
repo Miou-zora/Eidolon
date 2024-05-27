@@ -7,6 +7,7 @@ from common.engine.resource_manager import ResourceManager
 from components.box_collider import BoxCollider
 from components.drawable import Drawable
 from resources.assets_manager import AssetsManager
+from resources.window_resource import WindowResource
 
 DEBUG_COLLIDER = True
 
@@ -16,11 +17,9 @@ class RenderProcessor(Processor):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
+        window = r.get_resource(WindowResource)
         pyray.begin_drawing()
-        pyray.clear_background(pyray.RAYWHITE)
-        pyray.draw_text(
-            "Congrats! You created your first window!", 190, 200, 20, pyray.LIGHTGRAY
-        )
+        pyray.clear_background(window.background_color)
         for ent, (pos, drawable) in esper.get_components(Position, Drawable):
             texture = r.get_resource(AssetsManager).get_texture(drawable.texture_name)
             if texture is not None:
