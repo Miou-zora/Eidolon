@@ -4,17 +4,21 @@ import logging
 from typing import TYPE_CHECKING
 
 import esper
+import pymunk
 import raylib
 
 from common.components.box_collider import BoxCollider
 from common.components.name import Name
+from common.components.physic_body import PhysicBody
 from common.components.position import Position
 from common.engine.engine import Engine
 from common.engine.entity import Entity
 from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
-from common.processors.collision_processor import CollisionProcessor
+from common.processors.init_physic_processor import InitPhysicProcessor
+from common.processors.physic_processor import PhysicProcessor
+from common.resources.physic_resource import PhysicResource
 from common.utils.vector2 import Vector2
 from components.camera import Camera2D
 from components.clickable import Clickable
@@ -67,6 +71,7 @@ class GameScene(Scene):
 
     def on_start(self, r: ResourceManager) -> None:
         asset_manager = r.get_resource(AssetsManager)
+        space = r.get_resource(PhysicResource)
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
         window = r.get_resource(WindowResource)
@@ -83,19 +88,39 @@ class GameScene(Scene):
             )
             cam.offset.x = window.get_size().x / 2
             cam.offset.y = window.get_size().y / 2
+        player_body = PhysicBody(None, None)
+        player_body.body = pymunk.Body(10, float("inf"))
+        player_body.body.position = (
+            player_spawn_pos.x + asset_manager.get_texture_size(player_texture_name).x,
+            player_spawn_pos.y + asset_manager.get_texture_size(player_texture_name).y,
+        )
+        player_body.shape = pymunk.Poly.create_box(
+            player_body.body,
+            size=(
+                asset_manager.get_texture_size(player_texture_name).x,
+                asset_manager.get_texture_size(player_texture_name).y,
+            ),
+        )
+        player_body.shape.friction = 1
+        space.world.add(player_body.body, player_body.shape)
+        box_body = PhysicBody(None, None)
+        box_body.body = pymunk.Body(body_type=pymunk.Body.STATIC)
+        box_body.body.position = player_spawn_pos.x - 100, player_spawn_pos.y + 100
+        box_body.shape = pymunk.Poly.create_box(box_body.body, size=(300, 50))
+        box_body.shape.friction = 3
+        box_body.shape.elasticity = 0
+        space.world.add(box_body.body, box_body.shape)
         self.entities = [
             Entity().add_components(
-                Position(player_spawn_pos.x, player_spawn_pos.y),
+                player_body,
                 Name("Player"),
                 Drawable(player_texture_name),
-                BoxCollider(asset_manager.get_texture_size(player_texture_name)),
                 Controllable(),
                 Speed(300),
             ),
             Entity().add_components(
-                Position(player_spawn_pos.x - 100, player_spawn_pos.y + 100),
+                box_body,
                 Name("Box"),
-                BoxCollider.from_size(300, 50),
             ),
         ]
 
@@ -188,13 +213,15 @@ class ClientPlugin(Plugin):
             ScheduleLabel.Startup,
             Setup(),
             StartProcessor(),
+            InitPhysicProcessor(),
         ).add_processors(
             ScheduleLabel.Update,
-            CollisionProcessor(),
+            PhysicProcessor(),
             ClickProcessor(),
             ControlProcessor(),
         ).insert_resources(
-            NetworkManager
+            NetworkManager,
+            PhysicResource,
         )
 
 

@@ -4,6 +4,7 @@ import esper
 import pyray
 
 from common.components.box_collider import BoxCollider
+from common.components.physic_body import PhysicBody
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
@@ -24,6 +25,7 @@ class RenderProcessor(Processor):
     def process(self, r: ResourceManager) -> None:
         window = r.get_resource(WindowResource)
         cameras = esper.get_components(Camera2D, Position)
+        assets_manager = r.get_resource(AssetsManager)
         if len(cameras) < 1:
             return
         main_camera_obj, main_camera_pos = cameras[0][1]
@@ -38,9 +40,24 @@ class RenderProcessor(Processor):
             )
         )
         for ent, (pos, drawable) in esper.get_components(Position, Drawable):
-            texture = r.get_resource(AssetsManager).get_texture(drawable.texture_name)
+            texture = assets_manager.get_texture(drawable.texture_name)
             if texture is not None:
                 pyray.draw_texture(texture, int(pos.x), int(pos.y), pyray.WHITE)
+        for ent, (body, drawable) in esper.get_components(PhysicBody, Drawable):
+            texture = assets_manager.get_texture(drawable.texture_name)
+            if texture is not None and body.body is not None:
+                pyray.draw_texture(
+                    texture,
+                    int(
+                        body.body.position.x
+                        - assets_manager.get_texture_size(drawable.texture_name).x / 2
+                    ),
+                    int(
+                        body.body.position.y
+                        - assets_manager.get_texture_size(drawable.texture_name).y / 2
+                    ),
+                    pyray.WHITE,
+                )
         if DEBUG_COLLIDER:
             for ent, (pos, collider) in esper.get_components(Position, BoxCollider):
                 pyray.draw_rectangle_lines_ex(
@@ -48,5 +65,17 @@ class RenderProcessor(Processor):
                     1,
                     pyray.RED,
                 )
+            for ent, body in esper.get_component(PhysicBody):
+                if body.shape is not None:
+                    pyray.draw_rectangle_lines_ex(
+                        pyray.Rectangle(
+                            int(body.shape.bb.left),
+                            int(body.shape.bb.bottom),
+                            int(body.shape.bb.right - body.shape.bb.left),
+                            int(body.shape.bb.top - body.shape.bb.bottom),
+                        ),
+                        1,
+                        pyray.BLUE,
+                    )
         pyray.end_mode_2d()
         pyray.end_drawing()
