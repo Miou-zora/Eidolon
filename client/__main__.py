@@ -8,9 +8,11 @@ import pymunk
 import raylib
 
 from common.components.box_collider import BoxCollider
+from common.components.leader import Leader
 from common.components.name import Name
 from common.components.physic_body import PhysicBody
 from common.components.position import Position
+from common.components.velocity import Velocity
 from common.engine.engine import Engine
 from common.engine.entity import Entity
 from common.engine.plugin import Plugin
@@ -19,6 +21,7 @@ from common.engine.schedule_label import ScheduleLabel
 from common.processors.init_physic_processor import InitPhysicProcessor
 from common.processors.physic_processor import PhysicProcessor
 from common.resources.physic_resource import PhysicResource
+from common.processors.follow_leader_processor import FollowLeaderProcessor
 from common.utils.vector2 import Vector2
 from components.camera import Camera2D
 from components.clickable import Clickable
@@ -60,6 +63,8 @@ class Setup(Processor):
         camera = Entity().add_components(
             Camera2D(Vector2(0, 0), 0, 1),
             Position(0, 0),
+            Leader(-1, 5),
+            Velocity(),
         )
 
 
@@ -75,17 +80,8 @@ class GameScene(Scene):
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
         window = r.get_resource(WindowResource)
-        for ent, (pos, cam) in esper.get_components(Position, Camera2D):
-            # TODO: create follow system / component
-            logger.info(f"Camera found at {pos.x}, {pos.y}")
-            pos.x = (
-                player_spawn_pos.x
-                + asset_manager.get_texture_size(player_texture_name).x / 2
-            )
-            pos.y = (
-                player_spawn_pos.y
-                + asset_manager.get_texture_size(player_texture_name).y / 2
-            )
+        for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
+            lead.ent = self.entities[0].id
             cam.offset.x = window.get_size().x / 2
             cam.offset.y = window.get_size().y / 2
         player_body = PhysicBody(None, None)
@@ -219,6 +215,7 @@ class ClientPlugin(Plugin):
             PhysicProcessor(),
             ClickProcessor(),
             ControlProcessor(),
+            FollowLeaderProcessor(),
         ).insert_resources(
             NetworkManager,
             PhysicResource,
