@@ -12,6 +12,6 @@ class InitPhysicProcessor(Processor):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
-        world: PhysicResource = r.get_resource(PhysicResource)
+        world = r.get_resource(PhysicResource)
         world.init_world()
         world.world.gravity = (0, 900)
