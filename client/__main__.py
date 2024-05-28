@@ -18,10 +18,10 @@ from common.engine.entity import Entity
 from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
+from common.processors.follow_leader_processor import FollowLeaderProcessor
 from common.processors.init_physic_processor import InitPhysicProcessor
 from common.processors.physic_processor import PhysicProcessor
 from common.resources.physic_resource import PhysicResource
-from common.processors.follow_leader_processor import FollowLeaderProcessor
 from common.utils.vector2 import Vector2
 from components.camera import Camera2D
 from components.clickable import Clickable
@@ -80,10 +80,6 @@ class GameScene(Scene):
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
         window = r.get_resource(WindowResource)
-        for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
-            lead.ent = self.entities[0].id
-            cam.offset.x = window.get_size().x / 2
-            cam.offset.y = window.get_size().y / 2
         player_body = PhysicBody(None, None)
         player_body.body = pymunk.Body(10, float("inf"))
         player_body.body.position = (
@@ -119,6 +115,10 @@ class GameScene(Scene):
                 Name("Box"),
             ),
         ]
+        for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
+            lead.ent = self.entities[0].id
+            cam.offset.x = window.get_size().x / 2
+            cam.offset.y = window.get_size().y / 2
 
     def on_exit(self, r: ResourceManager) -> None:
         for ent in self.entities:

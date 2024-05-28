@@ -3,6 +3,7 @@ import logging
 import esper
 
 from common.components.leader import Leader
+from common.components.physic_body import PhysicBody
 from common.components.position import Position
 from common.components.velocity import Velocity
 from common.engine.processor import Processor
@@ -16,8 +17,8 @@ class FollowLeaderProcessor(Processor):
     def process(self, r: ResourceManager) -> None:
         time_provider = r.get_resource(RealTimeProvider)
         for ent, (lead, pos, vel) in esper.get_components(Leader, Position, Velocity):
-            if lead.ent == -1 or not esper.has_component(lead.ent, Position):
+            if lead.ent == -1 or not esper.has_component(lead.ent, PhysicBody):
                 continue
-            leader_pos = esper.component_for_entity(lead.ent, Position)
-            vel.x = (leader_pos.x - pos.x) * lead.attraction
-            vel.y = (leader_pos.y - pos.y) * lead.attraction
+            leader_body: PhysicBody = esper.component_for_entity(lead.ent, PhysicBody)
+            vel.x = (leader_body.body.position.x - pos.x) * lead.attraction
+            vel.y = (leader_body.body.position.y - pos.y) * lead.attraction
