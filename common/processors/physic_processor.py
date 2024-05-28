@@ -16,7 +16,7 @@ class PhysicProcessor(Processor):
 
     def process(self, r: ResourceManager) -> None:
         world = r.get_resource(PhysicResource)
-        time_provider: RealTimeProvider = r.get_resource(RealTimeProvider)
+        time_provider = r.get_resource(RealTimeProvider)
         self.current_chrono_value += time_provider.get_elapsed_time()
         if self.current_chrono_value >= self.max_chrono_value:
             self.current_chrono_value -= self.max_chrono_value
