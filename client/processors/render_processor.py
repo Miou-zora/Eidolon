@@ -4,7 +4,7 @@ import esper
 import pyray
 
 from common.components.box_collider import BoxCollider
-from common.components.physic_body import PhysicBody
+from common.components.physic_body import Physic
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
@@ -43,19 +43,14 @@ class RenderProcessor(Processor):
             texture = assets_manager.get_texture(drawable.texture_name)
             if texture is not None:
                 pyray.draw_texture(texture, int(pos.x), int(pos.y), pyray.WHITE)
-        for ent, (body, drawable) in esper.get_components(PhysicBody, Drawable):
+        for ent, (body, drawable) in esper.get_components(Physic, Drawable):
             texture = assets_manager.get_texture(drawable.texture_name)
             if texture is not None and body.body is not None:
+                size = assets_manager.get_texture_size(drawable.texture_name)
                 pyray.draw_texture(
                     texture,
-                    int(
-                        body.body.position.x
-                        - assets_manager.get_texture_size(drawable.texture_name).x / 2
-                    ),
-                    int(
-                        body.body.position.y
-                        - assets_manager.get_texture_size(drawable.texture_name).y / 2
-                    ),
+                    int(body.body.position.x - size.x / 2),
+                    int(body.body.position.y - size.y / 2),
                     pyray.WHITE,
                 )
         if DEBUG_COLLIDER:
@@ -65,7 +60,7 @@ class RenderProcessor(Processor):
                     1,
                     pyray.RED,
                 )
-            for ent, body in esper.get_component(PhysicBody):
+            for ent, body in esper.get_component(Physic):
                 if body.shape is not None:
                     pyray.draw_rectangle_lines_ex(
                         pyray.Rectangle(

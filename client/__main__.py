@@ -10,7 +10,7 @@ import raylib
 from common.components.box_collider import BoxCollider
 from common.components.leader import Leader
 from common.components.name import Name
-from common.components.physic_body import PhysicBody
+from common.components.physic_body import Physic
 from common.components.position import Position
 from common.components.velocity import Velocity
 from common.engine.engine import Engine
@@ -80,7 +80,7 @@ class GameScene(Scene):
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
         window = r.get_resource(WindowResource)
-        player_body = PhysicBody(None, None)
+        player_body = Physic(None, None)
         player_body.body = pymunk.Body(10, float("inf"))
         player_body.body.position = (
             player_spawn_pos.x + asset_manager.get_texture_size(player_texture_name).x,
@@ -95,7 +95,7 @@ class GameScene(Scene):
         )
         player_body.shape.friction = 1
         space.world.add(player_body.body, player_body.shape)
-        box_body = PhysicBody(None, None)
+        box_body = Physic(None, None)
         box_body.body = pymunk.Body(body_type=pymunk.Body.STATIC)
         box_body.body.position = player_spawn_pos.x - 100, player_spawn_pos.y + 100
         box_body.shape = pymunk.Poly.create_box(box_body.body, size=(300, 50))
@@ -126,7 +126,7 @@ class GameScene(Scene):
 
 
 class MainMenu(Scene):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.buttons: list[Entity] = []
 
@@ -222,8 +222,8 @@ class ClientPlugin(Plugin):
         )
 
 
-def run():
-    engine: Engine = Engine()
+def run() -> None:
+    engine = Engine()
     # add common resources
     engine.add_plugins(
         DefaultPlugin().build(),

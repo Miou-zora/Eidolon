@@ -13,10 +13,10 @@ class Vector2:
     def y(self) -> float:
         return self.__vec.y
 
-    @x.setter
-    def x(self, value: float):
+    @x.setter  # type: ignore
+    def x(self, value: float) -> None:
         self.__vec.x = value
 
-    @y.setter
+    @y.setter  # type: ignore
     def y(self, value: float):
         self.__vec.y = value
