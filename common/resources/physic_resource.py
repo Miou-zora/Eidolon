@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pymunk
+
+from common.engine.resource import Resource
+
 if TYPE_CHECKING:
     from common.engine.engine import Engine
-from common.engine.resource import Resource
-import pymunk
 
 
 class PhysicResource(Resource):

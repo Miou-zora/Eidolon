@@ -80,38 +80,35 @@ class GameScene(Scene):
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
         window = r.get_resource(WindowResource)
-        player_body = Physic(None, None)
-        player_body.body = pymunk.Body(10, float("inf"))
-        player_body.body.position = (
-            player_spawn_pos.x + asset_manager.get_texture_size(player_texture_name).x,
-            player_spawn_pos.y + asset_manager.get_texture_size(player_texture_name).y,
+        player_texture_size = asset_manager.get_texture_size(player_texture_name)
+        player_physic = Physic(None, None)
+        player_physic.body = pymunk.Body(10, float("inf"))
+        player_physic.body.position = (
+            player_spawn_pos.x + player_texture_size.x,
+            player_spawn_pos.y + player_texture_size.y,
         )
-        player_body.shape = pymunk.Poly.create_box(
-            player_body.body,
-            size=(
-                asset_manager.get_texture_size(player_texture_name).x,
-                asset_manager.get_texture_size(player_texture_name).y,
-            ),
+        player_physic.shape = pymunk.Poly.create_box(
+            player_physic.body, size=(player_texture_size.x, player_texture_size.y)
         )
-        player_body.shape.friction = 1
-        space.world.add(player_body.body, player_body.shape)
-        box_body = Physic(None, None)
-        box_body.body = pymunk.Body(body_type=pymunk.Body.STATIC)
-        box_body.body.position = player_spawn_pos.x - 100, player_spawn_pos.y + 100
-        box_body.shape = pymunk.Poly.create_box(box_body.body, size=(300, 50))
-        box_body.shape.friction = 3
-        box_body.shape.elasticity = 0
-        space.world.add(box_body.body, box_body.shape)
+        player_physic.shape.friction = 1
+        space.world.add(player_physic.body, player_physic.shape)
+        box_physic = Physic(None, None)
+        box_physic.body = pymunk.Body(body_type=pymunk.Body.STATIC)
+        box_physic.body.position = player_spawn_pos.x - 100, player_spawn_pos.y + 100
+        box_physic.shape = pymunk.Poly.create_box(box_physic.body, size=(300, 50))
+        box_physic.shape.friction = 1
+        box_physic.shape.elasticity = 0
+        space.world.add(box_physic.body, box_physic.shape)
         self.entities = [
             Entity().add_components(
-                player_body,
+                player_physic,
                 Name("Player"),
                 Drawable(player_texture_name),
                 Controllable(),
                 Speed(300),
             ),
             Entity().add_components(
-                box_body,
+                box_physic,
                 Name("Box"),
             ),
         ]
@@ -205,20 +202,27 @@ class StartProcessor(Processor):
 
 class ClientPlugin(Plugin):
     def build(self, engine: Engine) -> None:
-        engine.add_processors(
-            ScheduleLabel.Startup,
-            Setup(),
-            StartProcessor(),
-            InitPhysicProcessor(),
-        ).add_processors(
-            ScheduleLabel.Update,
-            PhysicProcessor(),
-            ClickProcessor(),
-            ControlProcessor(),
-            FollowLeaderProcessor(),
-        ).insert_resources(
-            NetworkManager,
-            PhysicResource,
+        (
+            engine.add_processors(
+                ScheduleLabel.Startup,
+                Setup(),
+                StartProcessor(),
+                InitPhysicProcessor(),
+            )
+            .add_processors(
+                ScheduleLabel.Update,
+                ClickProcessor(),
+                ControlProcessor(),
+                FollowLeaderProcessor(),
+            )
+            .add_processors(
+                ScheduleLabel.FixedUpdate,
+                PhysicProcessor(),
+            )
+            .insert_resources(
+                NetworkManager,
+                PhysicResource,
+            )
         )
 
 

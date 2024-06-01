@@ -6,8 +6,8 @@ from common.components.name import Name
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
-from common.resources.time_providers import UnitTimeProvider
-from common.resources.time_providers.time_provider import TimeProvider
+from common.engine.time_providers import TimeProvider
+from common.engine.time_providers import UnitTimeProvider
 
 logger = logging.getLogger(__name__)
 

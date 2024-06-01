@@ -9,4 +9,4 @@ class Physic:
     shape: pymunk.Shape
 
     def __str__(self) -> str:
-        return f"PhysicBody({repr(self.body)}, {repr(self.shape)})"
+        return f"PhysicBody({self.body}, {self.shape})"
