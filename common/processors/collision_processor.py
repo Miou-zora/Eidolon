@@ -10,6 +10,7 @@ from common.components.collisions import Collisions, Collision, \
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
+from common.utils.vector2 import Vector2
 
 logger = logging.getLogger(__name__)
 
@@ -34,37 +35,52 @@ class CollisionProcessor(Processor):
                 pos, collider, iter_pos, iter_collider
             ):
                 continue
-            box_left = pos.x
-            box_right = pos.x + collider.x
-            box_top = pos.y
-            box_bottom = pos.y + collider.y
-            old_box_left = collisions.last_position.x
-            old_box_right = collisions.last_position.x + collider.x
-            old_box_top = collisions.last_position.y
-            old_box_bottom = collisions.last_position.y + collider.y
-
-            collided_from_left = old_box_right <= iter_pos.x < box_right
-            collided_from_right = (
-                old_box_left >= iter_pos.x + iter_collider.x > box_left
+            self.create_collision(
+                iter_ent, pos, iter_pos, collider, iter_collider, collisions
             )
-            collided_from_top = old_box_bottom <= iter_pos.y < box_bottom
-            collided_from_bottom = old_box_top >= iter_pos.y + iter_collider.y > box_top
-            if collided_from_top:
+
+    @staticmethod
+    def create_collision(
+        iter_ent: int,
+        pos: Position,
+        iter_pos: Position,
+        collider: BoxCollider,
+        iter_collider: BoxCollider,
+        collisions: Collisions,
+    ) -> None:
+        box = CollisionProcessor.get_box(pos, collider)
+        old_box = CollisionProcessor.get_box(collisions.last_position, collider)
+
+        collided_from_left = old_box["right"] <= iter_pos.x < box["right"]
+        collided_from_right = (
+            old_box["left"] >= iter_pos.x + iter_collider.x > box["left"]
+        )
+        collided_from_top = old_box["bottom"] <= iter_pos.y < box["bottom"]
+        collided_from_bottom = (
+            old_box["top"] >= iter_pos.y + iter_collider.y > box["top"]
+        )
+
+        collisions_possibility = [
+            (collided_from_top, CollisionDirection.DOWN),
+            (collided_from_bottom, CollisionDirection.UP),
+            (collided_from_right, CollisionDirection.LEFT),
+            (collided_from_left, CollisionDirection.RIGHT),
+        ]
+        for collided in collisions_possibility:
+            if collided[0]:
                 collisions.collisions_between_entity.append(
-                    Collision(iter_ent, CollisionDirection.DOWN)
+                    Collision(iter_ent, collided[1])
                 )
-            elif collided_from_bottom:
-                collisions.collisions_between_entity.append(
-                    Collision(iter_ent, CollisionDirection.UP)
-                )
-            elif collided_from_left:
-                collisions.collisions_between_entity.append(
-                    Collision(iter_ent, CollisionDirection.RIGHT)
-                )
-            elif collided_from_right:
-                collisions.collisions_between_entity.append(
-                    Collision(iter_ent, CollisionDirection.LEFT)
-                )
+                break
+
+    @staticmethod
+    def get_box(pos: Vector2 | Position, collider: BoxCollider) -> dict[str, float]:
+        return {
+            "left": pos.x,
+            "right": pos.x + collider.x,
+            "top": pos.y,
+            "bottom": pos.y + collider.y,
+        }
 
     @staticmethod
     def aabb_collision(
