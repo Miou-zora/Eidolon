@@ -5,16 +5,18 @@ from common.engine import component
 from common.utils.vector2 import Vector2
 
 
+class CollisionDirection(enum.Enum):
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
+
+
 @dataclass
 class Collision:
-    class Direction(enum.Enum):
-        UP = 0
-        DOWN = 1
-        LEFT = 2
-        RIGHT = 3
 
     entity: int
-    direction: Direction
+    direction: CollisionDirection
 
 
 @component

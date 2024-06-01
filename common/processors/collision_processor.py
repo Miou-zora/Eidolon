@@ -4,7 +4,8 @@ import esper
 
 from common.components.box_collider import BoxCollider
 from common.components.collision_mask import CollisionMask
-from common.components.collisions import Collisions, Collision
+from common.components.collisions import Collisions, Collision, \
+    CollisionDirection
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
@@ -50,19 +51,19 @@ class CollisionProcessor(Processor):
                 )
                 if collided_from_top:
                     collisions.collisions_between_entity.append(
-                        Collision(iter_ent, Collision.Direction.DOWN)
+                        Collision(iter_ent, CollisionDirection.DOWN)
                     )
                 elif collided_from_bottom:
                     collisions.collisions_between_entity.append(
-                        Collision(iter_ent, Collision.Direction.UP)
+                        Collision(iter_ent, CollisionDirection.UP)
                     )
                 elif collided_from_left:
                     collisions.collisions_between_entity.append(
-                        Collision(iter_ent, Collision.Direction.RIGHT)
+                        Collision(iter_ent, CollisionDirection.RIGHT)
                     )
                 elif collided_from_right:
                     collisions.collisions_between_entity.append(
-                        Collision(iter_ent, Collision.Direction.LEFT)
+                        Collision(iter_ent, CollisionDirection.LEFT)
                     )
 
     @staticmethod

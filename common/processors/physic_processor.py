@@ -3,7 +3,7 @@ import logging
 import esper
 
 from common.components.box_collider import BoxCollider
-from common.components.collisions import Collisions
+from common.components.collisions import Collisions, CollisionDirection
 from common.components.groundable import Groundable
 from common.components.position import Position
 from common.components.static_body import StaticBody
@@ -29,11 +29,11 @@ class PhysicProcessor(Processor):
                 collided_collider = esper.component_for_entity(
                     collided_ent, BoxCollider
                 )
-                if collision.direction == collision.Direction.LEFT:
+                if collision.direction == CollisionDirection.LEFT:
                     pos.x = collided_pos.x + collided_collider.x
-                elif collision.direction == collision.Direction.RIGHT:
+                elif collision.direction == CollisionDirection.RIGHT:
                     pos.x = collided_pos.x - collider.x
-                elif collision.direction == collision.Direction.UP:
+                elif collision.direction == CollisionDirection.UP:
                     pos.y = collided_pos.y + collided_collider.y
                 else:
                     pos.y = collided_pos.y - collider.y
