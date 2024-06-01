@@ -9,7 +9,6 @@ from .plugin import Plugin
 from .plugin_group_builder import PluginGroupBuilder
 from .resource_manager import ResourceManager
 from .schedule_label import ScheduleLabel
-from .time_providers.real_time_provider import RealTimeProvider
 from .world import World
 
 if TYPE_CHECKING:
@@ -25,23 +24,11 @@ class Engine:
         self._running = False
         self.world: World = World(esper.current_world)
         self.resource_manager: ResourceManager = ResourceManager()
-        self.max_chrono_value = 1 / 60  # TODO: use chrono class
-        self.current_chrono_value = 0
 
     def run(self) -> None:
         self._running = True
         self.world.update(ScheduleLabel.Startup, self.resource_manager)
         while self._running:
-            self.current_chrono_value += self.resource_manager.get_resource(
-                RealTimeProvider
-            ).get_elapsed_time()
-            if self.current_chrono_value >= self.max_chrono_value:
-                self.current_chrono_value -= self.max_chrono_value
-                self.world.update(
-                    ScheduleLabel.FixedUpdate,
-                    self.resource_manager,
-                    self.max_chrono_value,
-                )
             self.world.update(ScheduleLabel.Update, self.resource_manager)
 
     def __insert_resource(self, resource: Type[Resource]) -> Engine:
