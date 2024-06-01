@@ -2,6 +2,7 @@ import logging
 
 import esper
 
+from common.components.name import Name
 from common.components.temporary import Temporary
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
@@ -16,5 +17,12 @@ class TemporaryProcessor(Processor):
         for ent, temp in esper.get_component(Temporary):
             temp.elapsed += elapsed_time
             if temp.elapsed >= temp.duration:
-                logger.debug(f"Entity {ent} has expired")
+                logger.debug(
+                    "Entity %s has expired",
+                    (
+                        esper.component_for_entity(ent, Name)
+                        if esper.has_component(ent, Name)
+                        else ent
+                    ),
+                )
                 esper.delete_entity(ent)
