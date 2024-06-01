@@ -33,36 +33,36 @@ class CollisionProcessor(Processor):
                     pos, collider, iter_pos, iter_box_collider
                 ):
                     continue
-                boxleft = pos.x
-                boxright = pos.x + collider.x
-                boxtop = pos.y
-                boxbottom = pos.y + collider.y
-                oldBoxLeft = collisions.last_position.x
-                oldBoxRight = collisions.last_position.x + collider.x
-                oldBoxTop = collisions.last_position.y
-                oldBoxBottom = collisions.last_position.y + collider.y
+                box_left = pos.x
+                box_right = pos.x + collider.x
+                box_top = pos.y
+                box_bottom = pos.y + collider.y
+                old_box_left = collisions.last_position.x
+                old_box_right = collisions.last_position.x + collider.x
+                old_box_top = collisions.last_position.y
+                old_box_bottom = collisions.last_position.y + collider.y
 
-                collidedFromLeft = oldBoxRight <= iter_pos.x < boxright
-                collidedFromRight = (
-                    oldBoxLeft >= iter_pos.x + iter_box_collider.x > boxleft
+                collided_from_left = old_box_right <= iter_pos.x < box_right
+                collided_from_right = (
+                    old_box_left >= iter_pos.x + iter_box_collider.x > box_left
                 )
-                collidedFromTop = oldBoxBottom <= iter_pos.y < boxbottom
-                collidedFromBottom = (
-                    oldBoxTop >= iter_pos.y + iter_box_collider.y > boxtop
+                collided_from_top = old_box_bottom <= iter_pos.y < box_bottom
+                collided_from_bottom = (
+                    old_box_top >= iter_pos.y + iter_box_collider.y > box_top
                 )
-                if collidedFromTop:
+                if collided_from_top:
                     collisions.collisions_between_entity.append(
                         Collision(iter_ent, Collision.Direction.DOWN)
                     )
-                elif collidedFromBottom:
+                elif collided_from_bottom:
                     collisions.collisions_between_entity.append(
                         Collision(iter_ent, Collision.Direction.UP)
                     )
-                elif collidedFromLeft:
+                elif collided_from_left:
                     collisions.collisions_between_entity.append(
                         Collision(iter_ent, Collision.Direction.RIGHT)
                     )
-                elif collidedFromRight:
+                elif collided_from_right:
                     collisions.collisions_between_entity.append(
                         Collision(iter_ent, Collision.Direction.LEFT)
                     )
