@@ -17,7 +17,7 @@ class LogProcessor(Processor):
 
     def process(self, r: ResourceManager) -> None:
         logger.info(
-            f"Elapsed time: {r.get_resource(RealTimeProvider).get_elapsed_time()}"
+            "Elapsed time: %.3f", r.get_resource(RealTimeProvider).get_elapsed_time()
         )
         for ent, (pos, name) in esper.get_components(Position, Name):
             logger.debug(f"{name}: {pos}")
