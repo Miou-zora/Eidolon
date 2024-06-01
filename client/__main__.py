@@ -28,7 +28,6 @@ from common.processors.physic_processor import PhysicProcessor
 from common.processors.precollision_save_processor import \
     PreCollisionSaveProcessor
 from common.processors.reset_velocity_processor import ResetVelocityProcessor
-from common.resources.physic_resource import PhysicResource
 from common.utils.vector2 import Vector2
 from components.camera import Camera2D
 from components.clickable import Clickable
@@ -227,7 +226,6 @@ class ClientPlugin(Plugin):
             )
             .insert_resources(
                 NetworkManager,
-                PhysicResource,
             )
         )
 
