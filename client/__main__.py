@@ -25,11 +25,11 @@ from common.engine.schedule_label import ScheduleLabel
 from common.processors.apply_velocity_processor import ApplyVelocityProcessor
 from common.processors.collision_processor import CollisionProcessor
 from common.processors.follow_leader_processor import FollowLeaderProcessor
-from common.processors.temporary_processor import TemporaryProcessor
 from common.processors.physic_processor import PhysicProcessor
 from common.processors.precollision_save_processor import \
     PreCollisionSaveProcessor
 from common.processors.reset_velocity_processor import ResetVelocityProcessor
+from common.processors.temporary_processor import TemporaryProcessor
 from common.utils.vector2 import Vector2
 from components.camera import Camera2D
 from components.clickable import Clickable
@@ -121,7 +121,7 @@ class GameScene(Scene):
             Entity().add_components(
                 Text(value="Hello World"),
                 Temporary(5),
-                Position(100, 100),
+                Position.from_size(100, 100),
             ),
         ]
         for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
