@@ -15,6 +15,5 @@ class CollisionMask:
     """
     mask: int
 
-    @staticmethod
-    def a_can_collide_b(mask_a: CollisionMask, mask_b: CollisionMask) -> bool:
-        return (mask_a.mask & mask_b.layer) != 0
+    def collide_with(self, mask_b: CollisionMask) -> bool:
+        return (self.mask & mask_b.layer) != 0

@@ -25,9 +25,7 @@ class CollisionProcessor(Processor):
             ) in esper.get_components(CollisionMask, Position, BoxCollider):
                 if ent == iter_ent:
                     continue
-                if not CollisionMask.a_can_collide_b(
-                    collision_mask, iter_collision_mask
-                ):
+                if not collision_mask.collide_with(iter_collision_mask):
                     continue
                 if not CollisionProcessor.aabb_collision(
                     pos, collider, iter_pos, iter_box_collider
