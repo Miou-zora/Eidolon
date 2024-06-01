@@ -1,4 +1,5 @@
 import logging
+from copy import copy
 
 import esper
 
@@ -16,4 +17,4 @@ class PreCollisionSaveProcessor(Processor):
 
     def process(self, r: ResourceManager) -> None:
         for ent, (pos, collisions) in esper.get_components(Position, Collisions):
-            collisions.last_position = pos.__copy__()
+            collisions.last_position = copy(pos)
