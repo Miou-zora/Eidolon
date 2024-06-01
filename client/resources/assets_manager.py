@@ -16,7 +16,8 @@ if TYPE_CHECKING:
 class AssetsManager(Resource):
     def __init__(self, engine: Engine):
         super().__init__(engine)
-        self.textures: dict[str, raylib.Texture] = {}
+        self.__textures: dict[str, raylib.Texture] = {}
+        self.__font: dict[str, raylib.Font] = {"default": raylib.get_font_default()}
         self.base_path: str = self.__get_base_path()
 
     @staticmethod
@@ -41,11 +42,16 @@ class AssetsManager(Resource):
             raise ValueError(
                 f"Texture {self.base_path + '/' + texture_path} not loaded"
             )
-        self.textures[texture_name] = texture
+        self.__textures[texture_name] = texture
 
     def get_texture(self, texture_name: str) -> Optional[raylib.Texture]:
-        return self.textures[texture_name]
+        return self.__textures.get(texture_name)
+
+    def get_font(self, font_name: str) -> raylib.Font:
+        return self.__font.get(font_name, self.__font["default"])
 
     def get_texture_size(self, asset_name) -> Vector2:
         texture = self.get_texture(asset_name)
+        if texture is None:
+            raise KeyError(f"Texture {asset_name} not found")
         return Vector2(texture.width, texture.height)
