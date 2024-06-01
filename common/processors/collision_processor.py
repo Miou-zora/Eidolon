@@ -67,11 +67,6 @@ class CollisionProcessor(Processor):
                         Collision(iter_ent, Collision.Direction.LEFT)
                     )
 
-                if len(collisions.collisions_between_entity) > 0:
-                    logger.debug(
-                        f"Entity {ent} collided with {iter_ent} in directions {collisions.collisions_between_entity}"
-                    )
-
     @staticmethod
     def aabb_collision(
         pos1: Position,
