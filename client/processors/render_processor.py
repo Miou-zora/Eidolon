@@ -9,6 +9,7 @@ from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
 from components.camera import Camera2D
 from components.drawable import Drawable
+from components.text import Text
 from resources.assets_manager import AssetsManager
 from resources.window_resource import WindowResource
 
@@ -49,5 +50,14 @@ class RenderProcessor(Processor):
                     1,
                     pyray.RED,
                 )
+        for ent, (pos, text) in esper.get_components(Position, Text):
+            pyray.draw_text_ex(
+                r.get_resource(AssetsManager).get_font(text.font),
+                text.value,
+                pyray.Vector2(pos.x, pos.y),
+                text.size,
+                text.spacing,
+                text.color,
+            )
         pyray.end_mode_2d()
         pyray.end_drawing()

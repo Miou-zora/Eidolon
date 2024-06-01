@@ -15,6 +15,7 @@ from common.components.leader import Leader
 from common.components.name import Name
 from common.components.position import Position
 from common.components.static_body import StaticBody
+from common.components.temporary import Temporary
 from common.components.velocity import Velocity
 from common.engine.engine import Engine
 from common.engine.entity import Entity
@@ -24,6 +25,7 @@ from common.engine.schedule_label import ScheduleLabel
 from common.processors.apply_velocity_processor import ApplyVelocityProcessor
 from common.processors.collision_processor import CollisionProcessor
 from common.processors.follow_leader_processor import FollowLeaderProcessor
+from common.processors.temporary_processor import TemporaryProcessor
 from common.processors.physic_processor import PhysicProcessor
 from common.processors.precollision_save_processor import \
     PreCollisionSaveProcessor
@@ -34,6 +36,7 @@ from components.clickable import Clickable
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
+from components.text import Text
 from plugins.default_plugin import DefaultPlugin
 from plugins.scene_plugin import ScenePlugin
 from processors.click_processor import ClickProcessor
@@ -114,6 +117,11 @@ class GameScene(Scene):
                 CollisionMask(MaskLayers.TILES, MaskLayers.PLAYER),
                 Name("Box"),
                 StaticBody(),
+            ),
+            Entity().add_components(
+                Text(value="Hello World"),
+                Temporary(5),
+                Position(100, 100),
             ),
         ]
         for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
@@ -222,6 +230,7 @@ class ClientPlugin(Plugin):
                 ResetVelocityProcessor(),
                 CollisionProcessor(),
                 PhysicProcessor(),
+                TemporaryProcessor(),
                 # LogProcessor(),
             )
             .insert_resources(
