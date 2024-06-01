@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class ScheduleLabel(Enum):
-    Startup = 0
-    Update = 1
-    FixedUpdate = 2
+    Startup = auto()
+    Update = auto()
+    FixedUpdate = auto()
