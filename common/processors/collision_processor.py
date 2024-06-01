@@ -14,19 +14,14 @@ from common.engine.resource_manager import ResourceManager
 logger = logging.getLogger(__name__)
 
 
-def component_generator():
-    for entity, (pos, mask, collider) in esper.get_components(
-        Position, CollisionMask, BoxCollider
-    ):
-        yield entity, (pos, mask, collider)
-
-
 class CollisionProcessor(Processor):
     def process(self, r: ResourceManager) -> None:
         for (
             (ent, (pos, collision_mask, collider)),
             (iter_ent, (iter_pos, iter_collision_mask, iter_collider)),
-        ) in combinations(component_generator(), 2):
+        ) in combinations(
+            esper.get_components(Position, CollisionMask, BoxCollider), 2
+        ):
             if not esper.has_component(ent, Collisions):
                 continue
             collisions = esper.component_for_entity(ent, Collisions)
