@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import pyray as raylib
 
@@ -16,7 +16,10 @@ if TYPE_CHECKING:
 class AssetsManager(Resource):
     def __init__(self, engine: Engine):
         super().__init__(engine)
-        self.__textures: dict[str, raylib.Texture] = {}
+        default_texture = raylib.load_texture_from_image(
+            raylib.gen_image_checked(100, 100, 50, 50, raylib.PINK, raylib.BLACK)
+        )
+        self.__textures: dict[str, raylib.Texture] = {"default": default_texture}
         self.__font: dict[str, raylib.Font] = {"default": raylib.get_font_default()}
         self.base_path: str = self.__get_base_path()
 
@@ -44,8 +47,8 @@ class AssetsManager(Resource):
             )
         self.__textures[texture_name] = texture
 
-    def get_texture(self, texture_name: str) -> Optional[raylib.Texture]:
-        return self.__textures.get(texture_name)
+    def get_texture(self, texture_name: str) -> raylib.Texture:
+        return self.__textures.get(texture_name, self.__textures["default"])
 
     def get_font(self, font_name: str) -> raylib.Font:
         return self.__font.get(font_name, self.__font["default"])
