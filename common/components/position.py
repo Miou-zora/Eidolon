@@ -33,6 +33,3 @@ class Position:
 
     def __str__(self) -> str:
         return f"Position({self.x},{self.y})"
-
-    def __copy__(self):
-        return Position.from_size(self.__size.x, self.__size.y)
