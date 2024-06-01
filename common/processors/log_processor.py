@@ -6,8 +6,7 @@ from common.components.name import Name
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
-from common.engine.time_providers import TimeProvider
-from common.engine.time_providers import UnitTimeProvider
+from common.engine.time_providers import RealTimeProvider
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class LogProcessor(Processor):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
-        time_provider: UnitTimeProvider = r.get_resource(TimeProvider)
+        time_provider: RealTimeProvider = r.get_resource(RealTimeProvider)
         logger.info(f"Elapsed time: {time_provider.get_elapsed_time()}")
         for ent, (pos, name) in esper.get_components(Position, Name):
             logger.debug(f"{name}: {pos}")

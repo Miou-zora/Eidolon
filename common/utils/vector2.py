@@ -20,3 +20,9 @@ class Vector2:
     @y.setter  # type: ignore
     def y(self, value: float):
         self.__vec.y = value
+
+    def __add__(self, other):
+        return Vector2(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Vector2(self.x - other.x, self.y - other.y)

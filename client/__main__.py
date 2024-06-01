@@ -1,26 +1,33 @@
 from __future__ import annotations
 
+import enum
 import logging
 from typing import TYPE_CHECKING
 
 import esper
-import pymunk
 import raylib
 
 from common.components.box_collider import BoxCollider
+from common.components.collision_mask import CollisionMask
+from common.components.collisions import Collisions
+from common.components.groundable import Groundable
 from common.components.leader import Leader
 from common.components.name import Name
-from common.components.physic_body import Physic
 from common.components.position import Position
+from common.components.static_body import StaticBody
 from common.components.velocity import Velocity
 from common.engine.engine import Engine
 from common.engine.entity import Entity
 from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
+from common.processors.apply_velocity_processor import ApplyVelocityProcessor
+from common.processors.collision_processor import CollisionProcessor
 from common.processors.follow_leader_processor import FollowLeaderProcessor
-from common.processors.init_physic_processor import InitPhysicProcessor
 from common.processors.physic_processor import PhysicProcessor
+from common.processors.precollision_save_processor import \
+    PreCollisionSaveProcessor
+from common.processors.reset_velocity_processor import ResetVelocityProcessor
 from common.resources.physic_resource import PhysicResource
 from common.utils.vector2 import Vector2
 from components.camera import Camera2D
@@ -46,6 +53,11 @@ logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
 
+class MaskLayers(enum.IntEnum):
+    PLAYER = enum.auto()
+    TILES = enum.auto()
+
+
 class Setup(Processor):
     def __init__(self):
         super().__init__()
@@ -62,7 +74,7 @@ class Setup(Processor):
 
         camera = Entity().add_components(
             Camera2D(Vector2(0, 0), 0, 1),
-            Position(0, 0),
+            Position.from_size(0, 0),
             Leader(-1, 5),
             Velocity(),
         )
@@ -76,40 +88,31 @@ class GameScene(Scene):
 
     def on_start(self, r: ResourceManager) -> None:
         asset_manager = r.get_resource(AssetsManager)
-        space = r.get_resource(PhysicResource)
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
+        box_spawn_pos = Vector2(0, 0)
+        box_collider_size = Vector2(300, 50)
         window = r.get_resource(WindowResource)
-        player_texture_size = asset_manager.get_texture_size(player_texture_name)
-        player_physic = Physic(None, None)
-        player_physic.body = pymunk.Body(10, float("inf"))
-        player_physic.body.position = (
-            player_spawn_pos.x + player_texture_size.x,
-            player_spawn_pos.y + player_texture_size.y,
-        )
-        player_physic.shape = pymunk.Poly.create_box(
-            player_physic.body, size=(player_texture_size.x, player_texture_size.y)
-        )
-        player_physic.shape.friction = 1
-        space.world.add(player_physic.body, player_physic.shape)
-        box_physic = Physic(None, None)
-        box_physic.body = pymunk.Body(body_type=pymunk.Body.STATIC)
-        box_physic.body.position = player_spawn_pos.x - 100, player_spawn_pos.y + 100
-        box_physic.shape = pymunk.Poly.create_box(box_physic.body, size=(300, 50))
-        box_physic.shape.friction = 1
-        box_physic.shape.elasticity = 0
-        space.world.add(box_physic.body, box_physic.shape)
+
         self.entities = [
             Entity().add_components(
-                player_physic,
+                Position(player_spawn_pos),
+                BoxCollider(asset_manager.get_texture_size(player_texture_name)),
+                CollisionMask(MaskLayers.PLAYER, MaskLayers.TILES),
+                Velocity(),
+                Collisions(),
                 Name("Player"),
                 Drawable(player_texture_name),
                 Controllable(),
                 Speed(300),
+                Groundable(),
             ),
             Entity().add_components(
-                box_physic,
+                Position(box_spawn_pos + Vector2(0, 200)),
+                BoxCollider(box_collider_size),
+                CollisionMask(MaskLayers.TILES, MaskLayers.PLAYER),
                 Name("Box"),
+                StaticBody(),
             ),
         ]
         for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
@@ -182,7 +185,7 @@ class MainMenu(Scene):
     ) -> Entity:
         # We will maybe create a proper Button creator in the future (and use raygui)
         return Entity().add_components(
-            Position(pos.x, pos.y),
+            Position(pos),
             Name(name),
             Drawable(name),
             Clickable(callback),
@@ -207,17 +210,19 @@ class ClientPlugin(Plugin):
                 ScheduleLabel.Startup,
                 Setup(),
                 StartProcessor(),
-                InitPhysicProcessor(),
+                # InitPhysicProcessor(), # TODO: remove it
             )
             .add_processors(
                 ScheduleLabel.Update,
                 ClickProcessor(),
                 ControlProcessor(),
                 FollowLeaderProcessor(),
-            )
-            .add_processors(
-                ScheduleLabel.FixedUpdate,
+                PreCollisionSaveProcessor(),
+                ApplyVelocityProcessor(),
+                ResetVelocityProcessor(),
+                CollisionProcessor(),
                 PhysicProcessor(),
+                # LogProcessor(),
             )
             .insert_resources(
                 NetworkManager,

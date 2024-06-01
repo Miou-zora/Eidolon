@@ -4,7 +4,6 @@ import esper
 import pyray
 
 from common.components.box_collider import BoxCollider
-from common.components.physic_body import Physic
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
@@ -43,17 +42,6 @@ class RenderProcessor(Processor):
             texture = assets_manager.get_texture(drawable.texture_name)
             if texture is not None:
                 pyray.draw_texture(texture, int(pos.x), int(pos.y), pyray.WHITE)
-        for ent, (physic_component, drawable) in esper.get_components(Physic, Drawable):
-            if physic_component.body is not None:
-                texture = assets_manager.get_texture(drawable.texture_name)
-                if texture is not None:
-                    size = assets_manager.get_texture_size(drawable.texture_name)
-                    pyray.draw_texture(
-                        texture,
-                        int(physic_component.body.position.x - size.x / 2),
-                        int(physic_component.body.position.y - size.y / 2),
-                        pyray.WHITE,
-                    )
         if DEBUG_COLLIDER:
             for ent, (pos, collider) in esper.get_components(Position, BoxCollider):
                 pyray.draw_rectangle_lines_ex(
@@ -61,23 +49,5 @@ class RenderProcessor(Processor):
                     1,
                     pyray.RED,
                 )
-            for ent, physic_component in esper.get_component(Physic):
-                if physic_component.shape is not None:
-                    pyray.draw_rectangle_lines_ex(
-                        pyray.Rectangle(
-                            int(physic_component.shape.bb.left),
-                            int(physic_component.shape.bb.bottom),
-                            int(
-                                physic_component.shape.bb.right
-                                - physic_component.shape.bb.left
-                            ),
-                            int(
-                                physic_component.shape.bb.top
-                                - physic_component.shape.bb.bottom
-                            ),
-                        ),
-                        1,
-                        pyray.BLUE,
-                    )
         pyray.end_mode_2d()
         pyray.end_drawing()
