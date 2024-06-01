@@ -96,6 +96,7 @@ class GameScene(Scene):
 
         self.entities = [
             Entity().add_components(
+                # TODO: find a way to package collidable entity (position, collider, collision mask, collisions)
                 Position(player_spawn_pos),
                 BoxCollider(asset_manager.get_texture_size(player_texture_name)),
                 CollisionMask(MaskLayers.PLAYER, MaskLayers.TILES),
@@ -108,6 +109,7 @@ class GameScene(Scene):
                 Groundable(),
             ),
             Entity().add_components(
+                # TODO: same as before but for entity with static body
                 Position(box_spawn_pos + Vector2(0, 200)),
                 BoxCollider(box_collider_size),
                 CollisionMask(MaskLayers.TILES, MaskLayers.PLAYER),
@@ -210,7 +212,6 @@ class ClientPlugin(Plugin):
                 ScheduleLabel.Startup,
                 Setup(),
                 StartProcessor(),
-                # InitPhysicProcessor(), # TODO: remove it
             )
             .add_processors(
                 ScheduleLabel.Update,
