@@ -9,6 +9,7 @@ import raylib
 from common.components.leader import Leader
 from common.components.name import Name
 from common.components.position import Position
+from common.components.temporary import Temporary
 from common.components.velocity import Velocity
 from common.engine.engine import Engine
 from common.engine.entity import Entity
@@ -16,6 +17,7 @@ from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
 from common.processors.follow_leader_processor import FollowLeaderProcessor
+from common.processors.temporary_processor import TemporaryProcessor
 from common.utils.vector2 import Vector2
 from components.box_collider import BoxCollider
 from components.camera import Camera2D
@@ -23,6 +25,7 @@ from components.clickable import Clickable
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.speed import Speed
+from components.text import Text
 from plugins.default_plugin import DefaultPlugin
 from plugins.scene_plugin import ScenePlugin
 from processors.click_processor import ClickProcessor
@@ -82,7 +85,12 @@ class GameScene(Scene):
                 Controllable(),
                 Speed(300),
                 Velocity(),
-            )
+            ),
+            Entity().add_components(
+                Text(value="Hello World"),
+                Temporary(5),
+                Position(100, 100),
+            ),
         ]
         window = r.get_resource(WindowResource)
         for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
@@ -184,6 +192,7 @@ class ClientPlugin(Plugin):
             ClickProcessor(),
             ControlProcessor(),
             FollowLeaderProcessor(),
+            TemporaryProcessor(),
         ).insert_resources(
             NetworkManager
         )

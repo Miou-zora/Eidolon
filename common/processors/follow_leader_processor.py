@@ -16,7 +16,11 @@ class FollowLeaderProcessor(Processor):
     def process(self, r: ResourceManager) -> None:
         time_provider = r.get_resource(RealTimeProvider)
         for ent, (lead, pos, vel) in esper.get_components(Leader, Position, Velocity):
-            if lead.ent == -1 or not esper.has_component(lead.ent, Position):
+            if (
+                lead.ent == -1
+                or not esper.entity_exists(lead.ent)
+                or not esper.has_component(lead.ent, Position)
+            ):
                 continue
             leader_pos = esper.component_for_entity(lead.ent, Position)
             vel.x = (leader_pos.x - pos.x) * lead.attraction
