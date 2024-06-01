@@ -35,8 +35,7 @@ class PhysicProcessor(Processor):
                     pos.x = collided_pos.x - collider.x
                 elif collision.direction == collision.Direction.UP:
                     pos.y = collided_pos.y + collided_collider.y
-                elif collision.direction == collision.Direction.DOWN:
+                else:
                     pos.y = collided_pos.y - collider.y
-                if esper.has_component(ent, Groundable):
-                    groundable = esper.component_for_entity(ent, Groundable)
-                    groundable.grounded = True
+                    if esper.has_component(ent, Groundable):
+                        esper.component_for_entity(ent, Groundable).grounded = True
