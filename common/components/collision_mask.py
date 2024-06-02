@@ -16,4 +16,4 @@ class CollisionMask:
     mask: int
 
     def collide_with(self, mask_b: CollisionMask) -> bool:
-        return (self.mask & mask_b.layer) != 0
+        return self.mask & mask_b.layer
