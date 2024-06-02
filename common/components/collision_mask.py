@@ -6,13 +6,18 @@ from common.engine import component
 @component
 class CollisionMask:
     """
-    Layer corresponds on which layer the entity is.
+    Helper class to filter out collisions based on layer mask
+    
+    Attributes
+    ----------
+    layer: int
+        Layer corresponds on which layer the entity is.
+
+    mask: int
+        It corresponds to the layers that the entity can collide with.
     """
 
     layer: int
-    """
-    It corresponds to the layers that the entity can collide with.
-    """
     mask: int
 
     def collide_with(self, mask_b: CollisionMask) -> bool:
