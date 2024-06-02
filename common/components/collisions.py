@@ -6,10 +6,10 @@ from common.utils.vector2 import Vector2
 
 
 class CollisionDirection(enum.Enum):
-    UP = auto()
-    DOWN = auto()
-    LEFT = auto()
-    RIGHT = auto()
+    UP = enum.auto()
+    DOWN = enum.auto()
+    LEFT = enum.auto()
+    RIGHT = enum.auto()
 
 
 @dataclass
