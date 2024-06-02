@@ -5,8 +5,9 @@ import esper
 
 from common.components.box_collider import BoxCollider
 from common.components.collision_mask import CollisionMask
-from common.components.collisions import Collisions, Collision, \
-    CollisionDirection
+from common.components.collisions import (
+    Collisions, Collision, CollisionDirection
+)
 from common.components.position import Position
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
