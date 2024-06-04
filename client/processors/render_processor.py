@@ -44,6 +44,7 @@ class RenderProcessor(Processor):
                 pyray.draw_texture(texture, int(pos.x), int(pos.y), pyray.WHITE)
             if (
                 DEBUG_COLLIDER
+                and esper.has_component(ent, BoxCollider)
                 and (collider := esper.component_for_entity(ent, BoxCollider))
                 is not None
             ):

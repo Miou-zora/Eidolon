@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import esper
 import raylib
 
+from common.components.inventory import Inventory
 from common.components.leader import Leader
 from common.components.name import Name
 from common.components.position import Position
@@ -18,6 +19,9 @@ from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
 from common.processors.follow_leader_processor import FollowLeaderProcessor
 from common.processors.temporary_processor import TemporaryProcessor
+from common.resources.meta_item_manager import MetaItemManager
+from common.utils.item.inventory_item import InventoryItem
+from common.utils.item.meta_item import MetaItem
 from common.utils.vector2 import Vector2
 from components.box_collider import BoxCollider
 from components.camera import Camera2D
@@ -30,6 +34,7 @@ from plugins.default_plugin import DefaultPlugin
 from plugins.scene_plugin import ScenePlugin
 from processors.click_processor import ClickProcessor
 from processors.control_processor import ControlProcessor
+from processors.draw_inventory_processor import DrawInventoryProcessor
 from resources.assets_manager import AssetsManager
 from resources.scene_manager import Scene, SceneManager
 from resources.window_resource import WindowResource
@@ -65,6 +70,12 @@ class Setup(Processor):
             Velocity(),
         )
 
+        meta_item_manager = r.get_resource(MetaItemManager)
+        meta_item_a = MetaItem(
+            "A", "assets/A.png", meta_item_manager.generate_meta_item_id()
+        )
+        meta_item_manager.register_meta_item(meta_item_a)
+
 
 class GameScene(Scene):
     def __init__(self):
@@ -74,6 +85,7 @@ class GameScene(Scene):
 
     def on_start(self, r: ResourceManager) -> None:
         asset_manager = r.get_resource(AssetsManager)
+        meta_item_manager = r.get_resource(MetaItemManager)
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
         self.entities = [
@@ -85,6 +97,7 @@ class GameScene(Scene):
                 Controllable(),
                 Speed(300),
                 Velocity(),
+                Inventory(Vector2(5, 5)),
             ),
             Entity().add_components(
                 Text(value="Hello World"),
@@ -92,6 +105,20 @@ class GameScene(Scene):
                 Position(100, 100),
             ),
         ]
+
+        inv: Inventory = esper.component_for_entity(self.entities[0].id, Inventory)
+        meta_item = meta_item_manager.get_meta_item(1)
+        if meta_item is not None:
+            inv.add_item(
+                0,
+                0,
+                InventoryItem.create_from_meta_item(meta_item),
+            )
+            inv.add_item(
+                4,
+                0,
+                InventoryItem.create_from_meta_item(meta_item),
+            )
         window = r.get_resource(WindowResource)
         for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
             lead.ent = self.entities[0].id
@@ -193,8 +220,10 @@ class ClientPlugin(Plugin):
             ControlProcessor(),
             FollowLeaderProcessor(),
             TemporaryProcessor(),
+            DrawInventoryProcessor(),
         ).insert_resources(
-            NetworkManager
+            NetworkManager,
+            MetaItemManager,
         )
 
 

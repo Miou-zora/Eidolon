@@ -11,7 +11,7 @@ from common.engine.resource import Resource
 from common.engine.resource_manager import ResourceManager
 
 if TYPE_CHECKING:
-    pass
+    from typing import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class SceneManager(Resource):
         self.scene_history.append(scene)
 
     @staticmethod
-    def __switch_to_scene(fn) -> callable:
+    def __switch_to_scene(fn) -> Callable:
         def wrapper(self, *args, **kwargs) -> None:
             self.scene_history[self.index].on_exit(self._engine.resource_manager)
             fn(self, *args, **kwargs)

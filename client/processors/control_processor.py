@@ -22,13 +22,13 @@ class ControlProcessor(Processor):
         inputs_manager = r.get_resource(InputsManager)
         network_manager = r.get_resource(NetworkManager)
         for ent, (_, vel, speed) in esper.get_components(Controllable, Velocity, Speed):
-            if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_W):
+            if inputs_manager.is_key_down(raylib.KeyboardKey.KEY_W):
                 vel.y -= speed.value
-            if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_S):
+            if inputs_manager.is_key_down(raylib.KeyboardKey.KEY_S):
                 vel.y += speed.value
-            if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_A):
+            if inputs_manager.is_key_down(raylib.KeyboardKey.KEY_A):
                 vel.x -= speed.value
-            if inputs_manager.is_key_pressed(raylib.KeyboardKey.KEY_D):
+            if inputs_manager.is_key_down(raylib.KeyboardKey.KEY_D):
                 vel.x += speed.value
             # TODO: Change that :3
             #                   ↑ @huntears (https://cdn.discordapp.com/attachments/1225045089055801395/1236661856261636177/image.png?ex=6654821a&is=6653309a&hm=cc8bf2a766f85b05695fa1a1e80d1c82b755b729a45a256bfac0c613cf363cd7&)

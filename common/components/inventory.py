@@ -1,74 +1,13 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
 from typing import Optional, TYPE_CHECKING
 
 from common.engine import component
+from common.utils.item.inventory_item import InventoryItem
 from common.utils.vector2 import Vector2
 
 if TYPE_CHECKING:
-    MetaItemId = int
-
-
-@dataclass
-class MetaItem:
-    """
-    MetaItem should be used to give various infos about an item like:
-    - Name
-    - Description
-    - Pattern (MetaItems to use to craft this item)
-    - Possible effects
-    - Durability
-    - Sprite
-    - Is stackable
-    - ID
-    These infos are just examples and can be changed.
-    """
-
-    name: str
-    # description
-    # pattern
-    # effects
-    # durability
-    sprite: str
-    # is_stackable
-    id: MetaItemId
-
-
-@dataclass
-class Item:
-    """
-    Items are the actual objects that can be stored.
-    It contains various infos about the concrete item like:
-    - MetaItemId
-    - CurrentDurability
-    - Specific effects with their values
-    These infos are just examples and can be changed.
-    """
-
-    meta_item_id: MetaItemId
-    # current_durability
-    # effects
-
-
-class InventoryItem(Item):
-    """
-    InventoryItem is an item with more infos like:
-    - Position in the inventory
-    - Favorite status
-    - Quantity
-    """
-
-    position: Vector2
-    # favorite
-    # quantity
-
-
-@component
-class DrawInventory:
-    """
-    Tag to know inventory should be drawn
-    """
-
-    pass
+    from typing import Callable
 
 
 @component
@@ -81,21 +20,29 @@ class Inventory:
         self.__items = [None] * int(size.x * size.y)
 
     @staticmethod
-    def __check_cords(fn: callable) -> callable:
-        def wrapper(self, x: int, y: int, *args, **kwargs) -> None:
+    def __check_cords(fn) -> Callable:
+        def wrapper(self, x: int, y: int, *args, **kwargs):
             if not (0 <= x < self.__size.x and 0 <= y < self.__size.y):
-                return
+                return None
             return fn(self, x, y, *args, **kwargs)
 
         return wrapper
 
     @__check_cords
-    def add_item(self, x: int, y: int, item: InventoryItem) -> None:
-        self.__items[int(x + y * self.__size.x)] = item
+    def add_item(self, x: int, y: int, item: InventoryItem) -> Optional[InventoryItem]:
+        if self.get_item(x, y) is not None:
+            item_before = self.get_item(x, y)
+            self.__items[int(x + y * self.__size.x)] = item
+            return item_before
+        else:
+            self.__items[int(x + y * self.__size.x)] = item
 
     @__check_cords
     def get_item(self, x: int, y: int) -> Optional[InventoryItem]:
         return self.__items[int(x + y * self.__size.x)]
+
+    def get_size(self) -> Vector2:
+        return self.__size
 
     @__check_cords
     def remove_item(self, x: int, y: int) -> Optional[InventoryItem]:

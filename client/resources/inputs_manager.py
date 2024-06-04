@@ -12,7 +12,11 @@ class InputsManager(Resource):
         self._mouse_wheel: int = 0
         self._mouse_position: raylib.Vector2 = raylib.Vector2(0, 0)
 
-    def is_key_pressed(self, key: raylib.KeyboardKey) -> bool:
+    @staticmethod
+    def is_key_pressed(key: raylib.KeyboardKey) -> bool:
+        return raylib.is_key_pressed(key)
+
+    def is_key_down(self, key: raylib.KeyboardKey) -> bool:
         if key in self._keys:
             return self._keys[key]
         return False
