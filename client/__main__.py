@@ -39,6 +39,7 @@ from components.camera import Camera2D
 from components.controllable import Controllable
 from components.drawable import Drawable
 from components.gui_button import GUIButton
+from components.main_player_tag import MainPlayerTag
 from components.speed import Speed
 from components.text import Text
 from plugins.default_plugin import DefaultPlugin
@@ -79,6 +80,8 @@ class Setup(Processor):
         asset_manager.load_texture("StartButton", "assets/StartButton.png")
         asset_manager.load_texture("ExitButton", "assets/ExitButton.png")
         asset_manager.load_texture("Player", "assets/Player.png")
+        asset_manager.load_texture("Item1", "assets/Item1.png")
+        asset_manager.load_texture("Item2", "assets/Item2.png")
 
         window = r.get_resource(WindowResource)
         window.background_color = raylib.DARKGRAY
@@ -99,9 +102,13 @@ class Setup(Processor):
 
         meta_item_manager = r.get_resource(MetaItemManager)
         meta_item_a = MetaItem(
-            "A", "assets/A.png", meta_item_manager.generate_meta_item_id()
+            "Item1", "Item1", meta_item_manager.generate_meta_item_id()
         )
         meta_item_manager.register_meta_item(meta_item_a)
+        meta_item_b = MetaItem(
+            "Item2", "Item2", meta_item_manager.generate_meta_item_id()
+        )
+        meta_item_manager.register_meta_item(meta_item_b)
 
 
 class GameScene(Scene):
@@ -132,6 +139,7 @@ class GameScene(Scene):
                 Speed(300),
                 Groundable(),
                 Inventory(Vector2(5, 5)),
+                MainPlayerTag(),
             ),
             Entity().add_components(
                 # TODO: same as before but for entity with static body
@@ -150,17 +158,24 @@ class GameScene(Scene):
         ]
 
         inv: Inventory = esper.component_for_entity(self.entities[0].id, Inventory)
-        meta_item = meta_item_manager.get_meta_item(1)
-        if meta_item is not None:
+        meta_item_a = meta_item_manager.get_meta_item(1)
+        meta_item_b = meta_item_manager.get_meta_item(2)
+        if meta_item_a is not None:
             inv.add_item(
                 0,
                 0,
-                InventoryItem.create_from_meta_item(meta_item),
+                InventoryItem.create_from_meta_item(meta_item_a),
             )
             inv.add_item(
-                4,
+                1,
+                1,
+                InventoryItem.create_from_meta_item(meta_item_a),
+            )
+        if meta_item_b is not None:
+            inv.add_item(
+                1,
                 0,
-                InventoryItem.create_from_meta_item(meta_item),
+                InventoryItem.create_from_meta_item(meta_item_b),
             )
         window = r.get_resource(WindowResource)
         for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):

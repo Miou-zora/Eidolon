@@ -12,6 +12,7 @@ from common.engine.resource_manager import ResourceManager
 from common.resources.meta_item_manager import MetaItemManager
 from components.draw_inventory import DrawInventory
 from components.drawable import Drawable
+from components.main_player_tag import MainPlayerTag
 from resources.inputs_manager import InputsManager
 
 logger = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ class DrawInventoryProcessor(Processor):
         space_pressed = InputsManager.is_key_pressed(raylib.KeyboardKey.KEY_SPACE)
         if not space_pressed:
             return
-        for ent, inv in esper.get_component(Inventory):
+        for ent, (inv, _) in esper.get_components(Inventory, MainPlayerTag):
             if esper.has_component(ent, DrawInventory):
                 draw_in = esper.remove_component(ent, DrawInventory)
                 for item in draw_in.items:
@@ -46,8 +47,8 @@ class DrawInventoryProcessor(Processor):
                         draw_in.items.append(
                             Entity()
                             .add_components(
-                                Position.from_size(x * 30, y * 30),
-                                Drawable(meta_item.sprite, 10, 1),  # 1 is UI_CAM_ID
+                                Position.from_size(100 + x * 40, 100 + y * 40),
+                                Drawable(meta_item.sprite, 11, 1),  # 1 is UI_CAM_ID
                                 Name(item.__str__()),
                             )
                             .id
