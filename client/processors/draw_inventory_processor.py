@@ -41,10 +41,12 @@ class DrawInventoryProcessor(Processor):
                             continue
                         item = inv.get_item(x, y)
                         meta_item = meta_item_manager.get_meta_item(item.meta_item_id)
+                        if meta_item is None:
+                            continue
                         draw_in.items.append(
                             Entity()
                             .add_components(
-                                Position(x * 30, y * 30),
+                                Position.from_size(x * 30, y * 30),
                                 Drawable(meta_item.sprite),
                                 Name(item.__str__()),
                             )
