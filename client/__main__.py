@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 import esper
 import raylib
 
-from common.components.inventory import Inventory
 from common.components.box_collider import BoxCollider
 from common.components.collision_mask import CollisionMask
 from common.components.collisions import Collisions
 from common.components.groundable import Groundable
+from common.components.inventory import Inventory
 from common.components.leader import Leader
 from common.components.name import Name
 from common.components.position import Position
@@ -60,6 +60,9 @@ from resources.network_manager import NetworkManager
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
+WORLD_CAM_ID = 0
+UI_CAM_ID = 1
+
 
 class MaskLayers(enum.IntEnum):
     PLAYER = enum.auto()
@@ -81,10 +84,17 @@ class Setup(Processor):
         window.background_color = raylib.DARKGRAY
 
         camera = Entity().add_components(
-            Camera2D(Vector2(0, 0), 0, 1),
+            Camera2D(Vector2(0, 0), 0, 1, WORLD_CAM_ID),
             Position.from_size(0, 0),
             Leader(-1, 5),
             Velocity(),
+            Name("Main Camera"),
+        )
+
+        ui_camera = Entity().add_components(
+            Camera2D(Vector2(0, 0), 0, 1, UI_CAM_ID),
+            Position.from_size(0, 0),
+            Name("UI Camera"),
         )
 
         meta_item_manager = r.get_resource(MetaItemManager)
@@ -95,7 +105,7 @@ class Setup(Processor):
 
 
 class GameScene(Scene):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         # Maybe inherit from Scene class
         self.entities: list[Entity] = []
@@ -107,7 +117,6 @@ class GameScene(Scene):
         player_spawn_pos = Vector2(300, 300)
         box_spawn_pos = Vector2(0, 0)
         box_collider_size = Vector2(300, 50)
-        window = r.get_resource(WindowResource)
 
         self.entities = [
             Entity().add_components(
@@ -118,7 +127,7 @@ class GameScene(Scene):
                 Velocity(),
                 Collisions(),
                 Name("Player"),
-                Drawable(player_texture_name),
+                Drawable(player_texture_name, 0, WORLD_CAM_ID),
                 Controllable(),
                 Speed(300),
                 Groundable(),
@@ -133,9 +142,10 @@ class GameScene(Scene):
                 StaticBody(),
             ),
             Entity().add_components(
-                Text(value="Hello World"),
+                Text(value="Hello World", size=30, z_order=10, camera_id=UI_CAM_ID),
                 Temporary(5),
                 Position.from_size(100, 100),
+                Name("Hello World Text"),
             ),
         ]
 
@@ -265,7 +275,7 @@ class ClientPlugin(Plugin):
             )
             .insert_resources(
                 NetworkManager,
-            MetaItemManager,
+                MetaItemManager,
             )
         )
 

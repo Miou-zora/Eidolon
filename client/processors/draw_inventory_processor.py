@@ -47,7 +47,7 @@ class DrawInventoryProcessor(Processor):
                             Entity()
                             .add_components(
                                 Position.from_size(x * 30, y * 30),
-                                Drawable(meta_item.sprite),
+                                Drawable(meta_item.sprite, 10, 1),  # 1 is UI_CAM_ID
                                 Name(item.__str__()),
                             )
                             .id
