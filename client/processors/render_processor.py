@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 def create_draw_text_ex(r, text, pos):
-    logger.debug(f"Drawing text {text.value} at {pos.x}, {pos.y}")
     return lambda: pyray.draw_text_ex(
         r.get_resource(AssetsManager).get_font(text.font),
         text.value,
@@ -39,7 +38,6 @@ def create_draw_rectangle_lines_ex(pos, collider):
 
 
 def create_draw_texture(texture, pos):
-    logger.debug(f"Drawing texture {texture} at {pos.x}, {pos.y}")
     return lambda: pyray.draw_texture(texture, int(pos.x), int(pos.y), pyray.WHITE)
 
 
@@ -71,7 +69,6 @@ class RenderProcessor(Processor):
                     (drawable.camera_id, create_draw_texture(texture, pos))
                 )
         for ent, (pos, text) in esper.get_components(Position, Text):
-            logger.debug(f"Adding text {text.value} to draw at {pos.x}, {pos.y}")
             to_draw.setdefault(text.z_order, []).append(
                 (text.camera_id, create_draw_text_ex(r, text, pos))
             )
