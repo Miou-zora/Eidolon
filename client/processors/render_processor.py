@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+from typing import TYPE_CHECKING
 
 import esper
 import pyray
@@ -13,97 +16,128 @@ from components.text import Text
 from resources.assets_manager import AssetsManager
 from resources.window_resource import WindowResource
 
+if TYPE_CHECKING:
+    from typing import Callable
+
+    map_layer_by_draw_function = dict[int, list[tuple[int, Callable[[], None]]]]
+
 DEBUG_COLLIDER = True
 
 logger = logging.getLogger(__name__)
 
 
-def create_draw_text_ex(r, text, pos):
-    return lambda: pyray.draw_text_ex(
-        r.get_resource(AssetsManager).get_font(text.font),
-        text.value,
-        pyray.Vector2(pos.x, pos.y),
-        text.size,
-        text.spacing,
-        text.color,
-    )
-
-
-def create_draw_rectangle_lines_ex(pos, collider):
-    return lambda: pyray.draw_rectangle_lines_ex(
-        pyray.Rectangle(int(pos.x), int(pos.y), collider.x, collider.y),
-        1,
-        pyray.RED,
-    )
-
-
-def create_draw_texture(texture, pos):
-    return lambda: pyray.draw_texture(texture, int(pos.x), int(pos.y), pyray.WHITE)
-
-
 class RenderProcessor(Processor):
+    __default_camera = pyray.Camera2D((0, 0), (0, 0), 0, 1)
+
     def __init__(self):
         super().__init__()
 
     def process(self, r: ResourceManager) -> None:
         window = r.get_resource(WindowResource)
-        cameras = esper.get_components(Camera2D, Position)
         assets_manager = r.get_resource(AssetsManager)
-        if len(cameras) < 1:
-            return
-        # main_camera_obj, main_camera_pos = cameras[0][1]
         pyray.clear_background(window.background_color)
-        # pyray.begin_mode_2d(
-        #     pyray.Camera2D(
-        #         (main_camera_obj.offset.x, main_camera_obj.offset.y),
-        #         (main_camera_pos.x, main_camera_pos.y),
-        #         main_camera_obj.rotation,
-        #         main_camera_obj.zoom,
-        #     )
-        # )
-        to_draw: dict[int, list[(int, callable)]] = {}
-        for ent, (pos, drawable) in esper.get_components(Position, Drawable):
-            texture = assets_manager.get_texture(drawable.texture_name)
-            if texture is not None:
-                to_draw.setdefault(drawable.z_order, []).append(
-                    (drawable.camera_id, create_draw_texture(texture, pos))
-                )
-        for ent, (pos, text) in esper.get_components(Position, Text):
-            to_draw.setdefault(text.z_order, []).append(
-                (text.camera_id, create_draw_text_ex(r, text, pos))
-            )
-        if DEBUG_COLLIDER:
+        to_draw: map_layer_by_draw_function = {}
+        RenderProcessor.__register_textures_to_draw(assets_manager, to_draw)
+        RenderProcessor.__register_text_to_draw(to_draw, r)
+        if (
+            DEBUG_COLLIDER
+        ):  # This should be temporary until we find a better way to debug colliders
             for ent, (pos, collider) in esper.get_components(Position, BoxCollider):
                 to_draw.setdefault(100, []).append(
-                    (0, create_draw_rectangle_lines_ex(pos, collider))
+                    (0, RenderProcessor.__create_draw_rectangle_lines_ex(pos, collider))
                 )
-        camera_by_id = {
+        RenderProcessor.__draw_layers(to_draw)
+
+    @staticmethod
+    def __draw_layers(to_draw: map_layer_by_draw_function):
+        cameras = esper.get_components(Camera2D, Position)
+        camera_by_id: dict[int, tuple[Camera2D, Position]] = {
             cameras[i][1][0].id: (cameras[i][1][0], cameras[i][1][1])
             for i in range(len(cameras))
         }
         current_camera_id: int = -1
-        default_camera = pyray.Camera2D((0, 0), (0, 0), 0, 1)
-        pyray.begin_mode_2d(default_camera)
+        pyray.begin_mode_2d(RenderProcessor.__default_camera)
         for layer in sorted(to_draw.keys()):
-            for camera_id, draw in to_draw[layer]:
-                if camera_id != current_camera_id:
-                    current_camera_id = camera_id
-                    pyray.end_mode_2d()
-                    if camera_id == -1:
-                        pyray.begin_mode_2d(default_camera)
-                    else:
-                        camera = camera_by_id.get(camera_id)
-                        if camera is None:
-                            logger.warning(f"Camera with id {camera_id} not found")
-                            pyray.begin_mode_2d(default_camera)
-                        else:
-                            pyray.begin_mode_2d(
-                                pyray.Camera2D(
-                                    (camera[0].offset.x, camera[0].offset.y),
-                                    (camera[1].x, camera[1].y),
-                                    camera[0].rotation,
-                                    camera[0].zoom,
-                                )
-                            )
-                draw()
+            RenderProcessor.__draw_layer(
+                to_draw[layer], camera_by_id, current_camera_id
+            )
         pyray.end_mode_2d()
+
+    @staticmethod
+    def __draw_layer(
+        to_draw_layer: list[tuple[int, Callable[[], None]]],
+        camera_by_id: dict[int, tuple[Camera2D, Position]],
+        current_camera_id: int,
+    ):
+        for camera_id, draw in to_draw_layer:
+            if camera_id != current_camera_id:
+                current_camera_id = camera_id
+                pyray.end_mode_2d()
+                if camera_id == -1:
+                    pyray.begin_mode_2d(RenderProcessor.__default_camera)
+                else:
+                    camera = camera_by_id.get(camera_id)
+                    if camera is None:
+                        logger.warning(f"Camera with id {camera_id} not found")
+                        pyray.begin_mode_2d(RenderProcessor.__default_camera)
+                    else:
+                        pyray.begin_mode_2d(
+                            pyray.Camera2D(
+                                (camera[0].offset.x, camera[0].offset.y),
+                                (camera[1].x, camera[1].y),
+                                camera[0].rotation,
+                                camera[0].zoom,
+                            )
+                        )
+            draw()
+
+    @staticmethod
+    def __register_textures_to_draw(
+        assets_manager: AssetsManager, to_draw: map_layer_by_draw_function
+    ):
+        for ent, (pos, drawable) in esper.get_components(Position, Drawable):
+            texture = assets_manager.get_texture(drawable.texture_name)
+            if texture is not None:
+                to_draw.setdefault(drawable.z_order, []).append(
+                    (
+                        drawable.camera_id,
+                        RenderProcessor.__create_draw_texture(texture, pos),
+                    )
+                )
+
+    @staticmethod
+    def __register_text_to_draw(
+        to_draw: map_layer_by_draw_function, r: ResourceManager
+    ):
+        for ent, (pos, text) in esper.get_components(Position, Text):
+            to_draw.setdefault(text.z_order, []).append(
+                (text.camera_id, RenderProcessor.__create_draw_text_ex(r, text, pos))
+            )
+
+    @staticmethod
+    def __create_draw_text_ex(r, text, pos):
+        return lambda: pyray.draw_text_ex(
+            r.get_resource(AssetsManager).get_font(text.font),
+            text.value,
+            pyray.Vector2(pos.x, pos.y),
+            text.size,
+            text.spacing,
+            text.color,
+        )
+
+    @staticmethod
+    def __create_draw_rectangle_lines_ex(pos, collider):
+        return lambda: pyray.draw_rectangle_lines_ex(
+            pyray.Rectangle(int(pos.x), int(pos.y), collider.x, collider.y),
+            1,
+            pyray.RED,
+        )
+
+    @staticmethod
+    def __create_draw_texture(texture, pos):
+        return lambda: pyray.draw_texture(
+            texture,
+            int(pos.x),
+            int(pos.y),
+            pyray.WHITE,
+        )
