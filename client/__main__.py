@@ -1,14 +1,20 @@
 from __future__ import annotations
 
+import enum
 import logging
 from typing import TYPE_CHECKING
 
 import esper
 import raylib
 
+from common.components.box_collider import BoxCollider
+from common.components.collision_mask import CollisionMask
+from common.components.collisions import Collisions
+from common.components.groundable import Groundable
 from common.components.leader import Leader
 from common.components.name import Name
 from common.components.position import Position
+from common.components.static_body import StaticBody
 from common.components.temporary import Temporary
 from common.components.velocity import Velocity
 from common.engine.engine import Engine
@@ -16,10 +22,15 @@ from common.engine.entity import Entity
 from common.engine.plugin import Plugin
 from common.engine.processor import Processor
 from common.engine.schedule_label import ScheduleLabel
+from common.processors.apply_velocity_processor import ApplyVelocityProcessor
+from common.processors.collision_processor import CollisionProcessor
 from common.processors.follow_leader_processor import FollowLeaderProcessor
+from common.processors.physic_processor import PhysicProcessor
+from common.processors.precollision_save_processor import \
+    PreCollisionSaveProcessor
+from common.processors.reset_velocity_processor import ResetVelocityProcessor
 from common.processors.temporary_processor import TemporaryProcessor
 from common.utils.vector2 import Vector2
-from components.box_collider import BoxCollider
 from components.camera import Camera2D
 from components.clickable import Clickable
 from components.controllable import Controllable
@@ -44,6 +55,11 @@ logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)
 
 
+class MaskLayers(enum.IntEnum):
+    PLAYER = enum.auto()
+    TILES = enum.auto()
+
+
 class Setup(Processor):
     def __init__(self):
         super().__init__()
@@ -60,7 +76,7 @@ class Setup(Processor):
 
         camera = Entity().add_components(
             Camera2D(Vector2(0, 0), 0, 1),
-            Position(0, 0),
+            Position.from_size(0, 0),
             Leader(-1, 5),
             Velocity(),
         )
@@ -76,23 +92,38 @@ class GameScene(Scene):
         asset_manager = r.get_resource(AssetsManager)
         player_texture_name = "Player"
         player_spawn_pos = Vector2(300, 300)
+        box_spawn_pos = Vector2(0, 0)
+        box_collider_size = Vector2(300, 50)
+        window = r.get_resource(WindowResource)
+
         self.entities = [
             Entity().add_components(
-                Position(player_spawn_pos.x, player_spawn_pos.y),
-                Name("First Entity"),
-                Drawable(player_texture_name),
+                # TODO: find a way to package collidable entity (position, collider, collision mask, collisions)
+                Position(player_spawn_pos),
                 BoxCollider(asset_manager.get_texture_size(player_texture_name)),
+                CollisionMask(MaskLayers.PLAYER, MaskLayers.TILES),
+                Velocity(),
+                Collisions(),
+                Name("Player"),
+                Drawable(player_texture_name),
                 Controllable(),
                 Speed(300),
-                Velocity(),
+                Groundable(),
+            ),
+            Entity().add_components(
+                # TODO: same as before but for entity with static body
+                Position(box_spawn_pos + Vector2(0, 200)),
+                BoxCollider(box_collider_size),
+                CollisionMask(MaskLayers.TILES, MaskLayers.PLAYER),
+                Name("Box"),
+                StaticBody(),
             ),
             Entity().add_components(
                 Text(value="Hello World"),
                 Temporary(5),
-                Position(100, 100),
+                Position.from_size(100, 100),
             ),
         ]
-        window = r.get_resource(WindowResource)
         for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
             lead.ent = self.entities[0].id
             cam.offset.x = window.get_size().x / 2
@@ -104,7 +135,7 @@ class GameScene(Scene):
 
 
 class MainMenu(Scene):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.buttons: list[Entity] = []
 
@@ -163,7 +194,7 @@ class MainMenu(Scene):
     ) -> Entity:
         # We will maybe create a proper Button creator in the future (and use raygui)
         return Entity().add_components(
-            Position(pos.x, pos.y),
+            Position(pos),
             Name(name),
             Drawable(name),
             Clickable(callback),
@@ -183,23 +214,33 @@ class StartProcessor(Processor):
 
 class ClientPlugin(Plugin):
     def build(self, engine: Engine) -> None:
-        engine.add_processors(
-            ScheduleLabel.Startup,
-            Setup(),
-            StartProcessor(),
-        ).add_processors(
-            ScheduleLabel.Update,
-            ClickProcessor(),
-            ControlProcessor(),
-            FollowLeaderProcessor(),
-            TemporaryProcessor(),
-        ).insert_resources(
-            NetworkManager
+        (
+            engine.add_processors(
+                ScheduleLabel.Startup,
+                Setup(),
+                StartProcessor(),
+            )
+            .add_processors(
+                ScheduleLabel.Update,
+                ClickProcessor(),
+                ControlProcessor(),
+                FollowLeaderProcessor(),
+                PreCollisionSaveProcessor(),
+                ApplyVelocityProcessor(),
+                ResetVelocityProcessor(),
+                CollisionProcessor(),
+                PhysicProcessor(),
+                TemporaryProcessor(),
+                # LogProcessor(),
+            )
+            .insert_resources(
+                NetworkManager,
+            )
         )
 
 
-def run():
-    engine: Engine = Engine()
+def run() -> None:
+    engine = Engine()
     # add common resources
     engine.add_plugins(
         DefaultPlugin().build(),

@@ -6,7 +6,7 @@ from common.components.name import Name
 from common.components.temporary import Temporary
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
-from common.resources.time_providers.real_time_provider import RealTimeProvider
+from common.engine.time_providers import RealTimeProvider
 
 logger = logging.getLogger(__name__)
 

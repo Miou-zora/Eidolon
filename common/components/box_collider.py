@@ -5,11 +5,11 @@ from common.utils.vector2 import Vector2
 
 
 @component
-class Position:
+class BoxCollider:
     __size: Vector2
 
     @classmethod
-    def from_size(cls, x: float, y: float) -> Position:
+    def from_size(cls, x: int, y: int) -> BoxCollider:
         return cls(Vector2(x, y))
 
     def __init__(self, vector: Vector2) -> None:
@@ -23,13 +23,13 @@ class Position:
     def y(self) -> float:
         return self.__size.y
 
-    @x.setter
-    def x(self, x: float) -> None:
-        self.__size.x = x
+    @x.getter
+    def x(self) -> float:
+        return self.__size.x
 
-    @y.setter
-    def y(self, y: float) -> None:
-        self.__size.y = y
+    @y.getter
+    def y(self) -> float:
+        return self.__size.y
 
     def __str__(self) -> str:
-        return f"Position({self.x},{self.y})"
+        return f"BoxCollider(width:{self.x:.6f}, height:{self.y:.6f})"
