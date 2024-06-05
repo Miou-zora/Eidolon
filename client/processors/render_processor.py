@@ -29,7 +29,6 @@ class RenderProcessor(Processor):
         if len(cameras) < 1:
             return
         main_camera_obj, main_camera_pos = cameras[0][1]
-        pyray.begin_drawing()  # TODO: split begin drawing, draw and end drawing into processor and create a new plugin for rendering
         pyray.clear_background(window.background_color)
         pyray.begin_mode_2d(
             pyray.Camera2D(
@@ -60,4 +59,3 @@ class RenderProcessor(Processor):
                 text.color,
             )
         pyray.end_mode_2d()
-        pyray.end_drawing()

@@ -36,9 +36,9 @@ from common.utils.item.inventory_item import InventoryItem
 from common.utils.item.meta_item import MetaItem
 from common.utils.vector2 import Vector2
 from components.camera import Camera2D
-from components.clickable import Clickable
 from components.controllable import Controllable
 from components.drawable import Drawable
+from components.gui_button import GUIButton
 from components.speed import Speed
 from components.text import Text
 from plugins.default_plugin import DefaultPlugin
@@ -46,6 +46,7 @@ from plugins.scene_plugin import ScenePlugin
 from processors.click_processor import ClickProcessor
 from processors.control_processor import ControlProcessor
 from processors.draw_inventory_processor import DrawInventoryProcessor
+from processors.gui_button_processor import GUIButtonProcessor
 from resources.assets_manager import AssetsManager
 from resources.scene_manager import Scene, SceneManager
 from resources.window_resource import WindowResource
@@ -194,6 +195,7 @@ class MainMenu(Scene):
             start_button_name,
             start_button_pos,
             start_button_size,
+            "Start",
             lambda: scene_manager.switch_to(GameScene()),
         )
 
@@ -213,20 +215,18 @@ class MainMenu(Scene):
             exit_button_name,
             exit_button_pos,
             exit_button_size,
+            "Exit",
             lambda: scene_manager.exit(),
         )
 
     @staticmethod
     def __create_button(
-        name: str, pos: Vector2, size: Vector2, callback: Callable[[], None]
+        name: str, pos: Vector2, size: Vector2, text: str, callback: Callable[[], None]
     ) -> Entity:
         # We will maybe create a proper Button creator in the future (and use raygui)
         return Entity().add_components(
-            Position(pos),
+            GUIButton(pos, size, text, callback),
             Name(name),
-            Drawable(name),
-            Clickable(callback),
-            BoxCollider(size),
         )
 
     def on_exit(self, r: ResourceManager) -> None:
@@ -258,6 +258,7 @@ class ClientPlugin(Plugin):
                 ResetVelocityProcessor(),
                 CollisionProcessor(),
                 PhysicProcessor(),
+                GUIButtonProcessor(),
                 TemporaryProcessor(),
                 DrawInventoryProcessor(),
                 # LogProcessor(),
