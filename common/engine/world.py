@@ -31,10 +31,12 @@ class World:
     def create_entity() -> EntityId:
         return esper.create_entity()
 
-    def update(self, schedule: ScheduleLabel, resource_manager: RM) -> None:
+    def update(
+        self, schedule: ScheduleLabel, resource_manager: RM, *args, **kargs
+    ) -> None:
         esper.clear_dead_entities()
         for processor in self.processors[schedule]:
-            processor.process(resource_manager)
+            processor.process(resource_manager, *args, **kargs)
 
     def add_processor(
         self, schedule: ScheduleLabel, processor: Type[Processor]

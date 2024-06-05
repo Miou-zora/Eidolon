@@ -1,6 +1,5 @@
 from common.engine.plugin_group import PluginGroup
 from common.engine.plugin_group_builder import PluginGroupBuilder
-from common.plugins.velocity_plugin import VelocityPlugin
 from .assets_plugin import AssetsPlugin
 from .inputs_plugin import InputsPlugin
 from .time_plugin import TimePlugin
@@ -15,5 +14,4 @@ class DefaultPlugin(PluginGroup):
             .add(AssetsPlugin())
             .add(TimePlugin())
             .add(InputsPlugin())
-            .add(VelocityPlugin())
         )

@@ -7,7 +7,7 @@ from common.components.position import Position
 from common.components.velocity import Velocity
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
-from common.resources.time_providers.real_time_provider import RealTimeProvider
+from common.engine.time_providers import RealTimeProvider
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +20,8 @@ class FollowLeaderProcessor(Processor):
                 lead.ent == -1
                 or not esper.entity_exists(lead.ent)
                 or not esper.has_component(lead.ent, Position)
-            ):
+            ):  # no leader defined
                 continue
-            leader_pos = esper.component_for_entity(lead.ent, Position)
-            vel.x = (leader_pos.x - pos.x) * lead.attraction
-            vel.y = (leader_pos.y - pos.y) * lead.attraction
+            leader_pos: Position = esper.component_for_entity(lead.ent, Position)
+            vel.x += (leader_pos.x - pos.x) * lead.attraction
+            vel.y += (leader_pos.y - pos.y) * lead.attraction
