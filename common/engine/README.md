@@ -1,6 +1,7 @@
 # EIDOLON ENGINE
 
-Eidolon is a game engine written in python using esper as ECS framework. It is designed to be simple and easy to use.
+Eidolon is a game engine written in python using esper as ECS framework. It is
+designed to be simple and easy to use.
 
 ## How to use
 
@@ -16,8 +17,8 @@ from common.engine.engine import Engine
 from common.engine.entity import Entity
 from common.engine.processor import Processor
 from common.engine.resource_manager import ResourceManager
-from common.resources.time_providers import UnitTimeProvider
-from common.resources.time_providers.time_provider import TimeProvider
+from common.engine.time_providers import UnitTimeProvider
+from common.engine.time_providers import TimeProvider
 
 logging.basicConfig(level=logging.NOTSET)
 logger = logging.getLogger(__name__)

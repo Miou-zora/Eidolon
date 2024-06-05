@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from common.engine.engine import Engine
     from common.engine.time import TimeUnit
-from common.resources.time_providers.time_provider import TimeProvider
+from common.engine.time_providers.time_provider import TimeProvider
 
 
 class UnitTimeProvider(TimeProvider):
