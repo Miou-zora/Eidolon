@@ -31,8 +31,8 @@ class GUIButton:
 
     def __str__(self) -> str:
         if self.callback.__name__ == "<lambda>":
-            return f"ClickableComponent(call:lambda({id(self.callback):x}))"
-        return f"ClickableComponent(call:{self.callback.__name__})"
+            return f"GUIButton(call:lambda({id(self.callback):x}))"
+        return f"GUIButton(call:{self.callback.__name__})"
 
     def __call__(self):
         self.callback()
