@@ -1,26 +1,16 @@
-__pycache__
-
-# Virtual env python
-venv
-
 # nix
 .direnv
 .envrc
 .pre-commit-config.yaml
+result
 
 # Exe build
 build
 dist
 *.spec
 
-# Packaging
-*egg-info
-
-# PyCharm IDE
+# jetbrains IDE
 .idea
 
 # common pkg
 .install
-
-# nix
-result

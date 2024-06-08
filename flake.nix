@@ -23,49 +23,45 @@
     forAllSystems = function:
       nixpkgs.lib.genAttrs defaultSystems
       (system: function nixpkgs.legacyPackages.${system});
-  in
-    {
-      formatter = forAllSystems (pkgs: pkgs.alejandra);
+  in {
+    formatter = forAllSystems (pkgs: pkgs.alejandra);
 
-      checks = forAllSystems (pkgs: let
-        commit-name = {
-          enable = true;
-          name = "commit name";
-          entry = ''
-            ${pkgs.python310.interpreter} ${./check_commit_msg_format.py}
-          '';
+    checks = forAllSystems (pkgs: let
+      commit-name = {
+        enable = true;
+        name = "commit name";
+        entry = ''
+          ${pkgs.python310.interpreter} ${./check_commit_msg_format.py}
+        '';
 
-          stages = ["commit-msg"];
-        };
-
-        hooks = {
-          inherit commit-name;
-
-          alejandra.enable = true;
-          check-merge-conflicts.enable = true;
-          check-shebang-scripts-are-executable.enable = true;
-          check-added-large-files.enable = true;
-        };
-      in {
-        pre-commit-check = pre-commit-hooks.lib.${pkgs.system}.run {
-          inherit hooks;
-          src = ./.;
-        };
-      });
-    }
-    // (let
-      outputs =
-        forAllSystems
-        (pkgs: import ./nix {inherit self pkgs;});
-
-      mapVals = f: attr: builtins.mapAttrs (_: f) attr;
-
-      transforms = {
-        devShells = out: {default = out.shell;};
-        packages = out: out.packages;
+        stages = ["commit-msg"];
       };
-    in
-      mapVals
-      (value: forAllSystems (pkgs: value outputs.${pkgs.system}))
-      transforms);
+
+      hooks = {
+        inherit commit-name;
+
+        alejandra.enable = true;
+        check-merge-conflicts.enable = true;
+        check-shebang-scripts-are-executable.enable = true;
+        check-added-large-files.enable = true;
+      };
+    in {
+      pre-commit-check = pre-commit-hooks.lib.${pkgs.system}.run {
+        inherit hooks;
+        src = ./.;
+      };
+    });
+
+    devShells = forAllSystems (pkgs: {
+      default = pkgs.mkShell {
+        inherit (self.checks.${pkgs.system}.pre-commit-check) shellHook;
+
+        name = "Eidolon";
+
+        env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+          pkgs.stdenv.cc.cc
+        ];
+      };
+    });
+  };
 }
