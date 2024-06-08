@@ -61,7 +61,13 @@
         env.LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
           pkgs.stdenv.cc.cc
         ];
+
+        packages = [pkgs.xmake];
       };
+    });
+
+    packages = forAllSystems (pkgs: {
+      default = pkgs.callPackage ./eidolon.nix {};
     });
   };
 }
