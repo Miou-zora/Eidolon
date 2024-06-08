@@ -4,6 +4,9 @@
 .pre-commit-config.yaml
 result
 
+# XMake
+.xmake
+
 # Exe build
 build
 dist
