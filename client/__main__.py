@@ -94,6 +94,7 @@ class Setup(Processor):
             Name("Main Camera"),
         )
 
+
         ui_camera = Entity().add_components(
             Camera2D(Vector2(0, 0), 0, 1, UI_CAM_ID),
             Position.from_size(0, 0),
@@ -161,10 +162,10 @@ class GameScene(Scene):
         meta_item_a = meta_item_manager.get_meta_item(1)
         meta_item_b = meta_item_manager.get_meta_item(2)
         if meta_item_a is not None:
-            inv.add_item(0, 0, InventoryItem.create_from_meta_item(meta_item_a))
-            inv.add_item(1, 1, InventoryItem.create_from_meta_item(meta_item_a))
+            inv.add_item(0, 0, InventoryItem.from_meta(meta_item_a))
+            inv.add_item(1, 1, InventoryItem.from_meta(meta_item_a))
         if meta_item_b is not None:
-            inv.add_item(1, 0, InventoryItem.create_from_meta_item(meta_item_b))
+            inv.add_item(1, 0, InventoryItem.from_meta(meta_item_b))
         window = r.get_resource(WindowResource)
         for ent, (pos, cam, lead) in esper.get_components(Position, Camera2D, Leader):
             lead.ent = self.entities[0].id
