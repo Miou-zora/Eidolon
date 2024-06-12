@@ -100,7 +100,6 @@ class Setup(Processor):
             Position.from_size(0, 0),
             Name("UI Camera"),
         )
-        print(Camera2D(Vector2(0, 0), 0, 1, WORLD_CAM_ID))
 
         meta_item_manager = r.get_resource(MetaItemManager)
         meta_item_a = MetaItem(

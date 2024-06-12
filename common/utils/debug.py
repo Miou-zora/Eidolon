@@ -3,7 +3,10 @@ class Debug:
         return_text = self.__class__.__name__
         return_text += "("
         for index, (key, value) in enumerate(self.__dict__.items()):
-            return_text += f"{key}:{value}"
+            if isinstance(value, float):
+                return_text += f"{key}:{value:.2f}"
+            else:
+                return_text += f"{key}:{value}"
             if index < len(self.__dict__) - 1:
                 return_text += ","
         return_text += ")"

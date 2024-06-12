@@ -28,4 +28,4 @@ class Vector2:
         return Vector2(self.x - other.x, self.y - other.y)
 
     def __str__(self):
-        return f"Vector2({self.x}, {self.y})"
+        return f"Vector2(x:{self.x:.3f},y:{self.y:.3f})"
