@@ -18,4 +18,4 @@ class Camera2D:
         self.id = _id
 
     def __str__(self) -> str:
-        return f"Camera2DComponent(offset:{self.offset.__str__()}, rotation:{self.rotation}, zoom:{self.zoom})"
+        return f"Camera2DComponent(offset:{self.offset}, rotation:{self.rotation}, zoom:{self.zoom})"
