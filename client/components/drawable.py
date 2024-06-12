@@ -1,8 +1,9 @@
 from common.engine import component
 
+from common.utils.debug import Debug
 
 @component
-class Drawable:
+class Drawable(Debug):
     texture_name: str
     # TODO: find a way to extract this from Text and Drawable components
     # 0 is the farthest away
@@ -10,5 +11,3 @@ class Drawable:
     # -1 is no camera
     camera_id: int = -1
 
-    def __str__(self) -> str:
-        return f"DrawableComponent(textureName:{self.texture_name})"

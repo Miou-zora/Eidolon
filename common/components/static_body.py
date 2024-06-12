@@ -1,7 +1,6 @@
 from common.engine import component
-
+from common.utils.debug import Debug
 
 @component
-class StaticBody:
-    def __str__(self) -> str:
-        return "StaticBody()"
+class StaticBody(Debug):
+    pass

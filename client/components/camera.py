@@ -1,9 +1,9 @@
 from common.engine import component
 from common.utils.vector2 import Vector2
-
+from common.utils.debug import Debug
 
 @component
-class Camera2D:
+class Camera2D(Debug):
     offset: Vector2
     rotation: float
     zoom: float
@@ -17,5 +17,3 @@ class Camera2D:
         self.zoom = zoom
         self.id = _id
 
-    def __str__(self) -> str:
-        return f"Camera2DComponent(offset:{self.offset}, rotation:{self.rotation}, zoom:{self.zoom})"
