@@ -12,8 +12,7 @@ class InputsManager(Resource):
         self._mouse_wheel: int = 0
         self._mouse_position: raylib.Vector2 = raylib.Vector2(0, 0)
 
-    @staticmethod
-    def is_key_pressed(key: raylib.KeyboardKey) -> bool:
+    def is_key_pressed(self, key: raylib.KeyboardKey) -> bool:
         return raylib.is_key_pressed(key)
 
     def is_key_down(self, key: raylib.KeyboardKey) -> bool:
@@ -33,9 +32,11 @@ class InputsManager(Resource):
         return self._mouse_position
 
     def update(self):
-        self._keys = {key: raylib.is_key_down(key) for key in raylib.KeyboardKey}
+        self._keys = {key: raylib.is_key_down(key) for key in
+                      raylib.KeyboardKey}
         self._mouse_buttons = {
-            button: raylib.is_mouse_button_down(button) for button in raylib.MouseButton
+            button: raylib.is_mouse_button_down(button) for button in
+            raylib.MouseButton
         }
         self._mouse_wheel = raylib.get_mouse_wheel_move()
         self._mouse_position = raylib.get_mouse_position()
