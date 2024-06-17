@@ -32,11 +32,9 @@ class InputsManager(Resource):
         return self._mouse_position
 
     def update(self):
-        self._keys = {key: raylib.is_key_down(key) for key in
-                      raylib.KeyboardKey}
+        self._keys = {key: raylib.is_key_down(key) for key in raylib.KeyboardKey}
         self._mouse_buttons = {
-            button: raylib.is_mouse_button_down(button) for button in
-            raylib.MouseButton
+            button: raylib.is_mouse_button_down(button) for button in raylib.MouseButton
         }
         self._mouse_wheel = raylib.get_mouse_wheel_move()
         self._mouse_position = raylib.get_mouse_position()
