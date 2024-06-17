@@ -6,12 +6,14 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import final
 
+from typing_extensions import Protocol
+
 from common.engine.engine import Engine
 from common.engine.resource import Resource
 from common.engine.resource_manager import ResourceManager
 
 if TYPE_CHECKING:
-    from typing import Callable
+    pass
 
 logger = logging.getLogger(__name__)
 
@@ -20,11 +22,14 @@ class Scene(ABC):
     @abstractmethod
     def on_start(self, _: ResourceManager) -> None:
         # maybe add some parameters like engine to kill entity (for example)
-        pass
+        ...
 
     @abstractmethod
-    def on_exit(self, _: ResourceManager) -> None:
-        pass
+    def on_exit(self, _: ResourceManager) -> None: ...
+
+
+class SwitchMethod(Protocol):
+    def __call__(self, *args, **kwargs) -> None: ...
 
 
 @final
@@ -58,11 +63,13 @@ class SceneManager(Resource):
         self.scene_history.append(scene)
 
     @staticmethod
-    def __switch_to_scene(fn) -> Callable:
+    def __switch_to_scene(fn: SwitchMethod) -> SwitchMethod:
         def wrapper(self, *args, **kwargs) -> None:
-            self.scene_history[self.index].on_exit(self._engine.resource_manager)
+            self.scene_history[self.index].on_exit(
+                self._engine.resource_manager)
             fn(self, *args, **kwargs)
-            self.scene_history[self.index].on_start(self._engine.resource_manager)
+            self.scene_history[self.index].on_start(
+                self._engine.resource_manager)
 
         return wrapper
 
