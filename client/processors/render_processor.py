@@ -42,9 +42,11 @@ class RenderProcessor(Processor):
         if (
             DEBUG_COLLIDER
         ):  # This should be temporary until we find a better way to debug colliders
-            for ent, (pos, collider) in esper.get_components(Position, BoxCollider):
+            for ent, (pos, collider) in esper.get_components(Position,
+                                                             BoxCollider):
                 to_draw.setdefault(100, []).append(
-                    (0, RenderProcessor.__create_draw_rectangle_lines_ex(pos, collider))
+                    (0, RenderProcessor.__create_draw_rectangle_lines_ex(pos,
+                                                                         collider))
                 )
         RenderProcessor.__draw_layers(to_draw)
 
@@ -52,8 +54,7 @@ class RenderProcessor(Processor):
     def __draw_layers(to_draw: map_layer_by_draw_function):
         cameras = esper.get_components(Camera2D, Position)
         camera_by_id: dict[int, tuple[Camera2D, Position]] = {
-            cameras[i][1][0].id: (cameras[i][1][0], cameras[i][1][1])
-            for i in range(len(cameras))
+            camera[1][0].id: (camera[1][0], camera[1][1]) for camera in cameras
         }
         current_camera_id: int = -1
         pyray.begin_mode_2d(RenderProcessor.__default_camera)
@@ -111,7 +112,8 @@ class RenderProcessor(Processor):
     ):
         for ent, (pos, text) in esper.get_components(Position, Text):
             to_draw.setdefault(text.z_order, []).append(
-                (text.camera_id, RenderProcessor.__create_draw_text_ex(r, text, pos))
+                (text.camera_id,
+                 RenderProcessor.__create_draw_text_ex(r, text, pos))
             )
 
     @staticmethod
