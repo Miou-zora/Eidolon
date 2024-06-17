@@ -95,7 +95,7 @@ class RenderProcessor(Processor):
     @staticmethod
     def __register_textures_to_draw(
         assets_manager: AssetsManager, to_draw: map_layer_by_draw_function
-    ):
+    ) -> None:
         for ent, (pos, drawable) in esper.get_components(Position, Drawable):
             texture = assets_manager.get_texture(drawable.texture_name)
             if texture is not None:
@@ -109,7 +109,7 @@ class RenderProcessor(Processor):
     @staticmethod
     def __register_text_to_draw(
         to_draw: map_layer_by_draw_function, r: ResourceManager
-    ):
+    ) -> None:
         for ent, (pos, text) in esper.get_components(Position, Text):
             to_draw.setdefault(text.z_order, []).append(
                 (text.camera_id,
@@ -117,7 +117,7 @@ class RenderProcessor(Processor):
             )
 
     @staticmethod
-    def __create_draw_text_ex(r, text, pos):
+    def __create_draw_text_ex(r, text, pos) -> Callable[[], None]:
         return lambda: pyray.draw_text_ex(
             r.get_resource(AssetsManager).get_font(text.font),
             text.value,
@@ -128,7 +128,7 @@ class RenderProcessor(Processor):
         )
 
     @staticmethod
-    def __create_draw_rectangle_lines_ex(pos, collider):
+    def __create_draw_rectangle_lines_ex(pos, collider) -> Callable[[], None]:
         return lambda: pyray.draw_rectangle_lines_ex(
             pyray.Rectangle(int(pos.x), int(pos.y), collider.x, collider.y),
             1,
@@ -136,7 +136,7 @@ class RenderProcessor(Processor):
         )
 
     @staticmethod
-    def __create_draw_texture(texture, pos):
+    def __create_draw_texture(texture, pos) -> Callable[[], None]:
         return lambda: pyray.draw_texture(
             texture,
             int(pos.x),
