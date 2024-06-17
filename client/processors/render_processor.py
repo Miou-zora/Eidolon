@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from collections import defaultdict
 from typing import TYPE_CHECKING
 
 import esper
@@ -19,7 +20,7 @@ from resources.window_resource import WindowResource
 if TYPE_CHECKING:
     from typing import Callable
 
-    map_layer_by_draw_function = dict[int, list[tuple[int, Callable[[], None]]]]
+    MapLayerByDrawFunction = dict[int, list[tuple[int, Callable[[], None]]]]
 
 DEBUG_COLLIDER = True
 
@@ -36,7 +37,7 @@ class RenderProcessor(Processor):
         window = r.get_resource(WindowResource)
         assets_manager = r.get_resource(AssetsManager)
         pyray.clear_background(window.background_color)
-        to_draw: map_layer_by_draw_function = {}
+        to_draw: MapLayerByDrawFunction = defaultdict(list)
         RenderProcessor.__register_textures_to_draw(assets_manager, to_draw)
         RenderProcessor.__register_text_to_draw(to_draw, r)
         if (
@@ -44,14 +45,15 @@ class RenderProcessor(Processor):
         ):  # This should be temporary until we find a better way to debug colliders
             for ent, (pos, collider) in esper.get_components(Position,
                                                              BoxCollider):
-                to_draw.setdefault(100, []).append(
+                debug_layer = 100  # This is a magic number that indicate to draw the collider over everything
+                to_draw[debug_layer].append(
                     (0, RenderProcessor.__create_draw_rectangle_lines_ex(pos,
                                                                          collider))
                 )
         RenderProcessor.__draw_layers(to_draw)
 
     @staticmethod
-    def __draw_layers(to_draw: map_layer_by_draw_function):
+    def __draw_layers(to_draw: MapLayerByDrawFunction):
         cameras = esper.get_components(Camera2D, Position)
         camera_by_id: dict[int, tuple[Camera2D, Position]] = {
             camera[1][0].id: (camera[1][0], camera[1][1]) for camera in cameras
@@ -94,12 +96,12 @@ class RenderProcessor(Processor):
 
     @staticmethod
     def __register_textures_to_draw(
-        assets_manager: AssetsManager, to_draw: map_layer_by_draw_function
+        assets_manager: AssetsManager, to_draw: MapLayerByDrawFunction
     ) -> None:
         for ent, (pos, drawable) in esper.get_components(Position, Drawable):
             texture = assets_manager.get_texture(drawable.texture_name)
             if texture is not None:
-                to_draw.setdefault(drawable.z_order, []).append(
+                to_draw[drawable.z_order].append(
                     (
                         drawable.camera_id,
                         RenderProcessor.__create_draw_texture(texture, pos),
@@ -108,10 +110,10 @@ class RenderProcessor(Processor):
 
     @staticmethod
     def __register_text_to_draw(
-        to_draw: map_layer_by_draw_function, r: ResourceManager
+        to_draw: MapLayerByDrawFunction, r: ResourceManager
     ) -> None:
         for ent, (pos, text) in esper.get_components(Position, Text):
-            to_draw.setdefault(text.z_order, []).append(
+            to_draw[text.z_order].append(
                 (text.camera_id,
                  RenderProcessor.__create_draw_text_ex(r, text, pos))
             )
