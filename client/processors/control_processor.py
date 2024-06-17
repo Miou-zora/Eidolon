@@ -14,17 +14,16 @@ logger = logging.getLogger(__name__)
 
 
 class ControlProcessor(Processor):
-    def __init__(self):
-        super().__init__()
 
     def process(self, r: ResourceManager) -> None:
         inputs_manager = r.get_resource(InputsManager)
-        for ent, (_, vel, speed) in esper.get_components(Controllable, Velocity,
-                                                         Speed):
-            vel.x += (inputs_manager.is_key_down(raylib.KeyboardKey.KEY_D)
-                      - inputs_manager.is_key_down(raylib.KeyboardKey.KEY_A)
-                      ) * speed.value
+        for ent, (_, vel, speed) in esper.get_components(Controllable, Velocity, Speed):
+            vel.x += (
+                inputs_manager.is_key_down(raylib.KeyboardKey.KEY_D)
+                - inputs_manager.is_key_down(raylib.KeyboardKey.KEY_A)
+            ) * speed.value
 
-            vel.y += (inputs_manager.is_key_down(raylib.KeyboardKey.KEY_S)
-                      - inputs_manager.is_key_down(raylib.KeyboardKey.KEY_W)
-                      ) * speed.value
+            vel.y += (
+                inputs_manager.is_key_down(raylib.KeyboardKey.KEY_S)
+                - inputs_manager.is_key_down(raylib.KeyboardKey.KEY_W)
+            ) * speed.value
