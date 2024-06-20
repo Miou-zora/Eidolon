@@ -46,7 +46,7 @@ class DrawInventoryProcessor(Processor):
     ) -> None:
         draw_in = DrawInventory()
         esper.add_component(ent, draw_in)
-        width, height = inv.get_size().x, inv.get_size().y
+        width, height = inv.size.x, inv.size.y
         for x, y in itertools.product(range(int(width)), range(int(height))):
             if inv.get_item(x, y) is None:
                 continue
