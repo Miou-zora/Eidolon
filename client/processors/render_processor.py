@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
+from functools import partial
 from typing import TYPE_CHECKING
 
 import esper
@@ -120,7 +121,8 @@ class RenderProcessor(Processor):
 
     @staticmethod
     def __create_draw_text_ex(r, text, pos) -> Callable[[], None]:
-        return lambda: pyray.draw_text_ex(
+        return partial(
+            pyray.draw_text_ex,
             r.get_resource(AssetsManager).get_font(text.font),
             text.value,
             pyray.Vector2(pos.x, pos.y),
@@ -131,7 +133,8 @@ class RenderProcessor(Processor):
 
     @staticmethod
     def __create_draw_rectangle_lines_ex(pos, collider) -> Callable[[], None]:
-        return lambda: pyray.draw_rectangle_lines_ex(
+        return partial(
+            pyray.draw_rectangle_lines_ex,
             pyray.Rectangle(int(pos.x), int(pos.y), collider.x, collider.y),
             1,
             pyray.RED,
@@ -139,7 +142,8 @@ class RenderProcessor(Processor):
 
     @staticmethod
     def __create_draw_texture(texture, pos) -> Callable[[], None]:
-        return lambda: pyray.draw_texture(
+        return partial(
+            pyray.draw_texture,
             texture,
             int(pos.x),
             int(pos.y),
