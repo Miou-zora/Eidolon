@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from common.engine import component
 from common.utils.vector2 import Vector2
+from common.utils.debug import Debug
 
 
 @component
-class Position:
+class Position(Debug):
     __size: Vector2
 
     @classmethod
@@ -30,6 +31,3 @@ class Position:
     @y.setter
     def y(self, y: float) -> None:
         self.__size.y = y
-
-    def __str__(self) -> str:
-        return f"Position({self.x},{self.y})"

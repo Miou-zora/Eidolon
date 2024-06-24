@@ -1,10 +1,8 @@
 from common.engine import component
+from common.utils.debug import Debug
 
 
 @component
-class Leader:
+class Leader(Debug):
     ent: int
     attraction: float
-
-    def __str__(self) -> str:
-        return f"Follow(Leader={self.ent})"

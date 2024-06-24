@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from common.engine import component
 from common.utils.vector2 import Vector2
+from common.utils.debug import Debug
 
 
 @component
-class BoxCollider:
+class BoxCollider(Debug):
     __size: Vector2
 
     @classmethod
@@ -30,6 +31,3 @@ class BoxCollider:
     @y.getter
     def y(self) -> float:
         return self.__size.y
-
-    def __str__(self) -> str:
-        return f"BoxCollider(width:{self.x:.6f}, height:{self.y:.6f})"

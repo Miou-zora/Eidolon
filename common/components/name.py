@@ -1,9 +1,6 @@
 from common.engine import component
-
+from common.utils.debug import Debug
 
 @component
-class Name:
+class Name(Debug):
     name: str
-
-    def __str__(self) -> str:
-        return f"{self.name}"
