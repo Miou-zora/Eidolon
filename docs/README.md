@@ -31,7 +31,7 @@ echo "experimental-features = nix-command flakes" \
 Start by cloning this repository
 
 ```sh
-git clone git clone https://github.com/Miou-zora/Eidolon.git
+git clone https://github.com/Miou-zora/Eidolon.git
 cd Eidolon
 ```
 
