@@ -1,5 +1,7 @@
 # Eidolon
 
+![Capture d'écran 2024-12-14 012038](https://github.com/user-attachments/assets/2532d118-9dff-4021-98c1-6f2cc2e07bd9)
+
 Eidolon is a game engine made in Python
 using [Raylib](https://www.raylib.com/)
 and [Esper](https://pypi.org/project/esper/).
