@@ -1,6 +1,6 @@
 # Eidolon
 
-Eidolon is a Terraria replica made in Python using custom game engine
+Eidolon is a game engine made in Python
 using [Raylib](https://www.raylib.com/)
 and [Esper](https://pypi.org/project/esper/).
 
